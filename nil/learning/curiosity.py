@@ -57,7 +57,7 @@ class CuriosityModule(nn.Module):
         # Compute prediction error (surprise)
         prediction_error = torch.mean((predicted_next_state - next_state) ** 2)
 
-        return prediction_error.items()
+        return prediction_error.item()
 
     def update(self, state, action, next_state):
         """
