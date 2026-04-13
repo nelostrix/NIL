@@ -1,0 +1,30 @@
+experiment:
+  name: "meta_reach_v1"
+  seed: 42
+
+model:
+  type: "LiquidNN"
+  input_dim: 4
+  hidden_dim: 32
+  output_dim: 2
+  num_layers: 5
+
+meta_learning:
+  inner_lr: 0.01
+  num_inner_steps: 5
+  outer_lr: 0.001
+  num_meta_epochs: 1000
+  tasks_per_batch: 5
+  support_episodes: 10
+  query_episodes: 5
+
+task:
+  name: "reach"
+  workspace_size: 1.0
+  max_episode_steps: 50
+
+logging:
+  use_tensorboard: true
+  use_wandb: true
+  log_interval: 10
+  checkpoint_interval: 100
