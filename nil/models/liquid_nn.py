@@ -47,13 +47,15 @@ With MAML (few-shot learning):
 from __future__ import annotations
 
 import math
+from re import L
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import torch
     import torch.nn as nn
     import torch.nn.functional as F
-
+    from nil.models.meta_learner import MAMLWrapper
+    from nil.models.world_model import WorldModel
     HAS_TORCH = True
 except ImportError:
     HAS_TORCH = False
@@ -418,3 +420,108 @@ if HAS_TORCH:
                 "total_parameters": self.num_parameters,
                 "trainable_parameters": self.num_trainable,
             }
+else:
+    # ══════════════════════════════════════════
+    # NUMPY FALLBACK — basic LNN without PyTorch
+    # ══════════════════════════════════════════
+    class LiquidNN:
+        """Minimal LNN implementation using only NumPy.
+
+        for environments without pytorch (edge devices, Raspberry pi).
+
+        Supports inference only - Training requires PyTorch version."""
+
+        def __init__(
+            self,
+            input_dim: int,
+            hidden_dim: int,
+            output_dim: int,
+            num_layers: int = 2, **kwargs
+        ):
+            try:
+                import numpy as np
+                self._np = np
+            except ImportError:
+                raise ImportError("Either torch or numpy  required for LiquidNN")
+
+            self.input_dim = input_dim
+            self.hidden_dim = hidden_dim
+            self.output_dim = output_dim
+            self.num_layers = num_layers
+
+            #Initialize random weights
+            self._weights = {}
+            in_d = input_dim
+            for i in range(num_layers):
+                self._weights[f"W_x_{i}"] = np.random.randn(in_d, hidden_dim) * 0.1
+                self._weights[f"W_h_{i}"] = np.random.randn(hidden_dim, hidden_dim) * 0.1
+                self._weights[f"b_{i}"] = np.zeros(hidden_dim)
+                self._weights[f"W_tau_{i}"] = np.random.randn(in_d + hidden_dim, hidden_dim) * 0.1
+                in_d = hidden_dim
+            self._weights["w_out"] = np.random.randn(hidden_dim, output_dim) * 0.1
+            self._weights["b_out"] = np.zeros(output_dim)
+
+            self._hidden = [np.zeros(hidden_dim) for _ in range(num_layers)]
+
+
+        def predict_step(self, x, dt: float = 0.1):
+            """single_step inference."""
+            np = self._np
+            current = np.array(x, dtype=float)
+
+            for i in range(self.num_layers):
+                h = self._hidden[i]
+                xh = np.concatenate([current, h])
+
+                # Adaptive time constant
+                tau_raw = xh @ self._weights[f"W_tau_{i}"]
+                tau = 0.1 + 9.9 / (1 + np.exp(-tau_raw))#Sigmoid Scaled
+
+                #pre-activation
+                f_xh = np.tanh(current @ self._weights[f"W_x_{i}"] + h @ self._weights[f"W_h_{i}"] + self._weights[f"b_{i}"])
+
+                #ODE step
+                dh = (-h + f_xh) / tau
+                self._hidden[i] = h + dt * dh
+                current = self._hidden[i]
+
+            #output
+            output = current @ self._weights["W_out"] + self._weights["b_out"]
+            return output
+        def load_weights(self, path: str):
+            """Load weights from a .npz file (Explored form Pytorch version)."""
+            np = self._np
+            data = np.load(path)
+            for key in data:
+                if key in self._weights:
+                    self._weights[key] = data[key]
+
+        def reset(self):
+            self._hidden = [self._np.zeros(self.hidden_dim) for _ in range(self.num_layers)]
+
+        @property
+        def num_parameters(self) -> int:
+            return sum(w.size for w in self._weights.values())
+
+        def summary(self) -> Dict[str, Any]:
+            return {
+                "name" : "LiquidNN (Numpy fallback)",
+                "input_dim": self.input_dim,
+                "hidden_dim": self.hidden_dim,
+                "output_dim": self.output_dim,
+                "num_layers" : self.num_layers,
+                "total_params": self.num_parameters,
+                "backend": "numpy",
+            }
+    class MAMLWrapper:
+        """Placeholder  - MAML requires PyTorch."""
+        def __init__(self, *args, **kwargs):
+            raise ImportError ("MAMLWrapper requires Pytorch, Install: pip install torch")
+    class Worldmodel:
+        """placeHolder - WorldModel requires PyTorch."""
+        def __init__(self, *args, **kwargs):
+            raise ImportError("WorldModel requires PyTorch. Install: pip install torch")
+    def create_liquid_policy(*args, **kwargs):
+        raise ImportError("Create_liquid_policy requires PyTorch. install >> pip install torch")
+    def create_world_model(*args, **kwargs):
+        raise ImportError("Create_world_model requires Pytorch. install>> pip install torch")
