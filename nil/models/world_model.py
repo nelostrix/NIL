@@ -1,155 +1,187 @@
-"""World model that learns physics by predicting the future."""
+from typing import Dict, List, Optional, Tuple
 
-import numpy as np
 import torch
 import torch.nn as nn
+from your_module import LiquidCell  # replace with actual path
 
 
 class WorldModel(nn.Module):
-    """
-    Learns to predict: state(t+1) = f(state(t), action(t))
-    Once trained, can plan in imagination!
+    """Predictive world model using Liquid Neural Networks.
+
+    Learns environment dynamics: given current state and action,
+    predict next state. Enables planning in imagination without
+    real-world interaction.
+
+    Architecture:
+        state → encoder → latent
+        (latent, action) → dynamics → next_latent
+        next_latent → decoder → predicted_next_state
+
+    Args:
+        state_dim: Dimension of state observations
+        action_dim: Dimension of actions
+        latent_dim: Dimension of latent representation
+        hidden_dim: Hidden layer size for LNN components
     """
 
-    def __init__(self, state_dim, action_dim, latent_dim=32):
+    def __init__(
+        self,
+        state_dim: int,
+        action_dim: int,
+        latent_dim: int = 32,
+        hidden_dim: int = 64,
+    ):
         super().__init__()
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        self.latent_dim = latent_dim
 
-        # Encoder: compress state to latent representation
+        # Encoder: state → latent
         self.encoder = nn.Sequential(
-            nn.Linear(state_dim, 64), nn.ReLU(), nn.Linear(64, latent_dim)
+            nn.Linear(state_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, latent_dim),
         )
 
-        # Dynamics model: predict next latent state
-        self.dynamics = nn.Sequential(
-            nn.Linear(latent_dim + action_dim, 64),
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, latent_dim),
+        # Dynamics: (latent, action) → next_latent
+        # Uses a LiquidCell for adaptive dynamics
+        self.dynamics = LiquidCell(
+            input_dim=latent_dim + action_dim,
+            hidden_dim=latent_dim,
+            tau_min=0.1,
+            tau_max=5.0,
         )
 
-        # self.decoder: reconst4ruct state from latent
+        # Decoder: latent → predicted state
         self.decoder = nn.Sequential(
-            nn.Linear(latent_dim, 64), nn.ReLU(), nn.Linear(64, state_dim)
+            nn.Linear(latent_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, state_dim),
         )
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
 
-    def forward(self, state, action):
-        """Predict next state given current state and action."""
-        # Encode current state
-        z = self.encoder(state)
+        # Reward predictor: latent → predicted reward
+        self.reward_head = nn.Sequential(
+            nn.Linear(latent_dim, hidden_dim // 2),
+            nn.ReLU(),
+            nn.Linear(hidden_dim // 2, 1),
+        )
 
-        # predict next latent state
-        z_next = self.dynamics(torch.cat([z, action], dim=-1))
+    def encode(self, state: torch.Tensor) -> torch.Tensor:
+        """Encode state to latent representation."""
+        return self.encoder(state)
 
-        # Decode to next state
-        next_state_pred = self.decoder(z_next)
-        #
-        return next_state_pred
+    def predict_next(
+        self, latent: torch.Tensor, action: torch.Tensor, dt: float = 0.1
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Predict next latent state and reward.
 
-    def learn_from_experience(self, states, actions, next_states, epochs=10):
+        Args:
+            latent: Current latent state [batch, latent_dim]
+            action: Action [batch, action_dim]
+            dt: Time step
+
+        Returns:
+            (next_latent, predicted_reward)
         """
-        Learn world model from observed transitions.
-        No labels needed - just raw experience!
+        combined = torch.cat([latent, action], dim=-1)
+        next_latent = self.dynamics(combined, latent, dt)
+        reward = self.reward_head(next_latent)
+        return next_latent, reward.squeeze(-1)
+
+    def decode(self, latent: torch.Tensor) -> torch.Tensor:
+        """Decode latent to predicted state."""
+        return self.decoder(latent)
+
+    def forward(
+        self, state: torch.Tensor, action: torch.Tensor, dt: float = 0.1
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Full forward: state + action → predicted_next_state + reward."""
+        latent = self.encode(state)
+        next_latent, reward = self.predict_next(latent, action, dt)
+        next_state = self.decode(next_latent)
+        return next_state, reward
+
+    def imagine(
+        self,
+        initial_state: torch.Tensor,
+        action_sequence: torch.Tensor,
+        dt: float = 0.1,
+    ) -> Tuple[List[torch.Tensor], List[float]]:
+        """Imagine a trajectory by rolling out the world model.
+
+        Args:
+            initial_state: Starting state [state_dim] or [batch, state_dim]
+            action_sequence: Sequence of actions [seq_len, action_dim]
+            dt: Time step
+
+        Returns:
+            (predicted_states, predicted_rewards)
         """
-        states = torch.FloatTensor(states)
-        actions = torch.FloatTensor(actions)
-        next_states = torch.FloatTensor(next_states)
+        if initial_state.dim() == 1:
+            initial_state = initial_state.unsqueeze(0)
+
+        latent = self.encode(initial_state)
+        states = [initial_state]
+        rewards = []
+
+        for t in range(len(action_sequence)):
+            action = (
+                action_sequence[t : t + 1]
+                if action_sequence[t].dim() == 1
+                else action_sequence[t : t + 1]
+            )
+            if action.dim() == 1:
+                action = action.unsqueeze(0)
+
+            latent, reward = self.predict_next(latent, action, dt)
+            state = self.decode(latent)
+            states.append(state)
+            rewards.append(float(reward.item()))
+
+        return states, rewards
+
+    def learn_from_experience(
+        self,
+        states: torch.Tensor,
+        actions: torch.Tensor,
+        next_states: torch.Tensor,
+        rewards: Optional[torch.Tensor] = None,
+        epochs: int = 10,
+        lr: float = 0.001,
+    ) -> Dict[str, float]:
+        """Train world model on collected experience.
+
+        Args:
+            states: [N, state_dim]
+            actions: [N, action_dim]
+            next_states: [N, state_dim]
+            rewards: [N] (optional)
+            epochs: Training epochs
+            lr: Learning rate
+
+        Returns:
+            Training metrics
+        """
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+        state_loss_fn = nn.MSELoss()
+        reward_loss_fn = nn.MSELoss()
+
+        total_loss = 0.0
 
         for epoch in range(epochs):
-            # predict next states
-            pred_next_states = self(states, actions)
+            optimizer.zero_grad()
 
-            # Loss: how well did we predict the future?
-            loss = nn.MSELoss()(pred_next_states, next_states)
+            pred_states, pred_rewards = self(states, actions)
+            loss = state_loss_fn(pred_states, next_states)
 
-            # update
-            self.optimizer.zero_grad()
+            if rewards is not None:
+                loss += 0.1 * reward_loss_fn(pred_rewards, rewards)
+
             loss.backward()
-            self.optimizer.step()
+            optimizer.step()
+            total_loss = float(loss.item())
 
-            if epoch % 2 == 0:
-                print(f"Epoch {epoch}: Prediction Loss = {loss.item():.6f}")
-
-        return loss.item()
-
-    def imagine(self, initial_state, action_sequence):
-        """Imagine the future without interacting with environment.
-        This is mental simulation - key to AGI
-        """
-        state = torch.FloatTensor(initial_state)
-        imagined_trajectory = [state.numpy()]
-
-        for action in action_sequence:
-            action_tensor = torch.FloatTensor(action).unsqueeze(0)
-            state = self(state.unsqueeze(0), action_tensor).squeeze(0)
-            imagined_trajectory.append(state.detach().numpy())
-
-        return imagined_trajectory
-
-
-class SelfLearningWorldModel:
-    """Agent that learns physics and plans in imagination."""
-
-    def __init__(self, state_dim, action_dim):
-        self.world_model = WorldModel(state_dim, action_dim)
-        self.experience_buffer = []
-
-    def collect_random_expirence(self, env, num_episodes=50):
-        """Collect experience by random exploration."""
-        print("collecting random experience....")
-
-        for episode in range(num_episodes):
-            state = env.reset()
-            done = False
-
-            while not done:
-                # Random action
-                action = np.random.uniform(-0.1, 0.1, size=env.action_dim)
-                next_state, _, done, _ = env.step(action)
-
-                # Store tranisition
-                self.experience_buffer.append(
-                    {"state": state, "action": action, "next_state": next_state}
-                )
-                state = next_state
-
-        print(f"collected {len(self.experience_buffer)} transitions")
-
-    def learn_physics(self):
-        """Learn world model from collected experience."""
-        print("\nLearning physics from experience...")
-
-        # Extract data
-        states = np.array([t["state"] for t in self.experience_buffer])
-        actions = np.array([t["action"] for t in self.experience_buffer])
-        next_states = np.array([t["next_state"] for t in self.experience_buffer])
-
-        # Train world model
-        self.world_model.learn_from_experience(states, actions, next_states, epochs=20)
-
-    def plan_in_imagination(self, initial_state, num_plans=10):
-        """Generate random action sequence and imagine their outcomes.
-        Pick th best one based on imagined reward."""
-
-        best_plan = None
-        best_value = -float("inf")
-
-        for _ in range(num_plans):
-            # Random action sequence
-            action_seq = [np.random.uniform(-0.1, 0.1, size=2) for _ in range(10)]
-            # imagine the future
-            trajectory = self.world_model.imagine(initial_state, action_seq)
-
-            # Evalutate imagined trajectory
-            # (here we use distance to goal as heuristic, but could be learned)
-            final_state = trajectory[-1]
-            value = -np.linalg.norm(final_state[:2] - final_state[2:])
-
-            if value > best_value:
-                best_value = value
-                best_plan = action_seq
-        return best_plan[0]  # Return first action
+        return {"state_loss": total_loss, "epochs": epochs}
 
 
 if __name__ == "__main__":
