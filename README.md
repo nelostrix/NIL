@@ -1,102 +1,125 @@
-🧠 Intelligence Layer
-The AI & Intelligence backbone of NeloStrix Robotics
+# Nil — Self-Evolving Domain Agent Framework
 
-Overview
-Intelligence Layer is the centralized AI and cognitive processing framework that powers autonomous decision-making, perception, and adaptive behavior across the entire NeloStrix robotics ecosystem. It serves as the "brain" that sits between raw sensor data and physical actuation — transforming observations into intelligent action.
-This repository contains the core modules for perception, planning, learning, and reasoning that enable NeloStrix robots to understand, adapt, and operate autonomously in complex real-world environments.
+**AI agents that get better every time they run.**
 
-Architecture
-┌─────────────────────────────────────────────────────────────┐
-│ INTELLIGENCE LAYER │
-│ │
-│ ┌─────────────┐ ┌──────────────┐ ┌───────────────────┐ │
-│ │ Perception │ │ Planning │ │ Decision Engine │ │
-│ │ Pipeline │→ │ & Policy │→ │ & Reasoning │ │
-│ └─────────────┘ └──────────────┘ └───────────────────┘ │
-│ ↑ │ │
-│ ┌─────────────┐ ┌──────────────┐ ↓ │
-│ │ Sensor │ │ Learning & │ ┌───────────────────┐ │
-│ │ Fusion │ │ Adaptation │ │ Action Interface │ │
-│ └─────────────┘ └──────────────┘ └───────────────────┘ │
-│ │
-└────────────────────────┬────────────────────────────────────┘
-│
-┌──────────┴──────────┐
-│ NeloStrix Hardware │
-│ Abstraction Layer │
-└─────────────────────┘
+Nil is a Python SDK that gives AI agents persistent memory and self-improvement. Unlike frameworks where agents start from zero every session, Nil agents remember what worked, extract reusable skills, detect when strategies stop working, and optimize their own performance — all autonomously.
 
-Core Modules
-Perception Pipeline
-Computer vision, LiDAR processing, depth estimation, and multi-modal sensor fusion. Converts raw sensory input into structured world representations that downstream modules can reason over.
-Planning & Policy
-Task decomposition, motion planning, path optimization, and behavioral policy execution. Generates feasible action sequences from high-level goals using both classical planners and learned policies.
-Decision Engine & Reasoning
-Real-time decision-making under uncertainty. Incorporates probabilistic reasoning, constraint satisfaction, and safety-aware arbitration to select optimal actions in dynamic environments.
-Learning & Adaptation
-Online and offline learning pipelines — including reinforcement learning, imitation learning, and continual fine-tuning — that allow robots to improve performance over time and generalize to novel scenarios.
-Sensor Fusion
-Temporal and spatial alignment of heterogeneous sensor streams (camera, LiDAR, IMU, proprioception) into a unified state estimate with calibrated uncertainty.
-Action Interface
-Translates high-level decisions into low-level motor commands, bridging the Intelligence Layer to the NeloStrix Hardware Abstraction Layer with real-time safety checks and trajectory smoothing.
+## Quick Start
 
-Tech Stack
-DomainTechnologiesDeep LearningPyTorch, ONNX Runtime, TensorRTComputer VisionOpenCV, Open3D, DepthAnythingPlanningOMPL, MoveIt, Custom MCTSRL & TrainingStable-Baselines3, Isaac GymInferenceTensorRT, Triton Inference ServerCommunicationROS 2 (Humble/Iron), gRPC, ZeroMQDeploymentDocker, Kubernetes, NVIDIA Jetson
+```bash
+pip install nil-sdk
+```
 
-Repository Structure
-intelligence-layer/
-├── perception/ # Vision, LiDAR, and sensor processing
-├── planning/ # Task & motion planning
-├── decision/ # Reasoning and decision engine
-├── learning/ # RL, IL, and training pipelines
-├── fusion/ # Multi-sensor fusion
-├── action/ # Action interface & safety layer
-├── models/ # Pre-trained model weights & configs
-├── protos/ # gRPC & message definitions
-├── configs/ # Environment and module configs
-├── tests/ # Unit, integration, and simulation tests
-├── docs/ # Architecture docs and API reference
-├── scripts/ # Utilities, benchmarks, and tooling
-└── docker/ # Container definitions
+```python
+import nil
 
-Getting Started
-Prerequisites
+@nil.tool
+def search_logs(query: str) -> str:
+    """Search application logs."""
+    return search_my_logs(query)
 
-Python 3.10+
-CUDA 12.x with cuDNN 8+
-ROS 2 Humble or Iron
-Docker (recommended for reproducible environments)
+@nil.tool
+def apply_fix(action: str) -> str:
+    """Apply a remediation action."""
+    return execute_fix(action)
 
-Installation
-bash# Clone the repository
-git clone git@github.com:NeloStrix/intelligence-layer.git
-cd intelligence-layer
+domain = nil.Domain(
+    name="incident-response",
+    tools=[search_logs, apply_fix],
+    objectives=["resolve production incidents autonomously"],
+    success_signal=lambda run: run.success
+)
 
-# Set up the environment
+agent = nil.Agent(
+    domain=domain,
+    base_model="claude-sonnet-4-20250514",
+    memory=nil.PersistentMemory("./agent_store"),
+    evolution=nil.EvolutionConfig(strategy="continuous"),
+)
 
-make setup # Creates venv, installs deps, pulls model weights
+# Every run makes the agent smarter
+result = agent.run("API latency spike on /v2/users")
+```
 
-# Or use Docker
+## Why Nil?
 
-docker compose up -d intelligence-layer
-Running Tests
-bashmake test # Unit tests
-make test-sim # Simulation integration tests
+Every AI agent framework today produces **goldfish agents** — they start from zero every time, repeat the same mistakes, and can't learn from experience.
 
-Integration with NeloStrix Ecosystem
-The Intelligence Layer is designed to integrate seamlessly with other NeloStrix subsystems:
+Nil solves this with three systems:
 
-HAL (Hardware Abstraction Layer) — receives actuator capabilities, sends motor commands
-Fleet Manager — reports agent status, receives mission assignments
-Data Pipeline — streams telemetry and training data to cloud storage
-Simulation Engine — supports hardware-in-the-loop and pure sim evaluation
+1. **Agent Kernel** — Executes tasks while recording structured experience traces (not just logs — machine-readable execution data).
 
-Contributing
-This is an internal NeloStrix repository. Please refer to our Contributing Guidelines and ensure all changes pass CI before opening a merge request. All modules require accompanying tests and documentation updates.
+2. **Evolution Engine** — Analyzes traces to extract reusable skills, detect performance drift, and autonomously improve strategies.
 
-License
-Proprietary — © NeloStrix Robotics. All rights reserved. See LICENSE for details.
+3. **Optimization Layer** — Routes subtasks to cheaper models when safe, compresses redundant chains, and manages cost budgets.
 
-<p align="center">
-  <b>NeloStrix Robotics</b> — Building intelligent machines that see, think, and act.
-</p>
+## Key Features
+
+- **Persistent learning** — agents remember across sessions via SQLite
+- **Skill extraction** — successful patterns become reusable skills
+- **Drift detection** — alerts when strategies stop working
+- **Model agnostic** — works with Claude, GPT, Llama, or any LLM
+- **Zero infrastructure** — runs on any laptop, stores everything locally
+- **Cost tracking** — per-run token and cost accounting
+
+## Project Structure
+
+```
+nil/
+├── __init__.py          # Public API
+├── agent.py             # Main Agent class
+├── domain.py            # Domain definitions
+├── config.py            # Configuration objects
+├── kernel/              # Phase 1: Execution engine
+│   ├── runner.py        # Agent loop (LLM + tools)
+│   ├── tracer.py        # Structured experience capture
+│   ├── tool_manager.py  # Tool registration & dispatch
+│   └── outcome.py       # Run results
+├── memory/              # Phase 1: Persistent storage
+│   ├── store.py         # SQLite-backed memory
+│   ├── experience.py    # Trace query interface
+│   ├── skill_registry.py # Skill data model
+│   └── strategy_version.py # Strategy versioning
+├── evolution/           # Phase 2-3: Self-improvement
+│   ├── analyzer.py      # Pattern detection
+│   ├── skill_extractor.py # Skill extraction
+│   ├── strategy_mutator.py # Strategy mutation
+│   ├── evaluator.py     # Strategy evaluation
+│   └── drift_detector.py # Drift detection
+├── optimization/        # Phase 4: Cost optimization
+│   ├── model_router.py  # Smart model routing
+│   ├── chain_compressor.py # Chain compression
+│   ├── cache_manager.py # Response caching
+│   └── budget_controller.py # Cost limits
+├── providers/           # LLM adapters
+│   ├── anthropic.py     # Claude
+│   ├── openai.py        # GPT / compatible
+│   └── stub.py          # Testing (no API key)
+└── tools/               # Tool system
+    ├── base.py          # Tool class + @tool decorator
+    └── registry.py      # Global tool registry
+```
+
+## Running Tests
+
+```bash
+pip install -e ".[dev]"
+pytest -v
+```
+
+## Roadmap
+
+| Phase | What | When |
+|-------|------|------|
+| 1 | Agent Kernel + Memory (this release) | Now |
+| 2 | Skill Extraction | Month 3-4 |
+| 3 | Evolution Engine (core IP) | Month 5-6 |
+| 4 | Cost Optimization | Month 7+ |
+
+## Built by
+
+**Nelo Robotics Pvt Ltd** — Building the intelligence layer for autonomous systems.
+
+## License
+
+Apache 2.0
