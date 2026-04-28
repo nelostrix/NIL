@@ -1,0 +1,125 @@
+# Nil — Self-Evolving Domain Agent Framework
+
+**AI agents that get better every time they run.**
+
+Nil is a Python SDK that gives AI agents persistent memory and self-improvement. Unlike frameworks where agents start from zero every session, Nil agents remember what worked, extract reusable skills, detect when strategies stop working, and optimize their own performance — all autonomously.
+
+## Quick Start
+
+```bash
+pip install nil-sdk
+```
+
+```python
+import nil
+
+@nil.tool
+def search_logs(query: str) -> str:
+    """Search application logs."""
+    return search_my_logs(query)
+
+@nil.tool
+def apply_fix(action: str) -> str:
+    """Apply a remediation action."""
+    return execute_fix(action)
+
+domain = nil.Domain(
+    name="incident-response",
+    tools=[search_logs, apply_fix],
+    objectives=["resolve production incidents autonomously"],
+    success_signal=lambda run: run.success
+)
+
+agent = nil.Agent(
+    domain=domain,
+    base_model="claude-sonnet-4-20250514",
+    memory=nil.PersistentMemory("./agent_store"),
+    evolution=nil.EvolutionConfig(strategy="continuous"),
+)
+
+# Every run makes the agent smarter
+result = agent.run("API latency spike on /v2/users")
+```
+
+## Why Nil?
+
+Every AI agent framework today produces **goldfish agents** — they start from zero every time, repeat the same mistakes, and can't learn from experience.
+
+Nil solves this with three systems:
+
+1. **Agent Kernel** — Executes tasks while recording structured experience traces (not just logs — machine-readable execution data).
+
+2. **Evolution Engine** — Analyzes traces to extract reusable skills, detect performance drift, and autonomously improve strategies.
+
+3. **Optimization Layer** — Routes subtasks to cheaper models when safe, compresses redundant chains, and manages cost budgets.
+
+## Key Features
+
+- **Persistent learning** — agents remember across sessions via SQLite
+- **Skill extraction** — successful patterns become reusable skills
+- **Drift detection** — alerts when strategies stop working
+- **Model agnostic** — works with Claude, GPT, Llama, or any LLM
+- **Zero infrastructure** — runs on any laptop, stores everything locally
+- **Cost tracking** — per-run token and cost accounting
+
+## Project Structure
+
+```
+nil/
+├── __init__.py          # Public API
+├── agent.py             # Main Agent class
+├── domain.py            # Domain definitions
+├── config.py            # Configuration objects
+├── kernel/              # Phase 1: Execution engine
+│   ├── runner.py        # Agent loop (LLM + tools)
+│   ├── tracer.py        # Structured experience capture
+│   ├── tool_manager.py  # Tool registration & dispatch
+│   └── outcome.py       # Run results
+├── memory/              # Phase 1: Persistent storage
+│   ├── store.py         # SQLite-backed memory
+│   ├── experience.py    # Trace query interface
+│   ├── skill_registry.py # Skill data model
+│   └── strategy_version.py # Strategy versioning
+├── evolution/           # Phase 2-3: Self-improvement
+│   ├── analyzer.py      # Pattern detection
+│   ├── skill_extractor.py # Skill extraction
+│   ├── strategy_mutator.py # Strategy mutation
+│   ├── evaluator.py     # Strategy evaluation
+│   └── drift_detector.py # Drift detection
+├── optimization/        # Phase 4: Cost optimization
+│   ├── model_router.py  # Smart model routing
+│   ├── chain_compressor.py # Chain compression
+│   ├── cache_manager.py # Response caching
+│   └── budget_controller.py # Cost limits
+├── providers/           # LLM adapters
+│   ├── anthropic.py     # Claude
+│   ├── openai.py        # GPT / compatible
+│   └── stub.py          # Testing (no API key)
+└── tools/               # Tool system
+    ├── base.py          # Tool class + @tool decorator
+    └── registry.py      # Global tool registry
+```
+
+## Running Tests
+
+```bash
+pip install -e ".[dev]"
+pytest -v
+```
+
+## Roadmap
+
+| Phase | What | When |
+|-------|------|------|
+| 1 | Agent Kernel + Memory (this release) | Now |
+| 2 | Skill Extraction | Month 3-4 |
+| 3 | Evolution Engine (core IP) | Month 5-6 |
+| 4 | Cost Optimization | Month 7+ |
+
+## Built by
+
+**Nelo Robotics Pvt Ltd** — Building the intelligence layer for autonomous systems.
+
+## License
+
+Apache 2.0
