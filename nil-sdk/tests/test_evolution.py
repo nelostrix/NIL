@@ -41,7 +41,7 @@ from nil.evolution.analyzer import (
     wilson_ci,
 )
 from nil.evolution.drift_detector import DriftDetector
-from nil.evolution.skill_extractor import SkillExtractor
+from nil.evolution.skill_extractor import ExtractionResult, SkillExtractor
 from nil.memory.store import PersistentMemory
 
 # ---------------------------------------------------------------------------
@@ -999,9 +999,9 @@ class TestCrossModule:
             memory.store_trace(_trace(f"f-{i}", False, ["fix"]))
 
         extractor = SkillExtractor(memory)
-        skills = extractor.extract("test", min_frequency=3, min_confidence=0.5)
-        # Should not crash; may or may not extract depending on thresholds
-        assert isinstance(skills, list)
+        result = extractor.extract("test", min_frequency=3, min_confidence=0.5)
+        # Should not crash; returns ExtractionResult
+        assert isinstance(result, ExtractionResult)
 
     def test_drift_detector_uses_analyzer(self, memory):
         """DriftDetector should work with the upgraded analyzer."""
