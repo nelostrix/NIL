@@ -1,3 +1,39 @@
-requirements.txt
-.venv
-__pycache__
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Nil stores (don't commit agent memory)
+nil_store/
+*_store/
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
