@@ -1010,8 +1010,8 @@ class TestCrossModule:
 
         detector = DriftDetector(memory)
         result = detector.check("test")
-        assert "drift_detected" in result
-        assert "severity" in result
+        assert hasattr(result, "drift_detected")
+        assert hasattr(result, "severity")
 
 
 if __name__ == "__main__":

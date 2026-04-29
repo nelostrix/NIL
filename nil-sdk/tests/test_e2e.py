@@ -117,8 +117,8 @@ class TestFullLifecycle:
 
         detector = DriftDetector(memory)
         result = detector.check("e2e-test")
-        assert "drift_detected" in result
-        assert "severity" in result
+        assert hasattr(result, "drift_detected")
+        assert hasattr(result, "severity")
 
     def test_evolution_config_manual(self, workspace):
         domain = nil.Domain(name="e2e-test", tools=[diagnose])
