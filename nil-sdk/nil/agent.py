@@ -118,7 +118,7 @@ class Agent:
 
     def _maybe_evolve(self) -> None:
         """Check evolution strategy and trigger if conditions are met."""
-        if self.evolution.stratergy == "continuous":
+        if self.evolution.strategy == "continuous":
             self._evolve()
         elif self.evolution.strategy == "periodic":
             if self._run_count % self.evolution.evolve_internal == 0:
