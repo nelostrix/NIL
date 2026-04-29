@@ -37,16 +37,16 @@ class EvolutionConfig:
     """
 
     enabled: bool = True
-    stratergy: Literal["manual", "periodic", "continuous"] = "periodic"
-    evolve_internal: int = 10
+    strategy: Literal["manual", "periodic", "continuous"] = "periodic"
+    evolve_interval: int = 10
     skill_extraction: bool = False
     cost_optimization: bool = False
     drift_detection: bool = True
-    max_stratrgy_versions: int = 20
+    max_strategy_versions: int = 20
     human_approval: bool = False
 
     def __post_init__(self) -> None:
-        if self.evolve_internal < 1:
+        if self.evolve_interval < 1:
             raise ValueError("evolve_interval must be >= 1")
 
 
