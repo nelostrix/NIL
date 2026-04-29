@@ -238,13 +238,15 @@ class KernelRunner:
                         timestamp=time.time(),
                     )
                 )
-            else:
-                # HIt MAX_STEPS
-                outcome.error = f"Agent exceeded maximum steps ({MAX_STEPS})"
-                logger.warning("Run %s hit max steps", tracer.run_id)
-            outcome.duration = time.time() - start_time
-            outcome.total_tokens_in = sum(s.tokens_in for s in tracer._steps)
-            outcome.total_tokens_out = sum(s.tokens_out for s in tracer._steps)
-            outcome.success = self.domain.evaluate(outcome)
 
-            return outcome
+        # Check if we hit max steps
+        if step == MAX_STEPS - 1 and not outcome.output:
+            outcome.error = f"Agent exceeded maximum steps ({MAX_STEPS})"
+            logger.warning("Run %s hit max steps", tracer.run_id)
+
+        outcome.duration = time.time() - start_time
+        outcome.total_tokens_in = sum(s.tokens_in for s in tracer._steps)
+        outcome.total_tokens_out = sum(s.tokens_out for s in tracer._steps)
+        outcome.success = self.domain.evaluate(outcome)
+
+        return outcome
