@@ -1,15 +1,26 @@
 """
-KernelRunner — the core agent execution loop.
+Agent — the primary interface to Nil.
 
-This is where the agent actually runs. The loop is:
-    1. Build the prompt (system + task + context + skills)
-    2. Call the LLM
-    3. If the LLM wants to use a tool → execute it, feed result back
-    4. Repeat until the LLM produces a final answer or max steps hit
-    5. Return a RunOutcome
+Users create an Agent with a Domain, a model, and optional evolution config.
+Calling agent.run(task) executes the task, records the trace, and (if
+evolution is enabled) triggers self-improvement via the evolution pipeline.
 
-The runner is model-agnostic — it delegates actual API calls to
-a provider adapter (see nil/providers/).
+The Agent connects:
+    - Kernel (execution) → runs tasks via LLM + tools
+    - Memory (persistence) → stores traces, skills, strategies
+    - Evolution Pipeline → analyzes, critiques, extracts, evaluates, heals
+
+Example:
+    agent = Agent(
+        domain=domain,
+        base_model="claude-sonnet-4-20250514",
+        memory=PersistentMemory("./store"),
+        evolution=EvolutionConfig(strategy="continuous"),
+    )
+    result = agent.run("Fix the broken API endpoint")
+    print(result.success, result.output)
+    print(agent.learned_skills())
+    print(agent.evolution_history())
 """
 
 from __future__ import annotations
@@ -18,298 +29,276 @@ import logging
 import time
 from typing import Any, Optional
 
-from nil.config import NilConfig
+from nil.config import EvolutionConfig, NilConfig
 from nil.domain import Domain
-from nil.kernel.outcome import RunOutcome, StepRecord
-from nil.kernel.tool_manager import ToolManager
+from nil.evolution.gradient_engine import GradientProvider
+from nil.evolution.pipeline import EvolutionPipeline, PipelineResult
+from nil.kernel.outcome import RunOutcome
+from nil.kernel.runner import KernelRunner
 from nil.kernel.tracer import Tracer
 from nil.memory.store import PersistentMemory
 
-logger = logging.getLogger("nil.kernel.runner")
-
-# Maximum agentic loop iterations to prevent runaway
-MAX_STEPS = 25
+logger = logging.getLogger("nil")
 
 
-class KernelRunner:
+class Agent:
     """
-    Executes an agent task through an LLM + tool loop.
+    A self-evolving AI agent bound to a specific domain.
 
-    This is the heart of Phase 1. It connects:
-        - The LLM (via a provider adapter)
-        - The tools (via ToolManager)
-        - The tracer (for experience capture)
-        - The memory (for retrieving learned skills)
+    The Agent is the orchestrator — it connects the Kernel (execution),
+    Memory (persistence), and Evolution (self-improvement) systems.
+
+    When evolution is enabled, the agent automatically:
+        - Extracts skills from successful patterns
+        - Critiques failures and proposes improvements
+        - Tests improvements before deploying them
+        - Monitors for performance drift and self-heals
+        - Injects learned knowledge into its own system prompt
     """
 
     def __init__(
         self,
         domain: Domain,
-        model: str,
-        config: NilConfig,
-        memory: PersistentMemory,
+        base_model: str = "claude-sonnet-4-20250514",
+        memory: Optional[PersistentMemory] = None,
+        evolution: Optional[EvolutionConfig] = None,
+        config: Optional[NilConfig] = None,
         provider: Optional[str] = None,
+        gradient_provider: Optional[GradientProvider] = None,
     ) -> None:
         self.domain = domain
-        self.model = model
-        self.config = config
-        self.memory = memory
-        self.tool_manager = ToolManager(domain.tools)
+        self.base_model = base_model
+        self.config = config or NilConfig()
+        self.evolution = evolution or EvolutionConfig(enabled=False)
+        self.memory = memory or PersistentMemory()
+        self.provider = provider
 
-        # Lazily load the provider
-        self._provider = self._init_provider(provider)
+        # Internal state
+        self._run_count: int = 0
+        self._evolution_history: list[dict[str, Any]] = []
 
-    def _init_provider(self, provider_name: Optional[str] = None) -> Any:
-        """
-        Initialize the LLM provider adapter.
-
-        Returns a provider instance with a `chat()` method.
-        Falls back to a stub provider for testing if no API key is found.
-        """
-        name = provider_name or self._detect_provider()
-
-        if name == "anthropic":
-            from nil.providers.anthropic import AnthropicProvider
-
-            return AnthropicProvider(model=self.model, config=self.config)
-        elif name == "openai":
-            from nil.providers.openai import OpenAIProvider
-
-            return OpenAIProvider(model=self.model, config=self.config)
-        elif name == "gemini":
-            from nil.providers.gemini import GeminiProvider
-
-            return GeminiProvider(model=self.model, config=self.config)
-        else:
-            from nil.providers.stub import StubProvider
-
-            logger.warning(
-                "No LLM provider detected. Using StubProvider for testing. "
-                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to use a real model."
-            )
-            return StubProvider(model=self.model, config=self.config)
-
-    def _detect_provider(self) -> str:
-        """Auto-detect which LLM provider to use based on env vars."""
-        import os
-
-        if os.environ.get("ANTHROPIC_API_KEY"):
-            return "anthropic"
-        elif os.environ.get("OPENAI_API_KEY"):
-            return "openai"
-        elif os.environ.get("GEMINI_API_KEY"):
-            return "gemini"
-        return "stub"
-
-    def _build_system_prompt(self) -> str:
-        """
-        Construct the system prompt from:
-          - Domain config (name, objectives)
-          - Active strategy (reasoning hints, avoidance rules, etc.)
-          - Learned skills (compressed action sequences)
-          - World model knowledge (constraints, tool guidance)
-          - Available tools
-        """
-        parts = [
-            f"You are an AI agent specialized in the domain: {self.domain.name}.",
-            "",
-            "Your objectives:",
-        ]
-        for obj in self.domain.objectives:
-            parts.append(f"  - {obj}")
-
-        # Inject active strategy
-        strategy = self.memory.get_active_strategy(self.domain.name)
-        if strategy:
-            # Reasoning hints
-            hints = strategy.get("reasoning_hints", [])
-            if hints:
-                parts.append("")
-                parts.append("Guidelines from past experience:")
-                for hint in hints:
-                    parts.append(f"  - {hint}")
-
-            # Avoidance rules
-            avoidance = strategy.get("avoidance_rules", [])
-            if avoidance:
-                parts.append("")
-                parts.append("Rules to follow:")
-                for rule in avoidance:
-                    parts.append(f"  - {rule}")
-
-            # Error handling hints
-            error_hints = strategy.get("error_handling_hints", [])
-            if error_hints:
-                parts.append("")
-                parts.append("Known error patterns to handle:")
-                for hint in error_hints:
-                    parts.append(f"  - {hint}")
-
-            # Preferred first tool
-            first_tool = strategy.get("preferred_first_tool")
-            if first_tool:
-                parts.append(f"\nRecommended: start with '{first_tool}' when applicable.")
-
-            # Skill injections from strategy
-            skill_inj = strategy.get("skill_injections", [])
-            if skill_inj:
-                parts.append("")
-                parts.append("Proven approaches:")
-                for s in skill_inj:
-                    parts.append(f"  - {s}")
-
-        # Inject learned skills from memory
-        skills = self.memory.list_skills(self.domain.name)
-        if skills:
-            parts.append("")
-            parts.append("Learned skills:")
-            for skill_name in skills[:10]:  # Cap to avoid prompt overflow
-                skill_data = self.memory.get_skill(self.domain.name, skill_name)
-                if skill_data and skill_data.get("description"):
-                    desc = skill_data["description"]
-                    # Use first 200 chars of description
-                    parts.append(f"  - {desc[:200]}")
-                else:
-                    parts.append(f"  - {skill_name}")
-
-        # Available tools
-        parts.append("")
-        parts.append(
-            "Available tools: " + ", ".join(self.tool_manager.names)
-            if self.tool_manager.names
-            else "No tools available."
-        )
-        parts.append("")
-        parts.append(
-            "Think step by step. Use tools when needed. Provide a clear final answer when done."
+        # Kernel runner
+        self._runner = KernelRunner(
+            domain=self.domain,
+            model=self.base_model,
+            config=self.config,
+            memory=self.memory,
+            provider=self.provider,
         )
 
-        return "\n".join(parts)
+        # Evolution pipeline (lazy init on first evolve)
+        self._pipeline: Optional[EvolutionPipeline] = None
+        self._gradient_provider = gradient_provider
 
-    def execute(
-        self,
-        task: str,
-        context: dict[str, Any],
-        tracer: Tracer,
-    ) -> RunOutcome:
+        logging.basicConfig(level=getattr(logging, self.config.log_level))
+        logger.info(
+            "Agent initialized for domain='%s' with model='%s'",
+            self.domain.name,
+            self.base_model,
+        )
+
+    # ------------------------------------------------------------------
+    # Core: run a task
+    # ------------------------------------------------------------------
+
+    def run(self, task: str, context: Optional[dict[str, Any]] = None) -> RunOutcome:
         """
-        Run the agent loop for a given task.
+        Execute a task within the agent's domain.
 
-        Returns a RunOutcome with all steps, timing, and the final output.
+        Args:
+            task: Natural language description of what to do.
+            context: Optional dict of additional context.
+
+        Returns:
+            RunOutcome with the result, trace, timing, and success flag.
         """
-        start_time = time.time()
-        system_prompt = self._build_system_prompt()
-        messages = []
+        self._run_count += 1
+        run_id = f"{self.domain.name}-run-{self._run_count}-{int(time.time())}"
 
-        # Add context if provided
-        if context:
-            task_with_context = f"{task}\n\nAdditional context:\n{context}"
-        else:
-            task_with_context = task
+        logger.info("Starting run %s: %s", run_id, task[:80])
 
-        messages.append({"role": "user", "content": task_with_context})
+        # Create a tracer for this run
+        tracer = Tracer(run_id=run_id, domain=self.domain.name)
 
-        outcome = RunOutcome(
-            run_id=tracer.run_id,
+        # Execute via the kernel
+        outcome = self._runner.execute(
             task=task,
+            context=context or {},
+            tracer=tracer,
         )
 
-        tool_schemas = self.tool_manager.to_schemas()
+        # Evaluate success using the domain's signal
+        outcome.success = self.domain.evaluate(outcome)
 
-        for step in range(MAX_STEPS):
-            # Call the LLM
-            llm_start = time.perf_counter()
-            try:
-                response = self._provider.chat(
-                    system=system_prompt,
-                    messages=messages,
-                    tools=tool_schemas if tool_schemas else None,
-                )
-            except Exception as e:
-                elapsed = (time.perf_counter() - llm_start) * 1000
-                tracer.record_llm_call(
-                    prompt=messages[-1],
-                    response=None,
-                    duration_ms=elapsed,
-                    error=str(e),
-                )
-                outcome.error = str(e)
-                break
+        # Persist the trace
+        trace = tracer.finalize(outcome)
+        self.memory.store_trace(trace)
 
-            llm_elapsed = (time.perf_counter() - llm_start) * 1000
+        logger.info(
+            "Run %s completed: success=%s, duration=%.2fs, steps=%d",
+            run_id,
+            outcome.success,
+            outcome.duration,
+            outcome.step_count,
+        )
 
-            tracer.record_llm_call(
-                prompt=messages[-1].get("content", "")[:200],
-                response=response.get("content", "")[:200]
-                if isinstance(response.get("content"), str)
-                else str(response.get("content", ""))[:200],
-                tokens_in=response.get("tokens_in", 0),
-                tokens_out=response.get("tokens_out", 0),
-                duration_ms=llm_elapsed,
-            )
-
-            # Check if the LLM wants to call a tool
-            tool_calls = response.get("tool_calls", [])
-
-            if not tool_calls:
-                # No tool calls — this is the final answer
-                outcome.output = response.get("content", "")
-                break
-
-            # Process each tool call
-            messages.append(
-                {
-                    "role": "assistant",
-                    "content": response.get("content", ""),
-                    "tool_calls": tool_calls,
-                }
-            )
-
-            for tc in tool_calls:
-                tool_name = tc.get("name", "")
-                tool_args = tc.get("arguments", {})
-
-                result = self.tool_manager.execute(tool_name, tool_args)
-
-                tracer.record_tool_call(
-                    name=tool_name,
-                    tool_input=tool_args,
-                    tool_output=result["output"],
-                    duration_ms=result["duration_ms"],
-                    error=result["error"],
-                )
-
-                # Feed tool result back to LLM
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tc.get("id", ""),
-                        "content": str(result["output"])
-                        if result["output"]
-                        else f"Error: {result['error']}",
-                    }
-                )
-
-                # Record step in outcome
-                outcome.steps.append(
-                    StepRecord(
-                        step_number=len(outcome.steps) + 1,
-                        step_type="tool_call",
-                        tool_name=tool_name,
-                        tool_input=tool_args,
-                        tool_output=result["output"],
-                        duration_ms=result["duration_ms"],
-                        error=result["error"],
-                        timestamp=time.time(),
-                    )
-                )
-        else:
-            # Hit MAX_STEPS
-            outcome.error = f"Agent exceeded maximum steps ({MAX_STEPS})"
-            logger.warning("Run %s hit max steps", tracer.run_id)
-
-        outcome.duration = time.time() - start_time
-        outcome.total_tokens_in = sum(s.tokens_in for s in tracer._steps)
-        outcome.total_tokens_out = sum(s.tokens_out for s in tracer._steps)
+        # Check if evolution should trigger
+        if self.evolution.enabled:
+            self._maybe_evolve()
 
         return outcome
+
+    # ------------------------------------------------------------------
+    # Evolution
+    # ------------------------------------------------------------------
+
+    def _get_pipeline(self) -> EvolutionPipeline:
+        """Lazily initialize the evolution pipeline."""
+        if self._pipeline is None:
+            self._pipeline = EvolutionPipeline(
+                memory=self.memory,
+                gradient_provider=self._gradient_provider,
+                auto_apply=not self.evolution.human_approval,
+                min_traces_for_evolution=max(10, self.evolution.evolve_interval),
+            )
+        return self._pipeline
+
+    def _maybe_evolve(self) -> None:
+        """Check evolution strategy and trigger if conditions are met."""
+        if self.evolution.strategy == "continuous":
+            self._evolve()
+        elif self.evolution.strategy == "periodic":
+            if self._run_count % self.evolution.evolve_interval == 0:
+                self._evolve()
+        # "manual" strategy: user calls agent.evolve() directly
+
+    def _evolve(self) -> None:
+        """
+        Trigger the full evolution pipeline.
+
+        Runs all 6 stages: analyze → extract skills → compute gradients
+        → evaluate → build world model → check drift.
+        """
+        logger.info(
+            "Evolution triggered after %d runs (strategy=%s)",
+            self._run_count,
+            self.evolution.strategy,
+        )
+
+        pipeline = self._get_pipeline()
+        result = pipeline.run(self.domain.name)
+
+        # Record in history
+        self._evolution_history.append(result.summary())
+
+        if result.had_impact:
+            logger.info(
+                "Evolution impact: %d skills extracted, %d deltas applied, promoted=%s, drift=%s",
+                result.skills_extracted,
+                result.deltas_applied,
+                result.strategy_promoted,
+                result.drift_detected,
+            )
+
+            # Rebuild the runner's system prompt with new knowledge
+            self._refresh_runner()
+
+        if result.error:
+            logger.warning("Evolution error: %s", result.error)
+
+    def evolve(self) -> PipelineResult:
+        """
+        Manually trigger evolution and return the result.
+
+        Use with strategy='manual' or anytime you want to force
+        an evolution cycle.
+        """
+        logger.info("Manual evolution triggered")
+        pipeline = self._get_pipeline()
+        result = pipeline.run(self.domain.name)
+        self._evolution_history.append(result.summary())
+
+        if result.had_impact:
+            self._refresh_runner()
+
+        return result
+
+    def _refresh_runner(self) -> None:
+        """
+        Rebuild the kernel runner to pick up new skills,
+        strategies, and world model knowledge.
+
+        This is called after evolution changes the strategy.
+        """
+        self._runner = KernelRunner(
+            domain=self.domain,
+            model=self.base_model,
+            config=self.config,
+            memory=self.memory,
+            provider=self.provider,
+        )
+
+    # ------------------------------------------------------------------
+    # Introspection
+    # ------------------------------------------------------------------
+
+    def learned_skills(self) -> list[str]:
+        """Return the names of skills this agent has extracted."""
+        return self.memory.list_skills(self.domain.name)
+
+    def get_skill_prompt(self, compact: bool = False) -> str:
+        """
+        Get the skill injection block that's currently being
+        added to the system prompt.
+        """
+        pipeline = self._get_pipeline()
+        return pipeline.get_skill_prompt(self.domain.name, compact=compact)
+
+    def get_world_model(self) -> Any:
+        """Build and return the current world model."""
+        pipeline = self._get_pipeline()
+        return pipeline.get_world_model(self.domain.name)
+
+    def get_strategy(self) -> Optional[dict[str, Any]]:
+        """Get the current active strategy."""
+        return self.memory.get_active_strategy(self.domain.name)
+
+    def evolution_history(self) -> list[dict[str, Any]]:
+        """Return the history of all evolution runs."""
+        return list(self._evolution_history)
+
+    def check_drift(self) -> Any:
+        """Run a drift check without triggering full evolution."""
+        pipeline = self._get_pipeline()
+        return pipeline.drift_detector.check(self.domain.name)
+
+    def success_rate(self, last_n: int = 50) -> float:
+        """Get the agent's success rate over the last N runs."""
+        return self.memory.get_success_rate(self.domain.name, last_n=last_n)
+
+    def stats(self) -> dict[str, Any]:
+        """Get a summary of the agent's current state."""
+        trace_count = self.memory.get_trace_count(self.domain.name)
+        return {
+            "domain": self.domain.name,
+            "model": self.base_model,
+            "run_count": self._run_count,
+            "traces_in_db": trace_count,
+            "success_rate": self.success_rate(),
+            "skills": self.learned_skills(),
+            "strategy": self.get_strategy(),
+            "evolution_runs": len(self._evolution_history),
+            "evolution_enabled": self.evolution.enabled,
+            "evolution_strategy": self.evolution.strategy,
+        }
+
+    @property
+    def run_count(self) -> int:
+        """Total number of runs executed by this agent."""
+        return self._run_count
+
+    def __repr__(self) -> str:
+        return (
+            f"Agent(domain='{self.domain.name}', model='{self.base_model}', "
+            f"runs={self._run_count}, skills={len(self.learned_skills())})"
+        )
