@@ -54,9 +54,9 @@ class KernelRunner:
         self.model = model
         self.config = config
         self.memory = memory
-        self.provider = provider
         self.tool_manager = ToolManager(domain.tools)
 
+        # Lazily load the provider
         self._provider = self._init_provider(provider)
 
     def _init_provider(self, provider_name: Optional[str] = None) -> Any:
@@ -66,7 +66,6 @@ class KernelRunner:
         Returns a provider instance with a `chat()` method.
         Falls back to a stub provider for testing if no API key is found.
         """
-
         name = provider_name or self._detect_provider()
 
         if name == "anthropic":
@@ -77,12 +76,16 @@ class KernelRunner:
             from nil.providers.openai import OpenAIProvider
 
             return OpenAIProvider(model=self.model, config=self.config)
+        elif name == "gemini":
+            from nil.providers.gemini import GeminiProvider
+
+            return GeminiProvider(model=self.model, config=self.config)
         else:
             from nil.providers.stub import StubProvider
 
             logger.warning(
                 "No LLM provider detected. Using StubProvider for testing. "
-                "Set ANTHROPIC_API_KEY or OPENAI_API_KEY to use a real model."
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to use a real model."
             )
             return StubProvider(model=self.model, config=self.config)
 
@@ -94,38 +97,41 @@ class KernelRunner:
             return "anthropic"
         elif os.environ.get("OPENAI_API_KEY"):
             return "openai"
-        else:
-            return "stub"
+        elif os.environ.get("GEMINI_API_KEY"):
+            return "gemini"
+        return "stub"
 
     def _build_system_prompt(self) -> str:
         """
         Construct the system prompt from domain config + learned skills.
         """
         parts = [
-            f"you are an AI agent Specialized in the domain: {self.domain.name}.",
+            f"You are an AI agent specialized in the domain: {self.domain.name}.",
             "",
             "Your objectives:",
         ]
         for obj in self.domain.objectives:
-            parts.append(f" - {obj}")
+            parts.append(f"  - {obj}")
 
+        # Inject learned skills (Phase 2+)
         skills = self.memory.list_skills(self.domain.name)
-
         if skills:
             parts.append("")
-            parts.append("learned skills from past experiences:")
+            parts.append("Learned skills from past experience:")
             for skill in skills:
-                parts.append(f" - {skill}")
+                parts.append(f"  - {skill}")
+
         parts.append("")
         parts.append(
             "Available tools: " + ", ".join(self.tool_manager.names)
             if self.tool_manager.names
-            else "No Tool available."
+            else "No tools available."
         )
         parts.append("")
         parts.append(
-            "think step by step. use tools when needed. provide a clear final answer when done."
+            "Think step by step. Use tools when needed. Provide a clear final answer when done."
         )
+
         return "\n".join(parts)
 
     def execute(
@@ -145,7 +151,7 @@ class KernelRunner:
 
         # Add context if provided
         if context:
-            task_with_context = f"{task}\n\nAdditional Context:\n{context}"
+            task_with_context = f"{task}\n\nAdditional context:\n{context}"
         else:
             task_with_context = task
 
@@ -155,10 +161,11 @@ class KernelRunner:
             run_id=tracer.run_id,
             task=task,
         )
+
         tool_schemas = self.tool_manager.to_schemas()
 
         for step in range(MAX_STEPS):
-            # call the LLM
+            # Call the LLM
             llm_start = time.perf_counter()
             try:
                 response = self._provider.chat(
@@ -176,7 +183,9 @@ class KernelRunner:
                 )
                 outcome.error = str(e)
                 break
+
             llm_elapsed = (time.perf_counter() - llm_start) * 1000
+
             tracer.record_llm_call(
                 prompt=messages[-1].get("content", "")[:200],
                 response=response.get("content", "")[:200]
@@ -187,15 +196,15 @@ class KernelRunner:
                 duration_ms=llm_elapsed,
             )
 
-            # check if the LLM wants to call a tool
+            # Check if the LLM wants to call a tool
             tool_calls = response.get("tool_calls", [])
 
             if not tool_calls:
-                # no tool calls = this is the final answer
+                # No tool calls — this is the final answer
                 outcome.output = response.get("content", "")
-
                 break
-            # process each tool call
+
+            # Process each tool call
             messages.append(
                 {
                     "role": "assistant",
@@ -203,10 +212,13 @@ class KernelRunner:
                     "tool_calls": tool_calls,
                 }
             )
+
             for tc in tool_calls:
                 tool_name = tc.get("name", "")
                 tool_args = tc.get("arguments", {})
+
                 result = self.tool_manager.execute(tool_name, tool_args)
+
                 tracer.record_tool_call(
                     name=tool_name,
                     tool_input=tool_args,
@@ -214,11 +226,12 @@ class KernelRunner:
                     duration_ms=result["duration_ms"],
                     error=result["error"],
                 )
+
                 # Feed tool result back to LLM
                 messages.append(
                     {
                         "role": "tool",
-                        "tool_calls_id": tc.get("id", ""),
+                        "tool_call_id": tc.get("id", ""),
                         "content": str(result["output"])
                         if result["output"]
                         else f"Error: {result['error']}",
@@ -238,15 +251,13 @@ class KernelRunner:
                         timestamp=time.time(),
                     )
                 )
-
-        # Check if we hit max steps
-        if step == MAX_STEPS - 1 and not outcome.output:
+        else:
+            # Hit MAX_STEPS
             outcome.error = f"Agent exceeded maximum steps ({MAX_STEPS})"
             logger.warning("Run %s hit max steps", tracer.run_id)
 
         outcome.duration = time.time() - start_time
         outcome.total_tokens_in = sum(s.tokens_in for s in tracer._steps)
         outcome.total_tokens_out = sum(s.tokens_out for s in tracer._steps)
-        outcome.success = self.domain.evaluate(outcome)
 
         return outcome
