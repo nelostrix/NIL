@@ -14,6 +14,7 @@ This is NOT just "name a tool sequence." This module:
    - Analyzes WHAT tasks/errors/contexts preceded successful use
    - Builds trigger conditions: "Activate when task mentions 'timeout'
      AND logs tool hasn't been called yet"
+
    - Uses counterfactual data from the analyzer
 
 3. PRECONDITION / POSTCONDITION EXTRACTION
