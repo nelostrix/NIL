@@ -25,7 +25,7 @@ env/
 .coverage
 htmlcov/
 
-# Nil stores (don't commit agent memory)
+# Nil stores (don't comst agent memory)
 nil_store/
 *_store/
 *.db
