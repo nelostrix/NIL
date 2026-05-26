@@ -13,6 +13,8 @@
 | `pyproject.toml` | Package metadata: `nil-sdk` v0.1.0, Python >=3.10, optional deps (anthropic, openai), dev deps (pytest, ruff) |
 | `setup.py` | Directory scaffolding script (generates the project tree, not used at runtime) |
 | `README.md` | Project documentation: quickstart, feature overview, architecture diagram, roadmap |
+| `requirements.md` | Comprehensive dependency overview covering all modules, providers, experiments, and dev tooling |
+| `requirements.txt` | Pip-installable requirements file with pinned extras for LLM providers, experiments, and development |
 
 ---
 
@@ -91,6 +93,110 @@
 |---|---|
 | `base.py` | **Tool** dataclass + `@tool` decorator. Two usage modes: class-based (`class MyTool(Tool): invoke(self, args)`) or decorator-based (`@tool def my_fn(param: str) -> ...`). Auto-generates JSON Schema parameter definitions from Python type hints |
 | `registry.py` | Global in-process tool registry. `register_tool()`, `get_tool()`, `list_tools()` for cross-domain tool discovery |
+| `embeddings.py` | **ToolEmbedding** + **ToolEmbeddingGenerator** — continuous vector space representations of tools. Constructed from name, description, and parameter embeddings; refined through usage, co-occurrence, and outcome vectors. Cosine similarity for tool comparison |
+| `affordance.py` | **ToolAffordance**, **AffordanceLearner**, **ToolAffordanceGraph** — learns emergent tool properties from execution traces: enabled state transitions, associated goals, pre/postconditions, substitutes, complements, and failure contexts. Graph with typed edges for tool relationship queries |
+| `composition.py` | **CompositeTool** + **ToolCompositionSynthesizer** — discovers frequent tool sequences via pattern mining, evaluates composition benefits, and registers synthesized composite tools with aggregated cost/duration/success-rate metadata |
+| `selection.py` | **LatentToolSelector**, **LatentAwarePromptBuilder**, **ScoredTool** — selects tools via embedding similarity rather than text generation. Encodes context, finds nearest tools in embedding space, gates by precondition satisfaction, ranks with affordance match + exploration bonus |
+
+---
+
+## `nil/models/` — POMDP Environment Models
+
+| File | Purpose |
+|---|---|
+| `state_space.py` | **EnvironmentState**, **StateSpace**, **StateSpaceLearner** — structured representation of agent/environment states. Discovers states from traces (by error, tool used, domain keywords), builds transition counts between states |
+| `transitions.py` | **TransitionModel** — learns P(s' \| s, a) from trace data. Records outcome distributions per action, computes expected outcomes, uncertainty estimates, known actions, and merges models |
+| `observations.py` | **ObservationModel** — learns P(o \| s) observation probabilities. Records observations per state, computes most likely state, diagnostic value of observations |
+| `rewards.py` | **RewardModel** — discounted return computation, reward-per-trace learning from cost/success/novelty signals |
+| `belief.py` | **BeliefTracker** — Bayesian belief updates over state space. Maintains P(s \| history), incorporates evidence and task priors, returns top-N most likely states |
+| `planners.py` | **ValuePlanner** (value iteration), **MCTSPlanner** (Monte Carlo tree search with UCB1), **HeuristicPolicy** (rule-based policy). All produce action recommendations from belief states |
+| `learning.py` | **OnlineModelLearner** — incremental learning from traces. Updates transition, observation, reward models per trace or batch |
+| `framework.py` | **EnvironmentModel** (unified POMDP) + **ModelAwareAgent** — full cycle: ingest traces, maintain belief, suggest actions, replan automatically after N traces |
+
+---
+
+## `nil/benchmarks/` — Long-Horizon Benchmarking
+
+| File | Purpose |
+|---|---|
+| `base.py` | **BenchmarkSuite**, **BenchmarkTask**, **BenchmarkResult** — framework for defining and running long-horizon evaluations. Task templates with success criteria, cost/time budgets, metrics tracking |
+| `learning.py` | **LearningCurve**, **LearningAnalyzer** — tracks performance across sequential attempts. Computes convergence rate, plateau detection, learning efficiency from exponentially-weighted moving averages |
+| `horizon.py` | **HorizonBenchmark** — tests agent performance over sustained multi-turn interactions. Evaluates consistency across extended episodes with fatigue and drift detection |
+| `recovery.py` | **RecoveryBenchmark** — injects controlled failures to test the agent's ability to detect, diagnose, and recover from errors. Measures recovery time, success rate, and adaptation |
+| `memory.py` | **MemoryBenchmark** — evaluates retention and recall quality across increasing memory loads. Tests working memory, long-term knowledge retention, and interference resilience |
+| `transfer.py` | **TransferBenchmark** — measures how well skills and strategies transfer across related domains. Tests generalization, adaptation speed, and negative transfer detection |
+| `system.py` | **SystematicVariationBenchmark** — stress-tests agents under systematic perturbations: tool failures, delayed responses, ambiguous tasks, conflicting objectives |
+| `runner.py` | **BenchmarkRunner** — orchestrates benchmark execution. Registers benchmark suites, schedules trials, collects results, generates comprehensive reports with pass/fail/duration/cost |
+
+---
+
+## `nil/agents/` — Multi-Agent Coordination
+
+| File | Purpose |
+|---|---|
+| `roles.py` | **AgentRole** + **RoleRegistry** — defines agent capabilities, responsibilities, and interaction patterns. Supports coordinator, executor, critic, observer, explorer roles with delegation rules |
+| `blackboard.py` | **Blackboard**, **BlackboardEntry**, **BlackboardSubscription** — shared memory space where agents post findings, hypotheses, and pending tasks. Subscription-based notification on key updates |
+| `messages.py` | **AgentMessage**, **MessageBus**, **MessagePriority** — typed inter-agent communication with priority levels, routing, and delivery guarantees. Structured message format with references and threading |
+| `pool.py` | **AgentPool** — manages a collection of agent instances. Load-balancing, lifecycle management, capacity-based routing, and health monitoring |
+| `orchestrator.py` | **Orchestrator** — top-level coordinator that decomposes tasks, assigns sub-tasks, monitors progress, and handles agent failures. Runs the full plan → assign → monitor → consolidate → adapt loop |
+| `consensus.py` | **ConsensusEngine** — voting-based decision making across agents. Supports majority, supermajority, unanimous, and weighted voting strategies with confidence scoring |
+| `market.py` | **MarketAllocator** — economic task allocation where agents bid on sub-tasks. Auction-based with budget constraints, bid scoring, and dynamic pricing |
+| `teams.py` | **AgentTeam** + **TeamRegistry** — persistent agent teams with role composition, performance tracking, and dynamic restructuring on underperformance |
+| `framework.py` | **MultiAgentFramework** — unified entry point integrating all coordination components. Full workflow: plan → form team → assign tasks → execute → communicate → reach consensus → consolidate |
+
+---
+
+## `nil/rl/` — Reinforcement Learning Signals
+
+| File | Purpose |
+|---|---|
+| `rewards.py` | **DenseRewardModel**, **ShapedRewardModel**, **InverseRLRewardModel** — step-level reward computation from progress, cost penalties, error penalties, and exploration bonuses. Potential-based shaping and IRL weight learning from demonstrations |
+| `trajectory.py` | **TrajectoryScorer**, **EloTrajectoryRating** — scores full trajectories on cost-efficiency, success rate, and step economy. Elo-based pairwise comparison with leaderboard ranking |
+| `preference.py` | **DirectPreferenceOptimizer** — learns from pairwise trajectory preferences. Bradley-Terry model for preference probability, updates action logits from comparison data |
+| `policy.py` | **Policy**, **BehavioralCloning** — action selection policy with log-probability computation, weighted updates, and BC from demonstration traces |
+| `value.py` | **ValueFunction**, **AdvantageEstimator** — state-value prediction with MSE-based updates. GAE and Monte Carlo advantage estimation for policy gradient methods |
+| `exploration.py` | **ExplorationScheduler** — UCB1-based exploration with visit counting, uncertainty bonuses, and action sampling. Balances exploration vs exploitation per action |
+| `replay.py` | **ReplayBuffer** — fixed-capacity experience replay with FIFO eviction, uniform sampling, and latest-N retrieval |
+| `agent.py` | **RLEnabledAgent** — integrates RL into the agent loop. Selects actions via policy, records step outcomes, computes rewards, stores in replay buffer, finishes trajectories |
+
+---
+
+## `nil/cognition/` — Retrieval-Augmented Cognition (RAC)
+
+| File | Purpose |
+|---|---|
+| `query.py` | **RetrievalQuery**, **RetrievalStrategy**, **RetrievalStrategySelector** — encodes the current task context (task, tool state, errors, step, domain) into a query. Selects retrieval strategy by context: failure_recovery (on error), exploration (early steps), minimal (late steps), balanced (default) |
+| `index.py` | **StoredItem**, **ScoredResult**, **RetrievalIndex** — persistent storage for items with dense embeddings (cosine similarity), sparse keyword index, and constraint-based retrieval. Supports upsert, delete, and multi-modal search |
+| `retrieval.py` | **HybridRetriever** — fuses dense, sparse, and structure-based retrieval into combined relevance scores. Re-ranks by keyword overlap with the query |
+| `scoring.py` | **RelevanceScorer** — multi-factor relevance scoring: semantic match, recency (exponential decay), specificity (keyword overlap), confidence, and diversity penalty to avoid redundant results |
+| `sources.py` | **MultiSourceRetriever** — indexes and retrieves from five source stores: skills, failures, trajectories, constraints, facts. Per-source scoring with failure-event boosting and tool-context matching |
+| `assembler.py` | **ContextAssembler** — assembles scored results into a formatted context string with per-source token budgets. Falls back to compact format when budget is exceeded |
+| `feedback.py` | **RetrievalFeedback** — records success/failure feedback on retrieval quality. Tracks positive/negative signals, supports to_dict/from_dict serialization |
+| `runner.py` | **RACEngine** — unified entry point. Maintains both index and source stores, runs search with strategy selection, assembles context, supports run_with_feedback for reinforcement learning |
+
+---
+
+## `nil/observability/` — Runtime Observability
+
+| File | Purpose |
+|---|---|
+| `events.py` | **EventType**, **ObservabilityEvent**, **EventRecorder**, **ObservabilityStore** — structured event system with 23 event types spanning run lifecycle, LLM calls, tool calls, memory operations, retrieval, and evolution. Span stack for flame graph grouping |
+| `trace_viewer.py` | **TraceViewer**, **TimelineView**, **TimelineRow** — renders execution timelines from stored events. Groups by span ID, computes timing, supports tree layout |
+| `flame_graph.py` | **FlameGraphGenerator**, **FlameGraph**, **FlameNode** — generates flame graph data from span-timed events. Identifies hot spots, computes aggregated duration/cost/token metadata |
+| `token_timeline.py` | **TokenTimeline**, **TokenReport**, **TokenStep** — tracks token consumption per step. Estimates cost ($3/M in, $15/M out), breaks down by category (LLM, retrieval, evolution) |
+| `reasoning_tree.py` | **ReasoningTree**, **ReasoningNode** — captures LLM reasoning per step: options considered, chosen action, rationale, skill/memory influences. Text rendering for inspection |
+| `memory_browser.py` | **MemoryBrowser** — inspects agent memory: skills (active/deprecated with stats), strategy versions (with history), facts. Generates text and HTML views |
+| `evolution_diff.py` | **EvolutionDiffViewer**, **EvolutionDiff** — per-evolution-cycle breakdown. Shows trigger, duration, traces analyzed, stage results (analysis, extraction, gradients, evaluation, drift), and strategy diff |
+| `strategy_lineage.py` | **StrategyLineage**, **LineageGraph**, **LineageNode** — version history tree with mutation types, parent tracking, rollback detection, and active-version marking |
+| `debugger.py` | **LiveDebugger**, **DebugCommand**, **Breakpoint**, **AgentSnapshot** — interactive debugger with pause/resume, step, breakpoints (step, tool, event), snapshots, rollback, and command execution |
+
+---
+
+## `nil/compilation/` — Skill Compilation
+
+| File | Purpose |
+|---|---|
+| `pipeline.py` | **SkillParser** (extracts tool sequences and control flow from skill descriptions), **IntermediateRepresentation** (structured IR with linear/conditional detection and compilation eligibility), **SkillOptimizer** (dead-step elimination, tool fusion, specialization), **SkillCodeGenerator** (emits Python, DSL, or constrained grammar), **CompiledSkillExecutor** (compile + cache + execute), **CompilationLearner** (measures determinism, decides compilation level), **HybridSkillExecutor** (mixes compiled and LLM steps), **SkillCompilationEngine** (full pipeline: should_compile → parse → optimize → codegen → promote to macro), **SkillMacro** (callable macro with usage tracking and avg duration), **MacroRegistry** (promote high-usage skills to macros), **CompilationResult** (compilation outcome with level, compiled object, and IR) |
 
 ---
 
@@ -109,5 +215,6 @@
 
 | Path | Contents |
 |---|---|
+| `docs/` | Project documentation: codebase map (`CODEBASE.md`), design docs |
 | `test_store/` | Pre-existing SQLite database (`nil.db`) from test executions |
 | `nil_store/`, `real_store/`, `evolution_test_store/` | Additional SQLite store directories created during development/testing |

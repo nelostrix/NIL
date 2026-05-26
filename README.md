@@ -7,8 +7,14 @@ Nil is a Python SDK that gives AI agents persistent memory and self-improvement.
 ## Quick Start
 
 ```bash
+# Core SDK (zero pip dependencies — pure Python stdlib)
 pip install nil-sdk
+
+# Full functionality (LLM providers + experiments)
+pip install -r requirements.txt
 ```
+
+> See [`requirements.md`](requirements.md) for a comprehensive overview of all dependencies, and [`requirements.txt`](requirements.txt) for the pip installable list.
 
 ```python
 import nil
@@ -68,6 +74,11 @@ Nil solves this with three systems:
 ## Project Structure
 
 ```
+├── requirements.md          # Comprehensive dependency overview (all modules)
+├── requirements.txt         # Pip-installable requirements file
+├── docs/                    # Documentation (codebase map, design docs)
+├── nil-sdk/                 # The NIL SDK package
+├── experiments/             # Meta-learning experiments (separate from SDK)
 nil/
 ├── __init__.py           # Public API: tool, Domain, Agent, PersistentMemory, EvolutionConfig
 ├── agent.py              # Main Agent class — orchestrates Kernel + Memory + Evolution
