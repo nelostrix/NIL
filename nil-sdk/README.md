@@ -56,9 +56,12 @@ Nil solves this with three systems:
 ## Key Features
 
 - **Persistent learning** — agents remember across sessions via SQLite
-- **Skill extraction** — successful patterns become reusable skills
-- **Drift detection** — alerts when strategies stop working
-- **Model agnostic** — works with Claude, GPT, Llama, or any LLM
+- **Skill extraction** — successful patterns become reusable skills with trigger conditions, preconditions, and postconditions
+- **Causal analysis** — Fisher's exact test, Wilson CI, temporal decay weighting, counterfactual analysis to identify what actually caused success or failure
+- **Textual gradient descent** — inspired by TextGrad: critique → gradient → delta → apply, with both heuristic and LLM-based providers
+- **Drift detection** — multi-signal monitoring (success rate, new errors, tool degradation, cost, task shift) with severity classification and auto-recovery
+- **World model building** — entity discovery, tool profiling, task clustering, constraint discovery, state transition graphs
+- **Model agnostic** — works with Claude (Anthropic), GPT (OpenAI), Gemini (Google), or any LLM via OpenAI-compatible endpoints (Ollama, vLLM)
 - **Zero infrastructure** — runs on any laptop, stores everything locally
 - **Cost tracking** — per-run token and cost accounting
 
@@ -66,38 +69,113 @@ Nil solves this with three systems:
 
 ```
 nil/
-├── __init__.py          # Public API
-├── agent.py             # Main Agent class
-├── domain.py            # Domain definitions
-├── config.py            # Configuration objects
-├── kernel/              # Phase 1: Execution engine
-│   ├── runner.py        # Agent loop (LLM + tools)
-│   ├── tracer.py        # Structured experience capture
-│   ├── tool_manager.py  # Tool registration & dispatch
-│   └── outcome.py       # Run results
-├── memory/              # Phase 1: Persistent storage
-│   ├── store.py         # SQLite-backed memory
-│   ├── experience.py    # Trace query interface
-│   ├── skill_registry.py # Skill data model
-│   └── strategy_version.py # Strategy versioning
-├── evolution/           # Phase 2-3: Self-improvement
-│   ├── analyzer.py      # Pattern detection
-│   ├── skill_extractor.py # Skill extraction
-│   ├── strategy_mutator.py # Strategy mutation
-│   ├── evaluator.py     # Strategy evaluation
-│   └── drift_detector.py # Drift detection
-├── optimization/        # Phase 4: Cost optimization
-│   ├── model_router.py  # Smart model routing
-│   ├── chain_compressor.py # Chain compression
-│   ├── cache_manager.py # Response caching
-│   └── budget_controller.py # Cost limits
-├── providers/           # LLM adapters
-│   ├── anthropic.py     # Claude
-│   ├── openai.py        # GPT / compatible
-│   └── stub.py          # Testing (no API key)
-└── tools/               # Tool system
-    ├── base.py          # Tool class + @tool decorator
-    └── registry.py      # Global tool registry
+├── __init__.py           # Public API: tool, Domain, Agent, PersistentMemory, EvolutionConfig
+├── agent.py              # Main Agent class — orchestrates Kernel + Memory + Evolution
+├── domain.py             # Domain definitions — binds tools, objectives, success signals
+├── config.py             # EvolutionConfig, NilConfig
+├── kernel/               # Execution engine
+│   ├── runner.py         # Agent loop (LLM + tool calls, up to 25 steps)
+│   ├── tracer.py         # Structured experience capture (LLM calls, tool calls, events)
+│   ├── tool_manager.py   # Tool registration, validation, dispatch
+│   └── outcome.py        # RunOutcome, StepRecord — result + timing + costs
+├── memory/               # Persistent storage
+│   ├── store.py          # SQLite-backed memory — traces, skills, strategy versions
+│   ├── experience.py     # ExperienceQuery, ExperienceStats — aggregation, patterns
+│   ├── skill_registry.py # Skill data model with full lifecycle (candidate → active → deprecated)
+│   └── strategy_version.py # Strategy version dataclass
+├── evolution/            # Self-improvement pipeline
+│   ├── pipeline.py       # Orchestrates all 6 stages (analyze → extract → gradient → evaluate → model → drift)
+│   ├── analyzer.py       # Causal analysis: Fisher's test, Wilson CI, subsequence mining, transition matrices
+│   ├── skill_extractor.py # Skill extraction: chain compression, dedup, trigger inference, merge
+│   ├── gradient_engine.py # Textual gradient descent: critique → gradient → delta → apply
+│   ├── evaluator.py      # Replay evaluator, A/B comparison, multi-dimensional scoring, rollback risk
+│   ├── drift_detector.py # Multi-signal drift detection, severity, root cause, auto-recovery
+│   ├── world_model.py    # Entity discovery, tool profiles, task clusters, state transition graphs
+│   └── strategy_mutator.py # Strategy mutation (placeholder — not yet implemented)
+├── optimization/         # Cost optimization (stubs — under development)
+│   ├── model_router.py   # Smart model routing (always returns default)
+│   ├── chain_compressor.py # Chain compression (no-op)
+│   ├── cache_manager.py  # In-memory LRU response cache
+│   └── budget_controller.py # Per-run and per-day cost limit enforcement
+├── providers/            # LLM adapters
+│   ├── anthropic.py      # Claude (Anthropic API)
+│   ├── openai.py         # OpenAI + any OpenAI-compatible endpoint (Ollama, vLLM)
+│   ├── gemini.py         # Google Gemini
+│   └── stub.py           # Deterministic fake LLM for testing (no API key needed)
+└── tools/                # Tool system
+    ├── base.py           # Tool dataclass + @tool decorator (auto-generates JSON Schema)
+    └── registry.py       # Global in-process tool registry
+```
+
+## Code Understanding
+
+### How the systems connect
+
+```
+Agent.run(task)
+  │
+  ├─ KernelRunner.execute(task, tracer)
+  │    ├─ Builds system prompt (includes active skills + strategy)
+  │    ├─ LLM call → tool calls → LLM call → ... (up to 25 steps)
+  │    └─ Returns RunOutcome (success, steps, timing, costs)
+  │
+  ├─ Tracer.finalize(outcome) → Trace (all LLM calls, tool calls, events)
+  │
+  ├─ Domain.evaluate(outcome) → bool (success signal)
+  │
+  ├─ PersistentMemory.store_trace(trace) → persists to SQLite
+  │
+  └─ EvolutionPipeline.run (if enabled)
+       ├─ TraceAnalyzer: statistical + causal analysis
+       ├─ SkillExtractor: extract + dedup + merge skills
+       ├─ TextualGradientEngine: critique failures → generate deltas
+       ├─ ReplayEvaluator: score + A/B test the deltas
+       ├─ WorldModelBuilder: entity/tool/constraint discovery
+       └─ DriftDetector: check performance degradation
+            └─ On impact: Agent._refresh_runner() → picks up new skills
+```
+
+### Public API
+
+Only 5 symbols are exported from the `nil` top-level package:
+
+| Symbol | Type | Source | Purpose |
+|--------|------|--------|---------|
+| `nil.tool` | decorator | `nil/tools/base.py` | Convert a Python function into a tool with auto-generated JSON Schema |
+| `nil.Domain` | class | `nil/domain.py` | Binds tools, objectives, and a success signal into a named domain |
+| `nil.PersistentMemory` | class | `nil/memory/store.py` | SQLite-backed storage for traces, skills, and strategy versions |
+| `nil.Agent` | class | `nil/agent.py` | Primary orchestrator — connects Kernel, Memory, Evolution |
+| `nil.EvolutionConfig` | class | `nil/config.py` | Evolution settings (strategy, interval, human approval gates) |
+
+Sub-package internals (`nil.kernel`, `nil.evolution.pipeline`, `nil.providers`, etc.) can be imported by their full module path when you need direct access.
+
+### Agent evolution strategies
+
+- **`"continuous"`** — evolves after every run
+- **`"periodic"`** — evolves every N runs (configurable via `evolve_interval`)
+- **`"manual"`** — you call `agent.evolve()` explicitly
+
+### Introspection
+
+```python
+agent.learned_skills()       # list of skill names
+agent.get_skill_prompt()     # skill injection block for system prompts
+agent.get_world_model()      # entity/tool/constraint model
+agent.get_strategy()         # active strategy
+agent.evolution_history()    # list of evolution run summaries
+agent.check_drift()          # drift check without full evolution
+agent.success_rate()         # success rate over last N runs
+agent.stats()                # full agent state summary
+```
+
+### Running without an API key
+
+Nil ships a `StubProvider` that works without any API key — it calls the first available tool on the first invocation and returns a canned response on subsequent calls. Useful for testing and development.
+
+```python
+agent = nil.Agent(domain=domain)
+# When no ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY is set,
+# the kernel auto-selects the StubProvider.
 ```
 
 ## Running Tests
@@ -106,15 +184,6 @@ nil/
 pip install -e ".[dev]"
 pytest -v
 ```
-
-## Roadmap
-
-| Phase | What | When |
-|-------|------|------|
-| 1 | Agent Kernel + Memory (this release) | Now |
-| 2 | Skill Extraction | Month 3-4 |
-| 3 | Evolution Engine (core IP) | Month 5-6 |
-| 4 | Cost Optimization | Month 7+ |
 
 ## Built by
 
