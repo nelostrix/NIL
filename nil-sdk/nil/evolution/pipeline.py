@@ -64,6 +64,7 @@ from nil.evolution.gradient_engine import (
 from nil.evolution.skill_extractor import ExtractionResult, SkillExtractor
 from nil.evolution.world_model import WorldModel, WorldModelBuilder
 from nil.memory.store import PersistentMemory
+from nil.tools.evolver import EvolutionResult, ToolEvolver
 
 logger = logging.getLogger("nil.evolution.pipeline")
 
@@ -86,6 +87,7 @@ class PipelineResult:
     world_model: Optional[WorldModel] = None
     drift_report: Optional[DriftReport] = None
     recovery: Optional[RecoveryResult] = None
+    tool_evolution: Optional[EvolutionResult] = None
 
     # What actually changed
     skills_extracted: int = 0
@@ -95,6 +97,7 @@ class PipelineResult:
     strategy_version: int = 0
     drift_detected: bool = False
     recovery_triggered: bool = False
+    tools_evolved: int = 0
 
     duration: float = 0.0
     run_at: float = field(default_factory=time.time)
@@ -108,6 +111,7 @@ class PipelineResult:
             or self.deltas_applied > 0
             or self.strategy_promoted
             or self.recovery_triggered
+            or self.tools_evolved > 0
         )
 
     def summary(self) -> dict[str, Any]:
@@ -121,6 +125,7 @@ class PipelineResult:
             "strategy_version": self.strategy_version,
             "drift_detected": self.drift_detected,
             "recovery_triggered": self.recovery_triggered,
+            "tools_evolved": self.tools_evolved,
             "had_impact": self.had_impact,
             "duration_s": round(self.duration, 2),
             "error": self.error,
@@ -157,6 +162,7 @@ class EvolutionPipeline:
         min_traces_for_evolution: int = 10,
         min_traces_for_world_model: int = 20,
         world_model_rebuild_interval: int = 50,
+        tool_evolver: Optional[ToolEvolver] = None,
     ) -> None:
         self.memory = memory
 
@@ -173,6 +179,7 @@ class EvolutionPipeline:
         self.world_model_builder = WorldModelBuilder(memory, analyzer=self.analyzer)
         self.evaluator = ReplayEvaluator(memory, analyzer=self.analyzer)
         self.drift_detector = DriftDetector(memory, analyzer=self.analyzer)
+        self.tool_evolver = tool_evolver
 
         self.auto_apply = auto_apply
         self.min_traces = min_traces_for_evolution
@@ -263,6 +270,13 @@ class EvolutionPipeline:
                     )
                     if result.recovery_triggered:
                         result.stages_run.append("auto_recover")
+
+            # STAGE 7: Evolve tools (if tool evolver is configured)
+            if self.tool_evolver is not None and trace_count >= self.min_traces:
+                result.tool_evolution = self._stage_evolve_tools(domain, max_traces)
+                result.stages_run.append("evolve_tools")
+                if result.tool_evolution:
+                    result.tools_evolved = len(result.tool_evolution.tools_evolved)
 
         except Exception as e:
             logger.error("Pipeline error for '%s': %s", domain, str(e))
@@ -405,6 +419,16 @@ class EvolutionPipeline:
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
+
+    def _stage_evolve_tools(self, domain: str, max_traces: int) -> EvolutionResult:
+        """Stage 7: Evolve tools from repeated workflows."""
+        if self.tool_evolver is None:
+            return EvolutionResult()
+        logger.debug("Stage 7: Evolving tools for '%s'", domain)
+        traces = self.memory.get_traces(domain, limit=max_traces)
+        if not traces:
+            return EvolutionResult()
+        return self.tool_evolver.evolve(traces, domain=domain)
 
     def _should_rebuild_world_model(self, current_trace_count: int) -> bool:
         """Decide if the world model needs rebuilding."""
