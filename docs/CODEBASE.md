@@ -87,6 +87,13 @@
 
 ---
 
+## `nil/training/` — Autonomous Curriculum (Phase 6)
+
+| File | Purpose |
+|---|---|
+| `__init__.py` | Exports `CurriculumEngine`, `WeaknessAnalyzer`, `SyntheticTaskGenerator`, `PracticeEngine`, `BenchmarkSuite` |
+| `curriculum.py` | **CurriculumEngine** — orchestrates self-directed capability growth. Pipeline: `WeaknessAnalyzer` → identify low-success tools, weak task types, and missing transitions from trace data → `SyntheticTaskGenerator` creates targeted training tasks → `PracticeEngine` runs the agent on exercises and tracks improvement → `BenchmarkSuite` measures before/after performance. All modules share a common `_trace_success()` helper for dict/object trace compatibility |
+
 ## `nil/tools/` — Tool System
 
 | File | Purpose |
@@ -97,6 +104,7 @@
 | `affordance.py` | **ToolAffordance**, **AffordanceLearner**, **ToolAffordanceGraph** — learns emergent tool properties from execution traces: enabled state transitions, associated goals, pre/postconditions, substitutes, complements, and failure contexts. Graph with typed edges for tool relationship queries |
 | `composition.py` | **CompositeTool** + **ToolCompositionSynthesizer** — discovers frequent tool sequences via pattern mining, evaluates composition benefits, and registers synthesized composite tools with aggregated cost/duration/success-rate metadata |
 | `selection.py` | **LatentToolSelector**, **LatentAwarePromptBuilder**, **ScoredTool** — selects tools via embedding similarity rather than text generation. Encodes context, finds nearest tools in embedding space, gates by precondition satisfaction, ranks with affordance match + exploration bonus |
+| `evolver.py` | **ToolEvolver** — Phase 5 Tool Evolution. Pipeline: `WorkflowDetector` mines traces for repeated tool sequences (configurable min_occurrences, min_success_rate, sequence length bounds), `WorkflowCompiler` converts detected workflows into `Tool` objects with auto-generated parameter schemas derived from observed parameter variations, and `ToolEvolver` orchestrates detect → filter (by fingerprint, avoiding duplicates) → compile → register. Evolved tools are named `evolved_<prefix>_<hash>` and execute the full workflow sequence by dispatching to underlying registered tools. `EvolutionResult` reports workflows detected, tools evolved, and duration |
 
 ---
 
@@ -161,7 +169,7 @@
 
 ---
 
-## `nil/cognition/` — Retrieval-Augmented Cognition (RAC)
+## `nil/cognition/` — Retrieval-Augmented Cognition + Executive Cognition + Cognitive Economy
 
 | File | Purpose |
 |---|---|
@@ -173,6 +181,14 @@
 | `assembler.py` | **ContextAssembler** — assembles scored results into a formatted context string with per-source token budgets. Falls back to compact format when budget is exceeded |
 | `feedback.py` | **RetrievalFeedback** — records success/failure feedback on retrieval quality. Tracks positive/negative signals, supports to_dict/from_dict serialization |
 | `runner.py` | **RACEngine** — unified entry point. Maintains both index and source stores, runs search with strategy selection, assembles context, supports run_with_feedback for reinforcement learning |
+| `loop.py` | **CognitiveLoop** — 10-phase Unified Cognitive Loop (observe→retrieve→reason→plan→simulate→act→evaluate→reflect→learn→adapt). Supports dynamic pipeline building via `CognitivePolicyEngine.build_pipeline()`, recursive cognition (retries, replans, phase injection via `_pending_phases` deque), per-phase uncertainty tracking (`PhaseUncertainty`), plugin hooks (`pre_phase`/`post_phase`), and supervisor integration |
+| `modes.py` | **CognitiveMode** enum (8 modes: REACTIVE, DELIBERATIVE, PLANNING, EXPLORATORY, REFLECTIVE, RECOVERY, MULTI_AGENT, COMPILATION), **ModeProfile** (planning_depth, simulation_depth, compute_allocation, retrieval_depth, spawn_agents, should_reflect, should_compile, max_retries, exploration_bonus), **MODE_PROFILES** lookup dict, **Uncertainty** dataclass (confidence, uncertainty, risk, novelty, reliability + is_certain/is_risky/is_novel) |
+| `policy.py` | **CognitivePolicyEngine** — heuristic mode selection (urgency, error rate, complexity, novelty, dependency signals), dynamic pipeline building (inserts/omits phases per mode profile), budget allocation (`allocate_budget`), and all `should_*` predicates (should_reflect, should_spawn_agents, should_simulate, should_plan, should_explore, should_retry, should_compile) |
+| `simulation.py` | **SimulationEngine** — generates candidate plans, runs world-model rollouts, estimates reward/failure-probability/tool-cost/uncertainty, selects best via scoring heuristic |
+| `supervisor.py` | **LiveSupervisor** — mid-task online adaptation with 10 triggers (pre_uncertainty_spike, pre_fallback_pattern, pre_novel_task_spawn, uncertainty_escalate, error_escalate, timing_anomaly, confidence_drop, novelty_explore, retrieval_weak, repetitive_failure_replan). Per-trigger cooldown (default 2 phases) to prevent oscillation. Actions thread through `PhaseContext` (escalate_mode, request_phase, replan, state) |
+| `adapters.py` | **ModelSwitcher** (model tier switching up/down), **AgentSpawner** (sub-agent spawning with max-agent cap), **RetrievalAlterer** (deepen/narrow depth, switch strategy), **ReasoningDeeper** (increase planning/simulation depth mid-run, injects pending phases) |
+| `economy.py` | **CognitiveEconomy** (Phase 7) — cost-aware cognition for efficient intelligence. **CostModel** records per-phase costs (tokens, tools, model tier) and provides average cost estimates. **CognitiveBudget** allocates spend per mode profile with max cost/token/step limits. **ExpectedValueCalculator** evaluates each phase's expected benefit vs cost, model switch decisions (small vs large model with quality/risk tradeoff), and simulation value. **COST_TIERS** dict maps model IDs to `ModelCostProfile` (input/output cost per 1K tokens, speed_quality_factor). Economy plugin in `KernelPlugin` skips low-EV phases, suggests cheaper models for low-risk tasks, and records run costs |
+| `plugins.py` | Plugin implementations: **MemoryPlugin** (populates trace count, success rate, abstraction; stores traces during EVALUATE; runs abstraction engine during LEARN), **RACPlugin** (triggers retrieval during RETRIEVE, feeds feedback during REFLECT, stores skills during LEARN), **KernelPlugin** (executes ACT phase via KernelRunner; integrates CognitiveEconomy for model suggestion and phase gating), **EvolutionPlugin** (runs evolution pipeline during LEARN; integrates ToolEvolver for workflow→tool compilation and CurriculumEngine for self-directed practice), **RLPlugin** (feeds RL signals during SIMULATE/EVALUATE/LEARN). `wire_cognitive_loop()` accepts all dependencies including `tool_evolver`, `curriculum_engine`, and `cognitive_economy` |
 
 ---
 

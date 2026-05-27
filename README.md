@@ -51,13 +51,21 @@ result = agent.run("API latency spike on /v2/users")
 
 Every AI agent framework today produces **goldfish agents** — they start from zero every time, repeat the same mistakes, and can't learn from experience.
 
-Nil solves this with three systems:
+Nil solves this with seven interconnected systems:
 
 1. **Agent Kernel** — Executes tasks while recording structured experience traces (not just logs — machine-readable execution data).
 
 2. **Evolution Engine** — Analyzes traces to extract reusable skills, detect performance drift, and autonomously improve strategies.
 
-3. **Optimization Layer** — Routes subtasks to cheaper models when safe, compresses redundant chains, and manages cost budgets.
+3. **Executive Cognition** — 10-phase Unified Cognitive Loop (observe→retrieve→reason→plan→simulate→act→evaluate→reflect→learn→adapt) with dynamic mode selection (reactive, deliberative, planning, exploratory, reflective, recovery, multi-agent, compilation).
+
+4. **Tool Evolution** — Detects repeated workflows across runs and automatically compiles them into reusable, callable tools. A 3-step sequence like `search→read→write` appearing 5+ times becomes an evolved tool that the agent can invoke in one step.
+
+5. **Autonomous Curriculum** — Self-directed capability growth: identifies weaknesses from trace analysis, generates synthetic training tasks, practices on past failures, and benchmarks improvement — all without human intervention.
+
+6. **Cognitive Economy** — Cost-aware cognition that reasons about token costs, model tiers, retrieval depth, and expected value of each cognitive phase. Uses small models for low-risk tasks and allocates more compute when uncertainty is high.
+
+7. **Optimization Layer** — Routes subtasks to cheaper models when safe, compresses redundant chains, and manages cost budgets.
 
 ## Key Features
 
@@ -67,6 +75,9 @@ Nil solves this with three systems:
 - **Textual gradient descent** — inspired by TextGrad: critique → gradient → delta → apply, with both heuristic and LLM-based providers
 - **Drift detection** — multi-signal monitoring (success rate, new errors, tool degradation, cost, task shift) with severity classification and auto-recovery
 - **World model building** — entity discovery, tool profiling, task clustering, constraint discovery, state transition graphs
+- **Tool evolution** — repeated workflows are automatically compiled into reusable tools
+- **Autonomous curriculum** — self-directed weakness identification and targeted practice
+- **Cognitive economy** — cost-aware phase selection, model tiering, and expected value computation
 - **Model agnostic** — works with Claude (Anthropic), GPT (OpenAI), Gemini (Google), or any LLM via OpenAI-compatible endpoints (Ollama, vLLM)
 - **Zero infrastructure** — runs on any laptop, stores everything locally
 - **Cost tracking** — per-run token and cost accounting
@@ -81,7 +92,7 @@ Nil solves this with three systems:
 ├── experiments/             # Meta-learning experiments (separate from SDK)
 nil/
 ├── __init__.py           # Public API: tool, Domain, Agent, PersistentMemory, EvolutionConfig
-├── agent.py              # Main Agent class — orchestrates Kernel + Memory + Evolution
+├── agent.py              # Main Agent class — orchestrates Kernel + Memory + Evolution + Curriculum + Economy
 ├── domain.py             # Domain definitions — binds tools, objectives, success signals
 ├── config.py             # EvolutionConfig, NilConfig
 ├── kernel/               # Execution engine
@@ -90,12 +101,14 @@ nil/
 │   ├── tool_manager.py   # Tool registration, validation, dispatch
 │   └── outcome.py        # RunOutcome, StepRecord — result + timing + costs
 ├── memory/               # Persistent storage
-│   ├── store.py          # SQLite-backed memory — traces, skills, strategy versions
+│   ├── store.py          # SQLite-backed memory — traces, skills, strategy versions, concepts
+│   ├── abstraction.py    # Concept abstraction pipeline (clusters → causal → symbolic → policies)
+│   ├── concept.py        # ConceptType, AbstractionLevel, Concept, ConceptGraph
 │   ├── experience.py     # ExperienceQuery, ExperienceStats — aggregation, patterns
 │   ├── skill_registry.py # Skill data model with full lifecycle (candidate → active → deprecated)
 │   └── strategy_version.py # Strategy version dataclass
 ├── evolution/            # Self-improvement pipeline
-│   ├── pipeline.py       # Orchestrates all 6 stages (analyze → extract → gradient → evaluate → model → drift)
+│   ├── pipeline.py       # Orchestrates all 7 stages (analyze → extract → gradient → evaluate → model → drift → evolve_tools)
 │   ├── analyzer.py       # Causal analysis: Fisher's test, Wilson CI, subsequence mining, transition matrices
 │   ├── skill_extractor.py # Skill extraction: chain compression, dedup, trigger inference, merge
 │   ├── gradient_engine.py # Textual gradient descent: critique → gradient → delta → apply
@@ -103,6 +116,18 @@ nil/
 │   ├── drift_detector.py # Multi-signal drift detection, severity, root cause, auto-recovery
 │   ├── world_model.py    # Entity discovery, tool profiles, task clusters, state transition graphs
 │   └── strategy_mutator.py # Strategy mutation (placeholder — not yet implemented)
+├── cognition/            # Executive cognition + memory + simulation + economy
+│   ├── loop.py           # 10-phase Unified Cognitive Loop (observe→...→adapt)
+│   ├── modes.py          # CognitiveMode enum, ModeProfile, MODE_PROFILES, Uncertainty
+│   ├── policy.py         # CognitivePolicyEngine — mode selection, pipeline building, budget
+│   ├── simulation.py     # SimulationEngine — candidate rollouts, reward/cost estimation
+│   ├── supervisor.py     # LiveSupervisor — mid-task supervision with 10 triggers
+│   ├── adapters.py       # ModelSwitcher, AgentSpawner, RetrievalAlterer, ReasoningDeeper
+│   ├── economy.py        # CognitiveEconomy — cost-aware cognition, model tiering, EV calculation
+│   ├── plugins.py        # MemoryPlugin, RACPlugin, KernelPlugin, EvolutionPlugin, RLPlugin
+│   └── runner.py         # RACEngine — retrieval-augmented cognition
+├── training/             # Autonomous curriculum
+│   └── curriculum.py     # CurriculumEngine, WeaknessAnalyzer, SyntheticTaskGenerator, PracticeEngine, BenchmarkSuite
 ├── optimization/         # Cost optimization (stubs — under development)
 │   ├── model_router.py   # Smart model routing (always returns default)
 │   ├── chain_compressor.py # Chain compression (no-op)
@@ -113,9 +138,20 @@ nil/
 │   ├── openai.py         # OpenAI + any OpenAI-compatible endpoint (Ollama, vLLM)
 │   ├── gemini.py         # Google Gemini
 │   └── stub.py           # Deterministic fake LLM for testing (no API key needed)
-└── tools/                # Tool system
-    ├── base.py           # Tool dataclass + @tool decorator (auto-generates JSON Schema)
-    └── registry.py       # Global in-process tool registry
+├── tools/                # Tool system
+│   ├── base.py           # Tool dataclass + @tool decorator (auto-generates JSON Schema)
+│   ├── registry.py       # Global in-process tool registry
+│   ├── evolver.py        # Tool Evolution — WorkflowDetector, WorkflowCompiler, ToolEvolver
+│   ├── embeddings.py     # Tool embeddings for latent selection
+│   ├── affordance.py     # ToolAffordance, AffordanceLearner, ToolAffordanceGraph
+│   ├── composition.py    # CompositeTool, ToolCompositionSynthesizer
+│   └── selection.py      # LatentToolSelector, LatentAwarePromptBuilder
+└── rl/                   # Reinforcement learning signals
+    ├── agent.py          # RLEnabledAgent — integrates RL into the agent loop
+    ├── policy.py         # Policy, BehavioralCloning
+    ├── rewards.py        # DenseRewardModel, ShapedRewardModel
+    ├── trajectory.py     # TrajectoryScorer, EloTrajectoryRating
+    └── ...               # value.py, exploration.py, replay.py, preference.py
 ```
 
 ## Code Understanding
@@ -125,16 +161,23 @@ nil/
 ```
 Agent.run(task)
   │
-  ├─ KernelRunner.execute(task, tracer)
-  │    ├─ Builds system prompt (includes active skills + strategy)
-  │    ├─ LLM call → tool calls → LLM call → ... (up to 25 steps)
-  │    └─ Returns RunOutcome (success, steps, timing, costs)
+  ├─ CognitiveLoop.run (10-phase pipeline, if enabled)
+  │    ├─ CognitivePolicyEngine.select_mode → chooses mode (reactive→compilation)
+  │    ├─ build_pipeline → inserts/omits phases per mode profile
+  │    ├─ LiveSupervisor → mid-task adaptation (mode escalation, replan, spawn)
+  │    └─ Each phase fires pre/post hooks on all registered plugins:
+  │         ├─ MemoryPlugin: trace count, success rate, abstraction
+  │         ├─ RACPlugin: retrieval-augmented context assembly
+  │         ├─ KernelPlugin: ACT phase → KernelRunner.execute(task, tracer)
+  │         │    ├─ CognitiveEconomy → suggests model tier, skips low-EV phases
+  │         │    ├─ Builds system prompt (skills + strategy + evolved tools)
+  │         │    ├─ LLM call → tool calls → LLM call → ... (up to 25 steps)
+  │         │    └─ Returns RunOutcome (success, steps, timing, costs)
+  │         └─ EvolutionPlugin: REFLECT/LEARN/ADAPT phases
   │
-  ├─ Tracer.finalize(outcome) → Trace (all LLM calls, tool calls, events)
+  ├─ Tracer.finalize(outcome) → Trace → PersistentMemory.store_trace
   │
   ├─ Domain.evaluate(outcome) → bool (success signal)
-  │
-  ├─ PersistentMemory.store_trace(trace) → persists to SQLite
   │
   └─ EvolutionPipeline.run (if enabled)
        ├─ TraceAnalyzer: statistical + causal analysis
@@ -142,29 +185,50 @@ Agent.run(task)
        ├─ TextualGradientEngine: critique failures → generate deltas
        ├─ ReplayEvaluator: score + A/B test the deltas
        ├─ WorldModelBuilder: entity/tool/constraint discovery
-       └─ DriftDetector: check performance degradation
-            └─ On impact: Agent._refresh_runner() → picks up new skills
+       ├─ DriftDetector: check performance degradation
+       └─ ToolEvolver: mine repeated workflows → compile → register as tools
+            └─ On impact: Agent._refresh_runner() → picks up new skills + tools
+
+  └─ (Optional) CurriculumEngine.run (if enabled)
+       ├─ WeaknessAnalyzer: identify low-success tools, task types, gaps
+       ├─ SyntheticTaskGenerator: create targeted training tasks
+       ├─ PracticeEngine: run agent on exercises, track improvement
+       └─ BenchmarkSuite: measure before/after performance
 ```
 
 ### Public API
 
-Only 5 symbols are exported from the `nil` top-level package:
+Key symbols exported from the `nil` top-level package and its sub-packages:
 
-| Symbol | Type | Source | Purpose |
-|--------|------|--------|---------|
-| `nil.tool` | decorator | `nil/tools/base.py` | Convert a Python function into a tool with auto-generated JSON Schema |
-| `nil.Domain` | class | `nil/domain.py` | Binds tools, objectives, and a success signal into a named domain |
-| `nil.PersistentMemory` | class | `nil/memory/store.py` | SQLite-backed storage for traces, skills, and strategy versions |
-| `nil.Agent` | class | `nil/agent.py` | Primary orchestrator — connects Kernel, Memory, Evolution |
-| `nil.EvolutionConfig` | class | `nil/config.py` | Evolution settings (strategy, interval, human approval gates) |
+| Symbol | Source | Purpose |
+|--------|--------|---------|
+| `nil.tool` | `nil/tools/base.py` | Convert a Python function into a tool with auto-generated JSON Schema |
+| `nil.Domain` | `nil/domain.py` | Binds tools, objectives, and a success signal into a named domain |
+| `nil.PersistentMemory` | `nil/memory/store.py` | SQLite-backed storage for traces, skills, and strategy versions |
+| `nil.Agent` | `nil/agent.py` | Primary orchestrator — Kernel, Memory, Evolution, Curriculum, Economy |
+| `nil.EvolutionConfig` | `nil/config.py` | Evolution settings (strategy, interval, human approval gates) |
+| `nil.cognition.CognitiveEconomy` | `nil/cognition/economy.py` | Cost-aware model selection, phase budgeting, EV calculation |
+| `nil.tools.ToolEvolver` | `nil/tools/evolver.py` | Workflow detection and tool compilation from traces |
+| `nil.training.CurriculumEngine` | `nil/training/curriculum.py` | Self-directed weakness detection and targeted practice |
 
-Sub-package internals (`nil.kernel`, `nil.evolution.pipeline`, `nil.providers`, etc.) can be imported by their full module path when you need direct access.
+Sub-package internals (`nil.kernel`, `nil.evolution`, `nil.providers`, etc.) can be imported by their full module path.
 
 ### Agent evolution strategies
 
 - **`"continuous"`** — evolves after every run
 - **`"periodic"`** — evolves every N runs (configurable via `evolve_interval`)
 - **`"manual"`** — you call `agent.evolve()` explicitly
+
+### Enabling advanced capabilities
+
+```python
+agent = nil.Agent(
+    domain=domain,
+    enable_tool_evolution=True,   # Phase 5: auto-compile repeated workflows into tools
+    enable_curriculum=True,       # Phase 6: self-directed weakness practice
+    enable_economy=True,          # Phase 7: cost-aware model/phase selection
+)
+```
 
 ### Introspection
 
@@ -177,6 +241,8 @@ agent.evolution_history()    # list of evolution run summaries
 agent.check_drift()          # drift check without full evolution
 agent.success_rate()         # success rate over last N runs
 agent.stats()                # full agent state summary
+                              #   includes: evolved_tools, tools_available,
+                              #   curriculum_runs, economy_enabled
 ```
 
 ### Running without an API key
