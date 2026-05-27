@@ -5,10 +5,23 @@ pipeline that ALL subsystems plug into, plus:
   - Executive Cognition Layer (CognitiveMode, CognitivePolicyEngine, recursive cognition)
   - Internal Simulation (candidate generation, rollouts, reward/cost/uncertainty estimation)
   - Live Cognition / Online Adaptation (mid-task supervision with triggers and actions)
+  - Cognitive Economy (cost-aware cognition for efficient intelligence)
 """
 
 from nil.cognition.adapters import AgentSpawner, ModelSwitcher, ReasoningDeeper, RetrievalAlterer
 from nil.cognition.assembler import ContextAssembler
+from nil.cognition.economy import (
+    COST_TIERS,
+    TOOL_COST_ESTIMATES,
+    CognitiveBudget,
+    CognitiveEconomy,
+    CostModel,
+    EconomyDecision,
+    ExpectedValue,
+    ExpectedValueCalculator,
+    ModelCostProfile,
+    PhaseCost,
+)
 from nil.cognition.feedback import RetrievalFeedback
 from nil.cognition.index import RetrievalIndex, ScoredResult, StoredItem
 from nil.cognition.loop import CognitiveLoop, CognitiveLoopPlugin, LoopResult, Phase, PhaseContext
@@ -66,6 +79,17 @@ __all__ = [
     "AgentSpawner",
     "RetrievalAlterer",
     "ReasoningDeeper",
+    # Cognitive Economy (Phase 7)
+    "CognitiveEconomy",
+    "CognitiveBudget",
+    "CostModel",
+    "ExpectedValue",
+    "ExpectedValueCalculator",
+    "EconomyDecision",
+    "ModelCostProfile",
+    "PhaseCost",
+    "COST_TIERS",
+    "TOOL_COST_ESTIMATES",
     # Plugins
     "MemoryPlugin",
     "RACPlugin",
