@@ -93,6 +93,28 @@ class PersistentMemory:
                 created_at REAL NOT NULL,
                 UNIQUE(domain, version)
             );
+
+            CREATE TABLE IF NOT EXISTS concepts (
+                concept_id TEXT PRIMARY KEY,
+                domain TEXT NOT NULL,
+                concept_type TEXT NOT NULL,
+                abstraction_level TEXT NOT NULL,
+                description TEXT NOT NULL,
+                pattern_data TEXT NOT NULL DEFAULT '{}',
+                confidence REAL DEFAULT 0.0,
+                support_count INTEGER DEFAULT 0,
+                source_traces TEXT DEFAULT '[]',
+                tags TEXT DEFAULT '[]',
+                created_at REAL NOT NULL,
+                last_updated REAL NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_concepts_domain
+                ON concepts(domain);
+            CREATE INDEX IF NOT EXISTS idx_concepts_type
+                ON concepts(domain, concept_type);
+            CREATE INDEX IF NOT EXISTS idx_concepts_confidence
+                ON concepts(domain, confidence DESC);
         """)
         conn.commit()
         logger.debug("Memory store initialized at %s", self.db_path)
@@ -262,6 +284,117 @@ class PersistentMemory:
         if row is None:
             return None
         return json.loads(row["strategy_data"])
+
+    # ---- Concepts ----
+
+    def store_concept(self, concept: Any) -> None:
+        """Store or update an abstracted concept."""
+        import time
+
+        conn = self._get_conn()
+        cd = concept.to_dict() if hasattr(concept, "to_dict") else concept
+
+        now = time.time()
+        row = conn.execute(
+            "SELECT concept_id FROM concepts WHERE concept_id = ?",
+            (cd["concept_id"],),
+        ).fetchone()
+
+        if row:
+            conn.execute(
+                """UPDATE concepts SET
+                   confidence = ?, support_count = ?, last_updated = ?,
+                   pattern_data = ?, source_traces = ?
+                   WHERE concept_id = ?""",
+                (
+                    cd["confidence"],
+                    cd["support_count"],
+                    now,
+                    json.dumps(cd.get("pattern_data", {})),
+                    json.dumps(cd.get("source_traces", [])),
+                    cd["concept_id"],
+                ),
+            )
+        else:
+            conn.execute(
+                """INSERT INTO concepts
+                   (concept_id, domain, concept_type, abstraction_level,
+                    description, pattern_data, confidence, support_count,
+                    source_traces, tags, created_at, last_updated)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    cd["concept_id"],
+                    cd["domain"],
+                    cd["concept_type"],
+                    cd["abstraction_level"],
+                    cd["description"],
+                    json.dumps(cd.get("pattern_data", {})),
+                    cd["confidence"],
+                    cd["support_count"],
+                    json.dumps(cd.get("source_traces", [])),
+                    json.dumps(cd.get("tags", [])),
+                    cd.get("created_at", now),
+                    now,
+                ),
+            )
+        conn.commit()
+
+    def get_concepts(
+        self,
+        domain: str,
+        min_confidence: float = 0.0,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Retrieve concepts for a domain, highest confidence first."""
+        conn = self._get_conn()
+        rows = conn.execute(
+            """SELECT * FROM concepts
+               WHERE domain = ? AND confidence >= ?
+               ORDER BY confidence DESC LIMIT ?""",
+            (domain, min_confidence, limit),
+        ).fetchall()
+
+        result = []
+        for row in rows:
+            d = dict(row)
+            d["pattern_data"] = json.loads(d.get("pattern_data", "{}"))
+            d["source_traces"] = json.loads(d.get("source_traces", "[]"))
+            d["tags"] = json.loads(d.get("tags", "[]"))
+            result.append(d)
+        return result
+
+    def get_concepts_by_type(
+        self,
+        domain: str,
+        concept_type: str,
+        min_confidence: float = 0.0,
+        limit: int = 50,
+    ) -> list[dict[str, Any]]:
+        """Retrieve concepts filtered by type."""
+        conn = self._get_conn()
+        rows = conn.execute(
+            """SELECT * FROM concepts
+               WHERE domain = ? AND concept_type = ? AND confidence >= ?
+               ORDER BY confidence DESC LIMIT ?""",
+            (domain, concept_type, min_confidence, limit),
+        ).fetchall()
+
+        result = []
+        for row in rows:
+            d = dict(row)
+            d["pattern_data"] = json.loads(d.get("pattern_data", "{}"))
+            d["source_traces"] = json.loads(d.get("source_traces", "[]"))
+            d["tags"] = json.loads(d.get("tags", "[]"))
+            result.append(d)
+        return result
+
+    def delete_concept(self, concept_id: str) -> None:
+        """Delete a concept by ID."""
+        conn = self._get_conn()
+        conn.execute(
+            "DELETE FROM concepts WHERE concept_id = ?", (concept_id,)
+        )
+        conn.commit()
 
     def close(self) -> None:
         """Close the database connection."""

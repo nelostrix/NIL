@@ -14,6 +14,10 @@ from nil.memory.meta_memory import MetaMemory, KnowledgeGap, Contradiction
 from nil.memory.consolidation import ConsolidationPipeline, ConsolidationReport
 from nil.memory.hierarchical import HierarchicalMemory
 
+# Abstraction layer
+from nil.memory.concept import Concept, ConceptGraph, ConceptType, AbstractionLevel
+from nil.memory.abstraction import AbstractionEngine, AbstractionReport, TraceCluster
+
 __all__ = [
     "PersistentMemory",
     "ExperienceQuery",
@@ -45,4 +49,12 @@ __all__ = [
     "Contradiction",
     "ConsolidationPipeline",
     "ConsolidationReport",
+    # Abstraction layer
+    "Concept",
+    "ConceptGraph",
+    "ConceptType",
+    "AbstractionLevel",
+    "AbstractionEngine",
+    "AbstractionReport",
+    "TraceCluster",
 ]
