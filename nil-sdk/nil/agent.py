@@ -4,6 +4,7 @@ import logging
 import time
 from typing import Any, Optional
 
+from nil.cognition.economy import CognitiveEconomy
 from nil.cognition.loop import CognitiveLoop, LoopResult, Phase
 from nil.cognition.plugins import EvolutionPlugin, KernelPlugin, MemoryPlugin, RACPlugin, RLPlugin, wire_cognitive_loop
 from nil.cognition.policy import CognitivePolicyEngine, build_default_policy
@@ -16,6 +17,8 @@ from nil.kernel.outcome import RunOutcome
 from nil.kernel.runner import KernelRunner
 from nil.memory.store import PersistentMemory
 from nil.rl.agent import RLConfig, RLEnabledAgent
+from nil.tools.evolver import ToolEvolver
+from nil.training.curriculum import CurriculumEngine
 
 logger = logging.getLogger("nil")
 
@@ -33,6 +36,9 @@ class Agent:
         rl_config: Optional[RLConfig] = None,
         enable_rl: bool = False,
         enable_multi_agent: bool = False,
+        enable_tool_evolution: bool = False,
+        enable_curriculum: bool = False,
+        enable_economy: bool = False,
     ) -> None:
         self.domain = domain
         self.base_model = base_model
@@ -60,9 +66,20 @@ class Agent:
         if enable_rl:
             self._rl_agent = RLEnabledAgent(domain=self.domain.name)
 
+        self._tool_evolver: Optional[ToolEvolver] = (
+            ToolEvolver() if enable_tool_evolution else None
+        )
+        self._curriculum_engine: Optional[CurriculumEngine] = (
+            CurriculumEngine() if enable_curriculum else None
+        )
+        self._cognitive_economy: Optional[CognitiveEconomy] = (
+            CognitiveEconomy() if enable_economy else None
+        )
+
         self._cognitive_loop: Optional[CognitiveLoop] = None
         self._cognitive_policy: CognitivePolicyEngine = build_default_policy()
         self._mode_history: list[dict[str, Any]] = []
+        self._curriculum_history: list[dict[str, Any]] = []
 
         logging.basicConfig(level=getattr(logging, self.config.log_level))
         logger.info(
@@ -78,6 +95,7 @@ class Agent:
                 gradient_provider=self._gradient_provider,
                 auto_apply=not self.evolution_cfg.human_approval,
                 min_traces_for_evolution=max(10, self.evolution_cfg.evolve_interval),
+                tool_evolver=self._tool_evolver,
             )
         return self._pipeline
 
@@ -91,6 +109,9 @@ class Agent:
                 evolution_pipeline=self._get_pipeline(),
                 rac_engine=self._rac_engine,
                 rl_agent=self._rl_agent,
+                tool_evolver=self._tool_evolver,
+                curriculum_engine=self._curriculum_engine,
+                cognitive_economy=self._cognitive_economy,
             )
             self._cognitive_loop = loop
         return self._cognitive_loop
@@ -128,6 +149,9 @@ class Agent:
                 "phases": list(result.phases_completed),
             })
 
+        if self._cognitive_economy is not None and result.context is not None:
+            self._cognitive_economy.record_run(result.context)
+
         if self.evolution_cfg.enabled:
             self._maybe_evolve()
 
@@ -154,13 +178,33 @@ class Agent:
 
         if result.had_impact:
             logger.info(
-                "Evolution impact: %d skills extracted, %d deltas applied, promoted=%s, drift=%s",
+                "Evolution impact: %d skills extracted, %d deltas applied, "
+                "promoted=%s, drift=%s, tools_evolved=%d",
                 result.skills_extracted,
                 result.deltas_applied,
                 result.strategy_promoted,
                 result.drift_detected,
+                result.tools_evolved,
             )
             self._refresh_runner()
+
+        if self._curriculum_engine is not None:
+            try:
+                traces = self.memory.get_traces(self.domain.name, limit=100)
+                if len(traces) >= 10:
+                    curr_result = self._curriculum_engine.run(
+                        self.domain.name, traces,
+                        tool_names=self.domain.tool_name,
+                    )
+                    self._curriculum_history.append(curr_result.summary())
+                    if curr_result.had_impact:
+                        logger.info(
+                            "Curriculum improvement: %.0f%%",
+                            curr_result.comparison.get("improvement", 0) * 100
+                            if curr_result.comparison else 0,
+                        )
+            except Exception as e:
+                logger.warning("Curriculum error: %s", e)
 
         if result.error:
             logger.warning("Evolution error: %s", result.error)
@@ -213,6 +257,11 @@ class Agent:
 
     def stats(self) -> dict[str, Any]:
         trace_count = self.memory.get_trace_count(self.domain.name)
+        evolved_tools = (
+            len(self._tool_evolver.get_evolved_tools())
+            if self._tool_evolver else 0
+        )
+        from nil.tools.registry import list_tools
         return {
             "domain": self.domain.name,
             "model": self.base_model,
@@ -226,6 +275,10 @@ class Agent:
             "evolution_strategy": self.evolution_cfg.strategy,
             "cognitive_modes": list({m["mode"] for m in self._mode_history}),
             "mode_escalations": sum(len(m["escalations"]) for m in self._mode_history),
+            "tools_available": len(list_tools()),
+            "evolved_tools": evolved_tools,
+            "curriculum_runs": len(self._curriculum_history),
+            "economy_enabled": self._cognitive_economy is not None,
         }
 
     @property

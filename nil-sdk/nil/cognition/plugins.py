@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
+from nil.cognition.economy import CognitiveBudget, CognitiveEconomy
 from nil.cognition.loop import CognitiveLoop, CognitiveLoopPlugin, Phase, PhaseContext
 from nil.cognition.modes import Uncertainty
 from nil.cognition.runner import RACEngine
@@ -12,6 +13,8 @@ from nil.kernel.tracer import Tracer
 from nil.memory.abstraction import AbstractionEngine
 from nil.memory.store import PersistentMemory
 from nil.rl.agent import RLEnabledAgent
+from nil.tools.evolver import ToolEvolver
+from nil.training.curriculum import CurriculumEngine, WeaknessAnalyzer
 
 logger = logging.getLogger("nil.cognition.plugins")
 
@@ -127,13 +130,23 @@ class RACPlugin(CognitiveLoopPlugin):
 
 
 class KernelPlugin(CognitiveLoopPlugin):
-    def __init__(self, runner: KernelRunner) -> None:
+    def __init__(
+        self,
+        runner: KernelRunner,
+        economy: Optional[CognitiveEconomy] = None,
+    ) -> None:
         self.runner = runner
+        self._economy = economy
 
     def get_id(self) -> str:
         return "kernel"
 
     def pre_phase(self, ctx: PhaseContext) -> None:
+        if self._economy is not None and ctx.phase != Phase.ACT:
+            skip = self._economy.should_skip_phase(ctx.phase, ctx)
+            if skip:
+                return
+
         if ctx.phase == Phase.ACT:
             tracer = Tracer(run_id=ctx.state["run_id"], domain=ctx.domain)
             ctx.state["_tracer"] = tracer
@@ -143,6 +156,22 @@ class KernelPlugin(CognitiveLoopPlugin):
                 combined_context["retrieved"] = ctx.memory["retrieved_context"]
             if ctx.memory.get("skills"):
                 combined_context["skills"] = ctx.memory["skills"]
+
+            if self._economy is not None:
+                econ_decision = self._economy.plan_run(ctx)
+                ctx.state["economy_decision"] = econ_decision
+
+                suggested = self._economy.suggest_model(
+                    current_model=self.runner.model,
+                    task=ctx.task,
+                    uncertainty=ctx.uncertainty.meta,
+                )
+                if suggested != self.runner.model:
+                    logger.info(
+                        "Economy: using model %s instead of %s",
+                        suggested, self.runner.model,
+                    )
+                    self.runner.model = suggested
 
             outcome = self.runner.execute(
                 task=ctx.task,
@@ -166,8 +195,16 @@ class KernelPlugin(CognitiveLoopPlugin):
 
 
 class EvolutionPlugin(CognitiveLoopPlugin):
-    def __init__(self, pipeline: EvolutionPipeline) -> None:
+    def __init__(
+        self,
+        pipeline: EvolutionPipeline,
+        tool_evolver: Optional[ToolEvolver] = None,
+        curriculum_engine: Optional[CurriculumEngine] = None,
+    ) -> None:
         self.pipeline = pipeline
+        self._tool_evolver = tool_evolver
+        self._curriculum_engine = curriculum_engine
+        self._last_evolution_time: float = 0.0
 
     def get_id(self) -> str:
         return "evolution"
@@ -268,6 +305,48 @@ class EvolutionPlugin(CognitiveLoopPlugin):
                     evo_result.deltas_applied,
                 )
 
+            if self._tool_evolver is not None:
+                try:
+                    traces = ctx.state.get("_traces_for_evolution", [])
+                    if not traces:
+                        traces = ctx.state.get("traces", [])
+                    if not traces:
+                        traces = self.pipeline.memory.get_traces(
+                            ctx.domain, limit=100
+                        )
+                    if traces:
+                        evo_tool_result = self._tool_evolver.evolve(
+                            traces, domain=ctx.domain
+                        )
+                        ctx.state["tool_evolution"] = evo_tool_result
+                        if evo_tool_result.tools_evolved:
+                            logger.info(
+                                "Tool evolution: %d new tools from %d workflows",
+                                evo_tool_result.workflows_compiled,
+                                evo_tool_result.workflows_detected,
+                            )
+                except Exception as e:
+                    logger.warning("Tool evolution error: %s", e)
+
+            if self._curriculum_engine is not None:
+                try:
+                    traces = self.pipeline.memory.get_traces(
+                        ctx.domain, limit=100
+                    )
+                    if len(traces) >= 10:
+                        curr_result = self._curriculum_engine.run(
+                            ctx.domain, traces
+                        )
+                        ctx.state["curriculum_result"] = curr_result
+                        if curr_result.had_impact:
+                            logger.info(
+                                "Curriculum impact: %.0f%% improvement",
+                                curr_result.comparison.get("improvement", 0) * 100
+                                if curr_result.comparison else 0,
+                            )
+                except Exception as e:
+                    logger.warning("Curriculum error: %s", e)
+
 
 class RLPlugin(CognitiveLoopPlugin):
     def __init__(self, rl_agent: RLEnabledAgent) -> None:
@@ -313,10 +392,17 @@ def wire_cognitive_loop(
     rac_engine: Optional[RACEngine] = None,
     rl_agent: Optional[RLEnabledAgent] = None,
     abstraction_engine: Optional[AbstractionEngine] = None,
+    tool_evolver: Optional[ToolEvolver] = None,
+    curriculum_engine: Optional[CurriculumEngine] = None,
+    cognitive_economy: Optional[CognitiveEconomy] = None,
 ) -> None:
     loop.register(MemoryPlugin(memory, abstraction_engine=abstraction_engine))
     loop.register(RACPlugin(rac_engine or RACEngine()))
-    loop.register(KernelPlugin(kernel_runner))
-    loop.register(EvolutionPlugin(evolution_pipeline))
+    loop.register(KernelPlugin(kernel_runner, economy=cognitive_economy))
+    loop.register(EvolutionPlugin(
+        evolution_pipeline,
+        tool_evolver=tool_evolver,
+        curriculum_engine=curriculum_engine,
+    ))
     if rl_agent:
         loop.register(RLPlugin(rl_agent))
