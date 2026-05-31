@@ -89,8 +89,11 @@ Nil solves this with seven interconnected systems:
 ├── requirements.txt         # Pip-installable requirements file
 ├── docs/                    # Documentation (codebase map, design docs)
 ├── nil-sdk/                 # The NIL SDK package
+│   ├── nil/                 # SDK source
+│   ├── tests/               # Test suite (20 test files)
+│   └── pyproject.toml       # Package configuration
 ├── experiments/             # Meta-learning experiments (separate from SDK)
-nil/
+nil-sdk/nil/
 ├── __init__.py           # Public API: tool, Domain, Agent, PersistentMemory, EvolutionConfig
 ├── agent.py              # Main Agent class — orchestrates Kernel + Memory + Evolution + Curriculum + Economy
 ├── domain.py             # Domain definitions — binds tools, objectives, success signals
@@ -99,23 +102,8 @@ nil/
 │   ├── runner.py         # Agent loop (LLM + tool calls, up to 25 steps)
 │   ├── tracer.py         # Structured experience capture (LLM calls, tool calls, events)
 │   ├── tool_manager.py   # Tool registration, validation, dispatch
-│   └── outcome.py        # RunOutcome, StepRecord — result + timing + costs
-├── memory/               # Persistent storage
-│   ├── store.py          # SQLite-backed memory — traces, skills, strategy versions, concepts
-│   ├── abstraction.py    # Concept abstraction pipeline (clusters → causal → symbolic → policies)
-│   ├── concept.py        # ConceptType, AbstractionLevel, Concept, ConceptGraph
-│   ├── experience.py     # ExperienceQuery, ExperienceStats — aggregation, patterns
-│   ├── skill_registry.py # Skill data model with full lifecycle (candidate → active → deprecated)
-│   └── strategy_version.py # Strategy version dataclass
-├── evolution/            # Self-improvement pipeline
-│   ├── pipeline.py       # Orchestrates all 7 stages (analyze → extract → gradient → evaluate → model → drift → evolve_tools)
-│   ├── analyzer.py       # Causal analysis: Fisher's test, Wilson CI, subsequence mining, transition matrices
-│   ├── skill_extractor.py # Skill extraction: chain compression, dedup, trigger inference, merge
-│   ├── gradient_engine.py # Textual gradient descent: critique → gradient → delta → apply
-│   ├── evaluator.py      # Replay evaluator, A/B comparison, multi-dimensional scoring, rollback risk
-│   ├── drift_detector.py # Multi-signal drift detection, severity, root cause, auto-recovery
-│   ├── world_model.py    # Entity discovery, tool profiles, task clusters, state transition graphs
-│   └── strategy_mutator.py # Strategy mutation (placeholder — not yet implemented)
+│   ├── outcome.py        # RunOutcome, StepRecord — result + timing + costs
+│   └── graph/            # DAG-based execution (planner, scheduler, critic, templates)
 ├── cognition/            # Executive cognition + memory + simulation + economy
 │   ├── loop.py           # 10-phase Unified Cognitive Loop (observe→...→adapt)
 │   ├── modes.py          # CognitiveMode enum, ModeProfile, MODE_PROFILES, Uncertainty
@@ -125,19 +113,41 @@ nil/
 │   ├── adapters.py       # ModelSwitcher, AgentSpawner, RetrievalAlterer, ReasoningDeeper
 │   ├── economy.py        # CognitiveEconomy — cost-aware cognition, model tiering, EV calculation
 │   ├── plugins.py        # MemoryPlugin, RACPlugin, KernelPlugin, EvolutionPlugin, RLPlugin
-│   └── runner.py         # RACEngine — retrieval-augmented cognition
+│   ├── runner.py         # RACEngine — retrieval-augmented cognition
+│   ├── assembler.py      # Context assembly from retrieval sources
+│   ├── retrieval.py      # Retrieval pipeline (query, fetch, rank)
+│   ├── index.py          # In-memory + persistent index for retrieval
+│   ├── query.py          # Query construction and expansion
+│   ├── scoring.py        # Relevance scoring for retrieval results
+│   ├── feedback.py       # Retrieval feedback loop (outcome-driven weight updates)
+│   └── sources.py        # Retrieval source definitions
+├── memory/               # Persistent storage (SQLite + in-memory tiers)
+│   ├── store.py          # Core SQLite-backed memory — traces, skills, strategy versions
+│   ├── abstraction.py    # Concept abstraction pipeline (clusters → causal → symbolic → policies)
+│   ├── concept.py        # ConceptType, AbstractionLevel, Concept, ConceptGraph
+│   ├── experience.py     # ExperienceQuery, ExperienceStats — aggregation, patterns
+│   ├── skill_registry.py # Skill data model with full lifecycle (candidate → active → deprecated)
+│   ├── strategy_version.py # Strategy version dataclass
+│   ├── hierarchical.py   # 7-tier hierarchical memory coordinator
+│   ├── episodic.py       # Episodic memory (raw traces with retention lifecycle)
+│   ├── semantic.py       # Semantic memory (facts, rules, concepts with confidence)
+│   ├── procedural.py     # Procedural memory (skills, policies, strategies)
+│   ├── working.py        # Working memory (sliding window, attention, scratchpad)
+│   ├── world_state.py    # World state memory (persistent external state)
+│   ├── social_memory.py  # Social/user memory (profiles, preferences, trust)
+│   ├── meta_memory.py    # Meta-memory (confidence calibration, knowledge gaps)
+│   └── consolidation.py  # Memory consolidation pipeline
+├── evolution/            # Self-improvement pipeline
+│   ├── pipeline.py       # Orchestrates all stages (analyze → extract → gradient → evaluate → model → drift → evolve_tools)
+│   ├── analyzer.py       # Causal analysis: Fisher's test, Wilson CI, subsequence mining, transition matrices
+│   ├── skill_extractor.py # Skill extraction: chain compression, dedup, trigger inference, merge
+│   ├── gradient_engine.py # Textual gradient descent: critique → gradient → delta → apply
+│   ├── evaluator.py      # Replay evaluator, A/B comparison, multi-dimensional scoring, rollback risk
+│   ├── drift_detector.py # Multi-signal drift detection, severity, root cause, auto-recovery
+│   ├── world_model.py    # Entity discovery, tool profiles, task clusters, state transition graphs
+│   └── strategy_mutator.py # Strategy mutation (placeholder — not yet implemented)
 ├── training/             # Autonomous curriculum
 │   └── curriculum.py     # CurriculumEngine, WeaknessAnalyzer, SyntheticTaskGenerator, PracticeEngine, BenchmarkSuite
-├── optimization/         # Cost optimization (stubs — under development)
-│   ├── model_router.py   # Smart model routing (always returns default)
-│   ├── chain_compressor.py # Chain compression (no-op)
-│   ├── cache_manager.py  # In-memory LRU response cache
-│   └── budget_controller.py # Per-run and per-day cost limit enforcement
-├── providers/            # LLM adapters
-│   ├── anthropic.py      # Claude (Anthropic API)
-│   ├── openai.py         # OpenAI + any OpenAI-compatible endpoint (Ollama, vLLM)
-│   ├── gemini.py         # Google Gemini
-│   └── stub.py           # Deterministic fake LLM for testing (no API key needed)
 ├── tools/                # Tool system
 │   ├── base.py           # Tool dataclass + @tool decorator (auto-generates JSON Schema)
 │   ├── registry.py       # Global in-process tool registry
@@ -146,12 +156,66 @@ nil/
 │   ├── affordance.py     # ToolAffordance, AffordanceLearner, ToolAffordanceGraph
 │   ├── composition.py    # CompositeTool, ToolCompositionSynthesizer
 │   └── selection.py      # LatentToolSelector, LatentAwarePromptBuilder
-└── rl/                   # Reinforcement learning signals
-    ├── agent.py          # RLEnabledAgent — integrates RL into the agent loop
-    ├── policy.py         # Policy, BehavioralCloning
-    ├── rewards.py        # DenseRewardModel, ShapedRewardModel
-    ├── trajectory.py     # TrajectoryScorer, EloTrajectoryRating
-    └── ...               # value.py, exploration.py, replay.py, preference.py
+├── providers/            # LLM adapters
+│   ├── anthropic.py      # Claude (Anthropic API)
+│   ├── openai.py         # OpenAI + any OpenAI-compatible endpoint (Ollama, vLLM)
+│   ├── gemini.py         # Google Gemini
+│   └── stub.py           # Deterministic fake LLM for testing (no API key needed)
+├── optimization/         # Cost optimization
+│   ├── model_router.py   # Smart model routing
+│   ├── chain_compressor.py # Chain compression
+│   ├── cache_manager.py  # In-memory LRU response cache
+│   └── budget_controller.py # Per-run and per-day cost limit enforcement
+├── agents/               # Multi-agent coordination
+│   ├── orchestrator.py   # Task decomposition, parallel execution, verification
+│   ├── roles.py          # Agent role definitions (9 roles)
+│   ├── blackboard.py     # Shared blackboard memory
+│   ├── consensus.py      # Negotiation, voting, debate
+│   ├── messages.py       # Message bus (pub/sub, request/reply)
+│   ├── pool.py           # Agent pool and lifecycle management
+│   ├── teams.py          # Hierarchical agent teams
+│   ├── market.py         # Market-based coordination (bidding)
+│   └── framework.py      # Coordination framework
+├── models/               # POMDP environment models
+│   ├── state_space.py    # Observable vs. hidden state, factorization
+│   ├── transitions.py    # Transition model T(s, a, s')
+│   ├── rewards.py        # Multi-factor reward model
+│   ├── belief.py         # Bayes filter belief tracking
+│   ├── planners.py       # Policy planning (value iteration, MCTS)
+│   ├── learning.py       # Online model learning from traces
+│   ├── observations.py   # Observation model
+│   └── framework.py      # ModelAwareAgent integration
+├── observability/        # Runtime observability
+│   ├── events.py         # 23 structured event types
+│   ├── trace_viewer.py   # Timeline with expandable reasoning
+│   ├── flame_graph.py    # Span-based timing visualization
+│   ├── token_timeline.py # Per-step token/cost breakdown
+│   ├── reasoning_tree.py # LLM reasoning tree visualization
+│   ├── memory_browser.py # Inspect skills, strategies, world model
+│   ├── evolution_diff.py # Per-cycle before/after strategy comparison
+│   ├── strategy_lineage.py # Version history tree
+│   ├── debugger.py       # Live debugger (pause, step, edit, rollback)
+│   └── dashboard.py      # Real-time multi-agent dashboard
+├── rl/                   # Reinforcement learning signals
+│   ├── agent.py          # RLEnabledAgent — integrates RL into the agent loop
+│   ├── policy.py         # Policy, BehavioralCloning
+│   ├── rewards.py        # DenseRewardModel, ShapedRewardModel
+│   ├── trajectory.py     # TrajectoryScorer, EloTrajectoryRating
+│   ├── value.py          # Value function learning
+│   ├── exploration.py    # Exploration strategies (UCB1, Thompson Sampling)
+│   ├── replay.py         # Replay buffer
+│   └── preference.py     # DPO preference optimization
+├── compilation/          # Skill compilation
+│   └── pipeline.py       # Parse → IR → Optimize → CodeGen → Execute
+└── benchmarks/           # Long-horizon benchmarking
+    ├── base.py           # Benchmark base classes
+    ├── learning.py       # Learning curve benchmarks
+    ├── horizon.py        # Long-horizon task benchmarks
+    ├── recovery.py       # Recovery & robustness benchmarks
+    ├── memory.py         # Memory & retention benchmarks
+    ├── transfer.py       # Transfer & adaptation benchmarks
+    ├── system.py         # System benchmarks (cost, latency)
+    └── runner.py         # Unified benchmark runner
 ```
 
 ## Code Understanding

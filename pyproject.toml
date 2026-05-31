@@ -36,6 +36,7 @@ Documentation = "https://nil.nelo.dev"
 Repository = "https://github.com/nelo-robotics/nil"
 
 [tool.setuptools.packages.find]
+where = ["nil-sdk"]
 include = ["nil*"]
 
 [tool.pytest.ini_options]

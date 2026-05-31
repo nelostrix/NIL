@@ -917,8 +917,7 @@ class TextualGradientEngine:
         systemic = report.systemic_failures
         if systemic:
             error_hints = [
-                f"Watch for: '{fc.error_signature[:80]}' — "
-                f"occurred {fc.count} times, typically at step {fc.avg_step_where_failed:.0f}"
+                f"Watch for: '{fc.error_signature[:80]}'"
                 for fc in systemic[:3]
             ]
             deltas.append(

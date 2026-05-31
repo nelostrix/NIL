@@ -11,7 +11,7 @@
 | File | Purpose |
 |---|---|
 | `pyproject.toml` | Package metadata: `nil-sdk` v0.1.0, Python >=3.10, optional deps (anthropic, openai), dev deps (pytest, ruff) |
-| `setup.py` | Directory scaffolding script (generates the project tree, not used at runtime) |
+| `nil-sdk/pyproject.toml` | Package metadata: `nil-sdk` v0.1.0, Python >=3.10, optional deps, dev deps |
 | `README.md` | Project documentation: quickstart, feature overview, architecture diagram, roadmap |
 | `requirements.md` | Comprehensive dependency overview covering all modules, providers, experiments, and dev tooling |
 | `requirements.txt` | Pip-installable requirements file with pinned extras for LLM providers, experiments, and development |
@@ -37,17 +37,29 @@
 | `tracer.py` | **Tracer** + **Trace** — structured experience capture. Records every LLM call, tool invocation, and event into a machine-readable `Trace` object designed for consumption by the Evolution Engine |
 | `tool_manager.py` | **ToolManager** — registers tools, converts them to LLM-compatible function-calling schemas, dispatches invocations with timing and error capture |
 | `outcome.py` | **RunOutcome** + **StepRecord** — the structured result of a run: output, success flag, step list, token counts, cost estimation ($3/M input tokens, $15/M output tokens), tool sequence |
+| `graph/` | **DAG Execution Engine** — `planner.py` (6 planning strategies), `scheduler.py` (dependency-aware parallelism), `runner.py` (graph executor), `critic.py` (validation with PASS/NEEDS_REVISION/FAIL), `graph_types.py` (ExecutionNode, DependencyEdge), `templates.py` (reusable DAG templates like `investigate_and_fix`) |
 
 ---
 
-## `nil/memory/` — Persistent Storage
+## `nil/memory/` — Persistent Storage (SQLite + In-Memory Tiers)
 
 | File | Purpose |
 |---|---|
-| `store.py` | **PersistentMemory** — SQLite-backed long-term store. Tables: `traces` (run_id, domain, task, trace_data JSON, success, tokens, cost, tool_sequence, error), `skills` (domain, name, description, pattern JSON, confidence, usage_count), `strategy_versions` (domain, version, strategy_data JSON, score, is_active). Methods: store/get/list traces, skills, strategies, success rates |
-| `experience.py` | **ExperienceQuery** — query/analysis interface over historical traces. `stats()` aggregates success rate, avg cost, avg steps, most common tool sequences, most common errors. `successful_tool_sequences()` finds winning patterns. `common_failures()` groups failures by error signature |
-| `skill_registry.py` | **Skill** + **TriggerCondition** — data model for extracted skills. Lifecycle: candidate → active → deprecated → superseded. Trigger conditions based on keywords, error patterns, tool prerequisites, step position. Generates prompt fragments (`to_prompt_fragment()`, `to_compact_prompt()`) for system prompt injection |
-| `strategy_version.py` | **StrategyVersion** — versioned snapshot of an agent's strategy (system prompt modifications, skill selections, model routing rules, tool preferences). Enables rollback |
+| `store.py` | **PersistentMemory** — core SQLite-backed long-term store. Tables: `traces` (run_id, domain, task, trace_data JSON, success, tokens, cost, tool_sequence, error), `skills`, `strategy_versions`. Methods: store/get/list traces, skills, strategies, success rates, `update_trace_success()` for post-hoc success correction |
+| `experience.py` | **ExperienceQuery** — query/analysis interface over historical traces. `stats()` aggregates success rate, avg cost, avg steps, tool sequences, errors |
+| `skill_registry.py` | **Skill** + **TriggerCondition** — data model with lifecycle: candidate → active → deprecated → superseded. Generates prompt fragments for system prompt injection |
+| `strategy_version.py` | **StrategyVersion** — versioned strategy snapshots with rollback support |
+| `hierarchical.py` | **HierarchicalMemory** — 7-tier memory coordinator (episodic, semantic, procedural, working, world_state, social, meta) |
+| `episodic.py` | **EpisodicMemory** — raw traces with retention lifecycle: RECENT → SUMMARIZED → COMPRESSED → ARCHIVED → FORGOTTEN |
+| `semantic.py` | **SemanticMemory** — facts, rules, concepts, relationships with confidence tracking and decay |
+| `procedural.py` | **ProceduralMemory** — skills, policies, strategies with refinement from failures |
+| `working.py` | **WorkingMemory** — sliding window with importance-based retention, attention mechanism, scratchpad |
+| `world_state.py` | **WorldStateMemory** — persistent external state snapshots, diff-logging, consistency checking |
+| `social_memory.py` | **SocialMemory** — user profiles, preferences, interaction history, trust calibration |
+| `meta_memory.py` | **MetaMemory** — confidence calibration, knowledge gaps, contradictions, epistemic curiosity |
+| `concept.py` | **Concept**, **ConceptType**, **AbstractionLevel**, **ConceptGraph** — building blocks for learned concepts |
+| `abstraction.py` | **AbstractionEngine** — concept abstraction pipeline: cluster → causal → symbolic → policies |
+| `consolidation.py` | **ConsolidationPipeline** — cross-tier memory consolidation (per-run, per-N-runs, on-demand) |
 
 ---
 
@@ -62,6 +74,7 @@
 | `evaluator.py` | **ReplayEvaluator** — tests candidate strategies against historical data before deployment. Scores each trace on success alignment, failure avoidance, cost efficiency, and constraint compliance. Uses paired sign test for statistical significance. Returns promote/reject/inconclusive with confidence intervals and rollback risk assessment |
 | `drift_detector.py` | **DriftDetector** — multi-signal performance monitoring. Detects: success rate regression, new error types, tool degradation, cost inflation, task distribution shift. Severity levels: none → mild → significant → critical. Auto-recovery: rollback on critical, targeted evolution on significant. Generates recovery actions (add error handling, update tool guidance, optimize cost) |
 | `world_model.py` | **WorldModelBuilder** — constructs a structured domain model from traces. Components: tool profiles (success rates, costs, complementary/redundant tools, typical position), task clusters (keyword-based), domain constraints (prerequisites, forbidden transitions, required minimum steps, conditional errors), state transition graph, health metrics. Generates prompt injection blocks for agent self-awareness |
+| `strategy_mutator.py` | **StrategyMutator** — mutation operations for strategy evolution (placeholder — under development) |
 
 ---
 
@@ -173,22 +186,22 @@
 
 | File | Purpose |
 |---|---|
-| `query.py` | **RetrievalQuery**, **RetrievalStrategy**, **RetrievalStrategySelector** — encodes the current task context (task, tool state, errors, step, domain) into a query. Selects retrieval strategy by context: failure_recovery (on error), exploration (early steps), minimal (late steps), balanced (default) |
-| `index.py` | **StoredItem**, **ScoredResult**, **RetrievalIndex** — persistent storage for items with dense embeddings (cosine similarity), sparse keyword index, and constraint-based retrieval. Supports upsert, delete, and multi-modal search |
-| `retrieval.py` | **HybridRetriever** — fuses dense, sparse, and structure-based retrieval into combined relevance scores. Re-ranks by keyword overlap with the query |
-| `scoring.py` | **RelevanceScorer** — multi-factor relevance scoring: semantic match, recency (exponential decay), specificity (keyword overlap), confidence, and diversity penalty to avoid redundant results |
-| `sources.py` | **MultiSourceRetriever** — indexes and retrieves from five source stores: skills, failures, trajectories, constraints, facts. Per-source scoring with failure-event boosting and tool-context matching |
-| `assembler.py` | **ContextAssembler** — assembles scored results into a formatted context string with per-source token budgets. Falls back to compact format when budget is exceeded |
-| `feedback.py` | **RetrievalFeedback** — records success/failure feedback on retrieval quality. Tracks positive/negative signals, supports to_dict/from_dict serialization |
-| `runner.py` | **RACEngine** — unified entry point. Maintains both index and source stores, runs search with strategy selection, assembles context, supports run_with_feedback for reinforcement learning |
-| `loop.py` | **CognitiveLoop** — 10-phase Unified Cognitive Loop (observe→retrieve→reason→plan→simulate→act→evaluate→reflect→learn→adapt). Supports dynamic pipeline building via `CognitivePolicyEngine.build_pipeline()`, recursive cognition (retries, replans, phase injection via `_pending_phases` deque), per-phase uncertainty tracking (`PhaseUncertainty`), plugin hooks (`pre_phase`/`post_phase`), and supervisor integration |
-| `modes.py` | **CognitiveMode** enum (8 modes: REACTIVE, DELIBERATIVE, PLANNING, EXPLORATORY, REFLECTIVE, RECOVERY, MULTI_AGENT, COMPILATION), **ModeProfile** (planning_depth, simulation_depth, compute_allocation, retrieval_depth, spawn_agents, should_reflect, should_compile, max_retries, exploration_bonus), **MODE_PROFILES** lookup dict, **Uncertainty** dataclass (confidence, uncertainty, risk, novelty, reliability + is_certain/is_risky/is_novel) |
-| `policy.py` | **CognitivePolicyEngine** — heuristic mode selection (urgency, error rate, complexity, novelty, dependency signals), dynamic pipeline building (inserts/omits phases per mode profile), budget allocation (`allocate_budget`), and all `should_*` predicates (should_reflect, should_spawn_agents, should_simulate, should_plan, should_explore, should_retry, should_compile) |
-| `simulation.py` | **SimulationEngine** — generates candidate plans, runs world-model rollouts, estimates reward/failure-probability/tool-cost/uncertainty, selects best via scoring heuristic |
-| `supervisor.py` | **LiveSupervisor** — mid-task online adaptation with 10 triggers (pre_uncertainty_spike, pre_fallback_pattern, pre_novel_task_spawn, uncertainty_escalate, error_escalate, timing_anomaly, confidence_drop, novelty_explore, retrieval_weak, repetitive_failure_replan). Per-trigger cooldown (default 2 phases) to prevent oscillation. Actions thread through `PhaseContext` (escalate_mode, request_phase, replan, state) |
-| `adapters.py` | **ModelSwitcher** (model tier switching up/down), **AgentSpawner** (sub-agent spawning with max-agent cap), **RetrievalAlterer** (deepen/narrow depth, switch strategy), **ReasoningDeeper** (increase planning/simulation depth mid-run, injects pending phases) |
-| `economy.py` | **CognitiveEconomy** (Phase 7) — cost-aware cognition for efficient intelligence. **CostModel** records per-phase costs (tokens, tools, model tier) and provides average cost estimates. **CognitiveBudget** allocates spend per mode profile with max cost/token/step limits. **ExpectedValueCalculator** evaluates each phase's expected benefit vs cost, model switch decisions (small vs large model with quality/risk tradeoff), and simulation value. **COST_TIERS** dict maps model IDs to `ModelCostProfile` (input/output cost per 1K tokens, speed_quality_factor). Economy plugin in `KernelPlugin` skips low-EV phases, suggests cheaper models for low-risk tasks, and records run costs |
-| `plugins.py` | Plugin implementations: **MemoryPlugin** (populates trace count, success rate, abstraction; stores traces during EVALUATE; runs abstraction engine during LEARN), **RACPlugin** (triggers retrieval during RETRIEVE, feeds feedback during REFLECT, stores skills during LEARN), **KernelPlugin** (executes ACT phase via KernelRunner; integrates CognitiveEconomy for model suggestion and phase gating), **EvolutionPlugin** (runs evolution pipeline during LEARN; integrates ToolEvolver for workflow→tool compilation and CurriculumEngine for self-directed practice), **RLPlugin** (feeds RL signals during SIMULATE/EVALUATE/LEARN). `wire_cognitive_loop()` accepts all dependencies including `tool_evolver`, `curriculum_engine`, and `cognitive_economy` |
+| `query.py` | **RetrievalQuery**, **RetrievalStrategy**, **RetrievalStrategySelector** — encodes task context into a query with strategy selection per context |
+| `index.py` | **RetrievalIndex** — persistent storage with dense embeddings (cosine similarity), sparse keyword index, constraint-based retrieval |
+| `retrieval.py` | **HybridRetriever** — fuses dense, sparse, and structure-based retrieval with cross-encoder re-ranking |
+| `scoring.py` | **RelevanceScorer** — multi-factor scoring: semantic match, recency decay, specificity, confidence, diversity penalty |
+| `sources.py` | **MultiSourceRetriever** — indexes and retrieves from skills, failures, trajectories, constraints, facts stores |
+| `assembler.py` | **ContextAssembler** — assembles scored results into formatted context with per-source token budgets |
+| `feedback.py` | **RetrievalFeedback** — records success/failure feedback on retrieval quality |
+| `runner.py` | **RACEngine** — unified entry point, runs search with strategy selection, assembles context |
+| `loop.py` | **CognitiveLoop** — 10-phase Unified Cognitive Loop (observe→retrieve→reason→plan→simulate→act→evaluate→reflect→learn→adapt). Dynamic pipeline building, recursive cognition, per-phase uncertainty, plugin hooks, supervisor integration |
+| `modes.py` | **CognitiveMode** enum (8 modes), **ModeProfile**, **MODE_PROFILES**, **Uncertainty** dataclass |
+| `policy.py` | **CognitivePolicyEngine** — heuristic mode selection, dynamic pipeline building, budget allocation |
+| `simulation.py` | **SimulationEngine** — candidate plan generation, world-model rollouts, reward/risk estimation |
+| `supervisor.py` | **LiveSupervisor** — mid-task adaptation with 10 triggers, per-trigger cooldown, mode escalation |
+| `adapters.py` | **ModelSwitcher**, **AgentSpawner**, **RetrievalAlterer**, **ReasoningDeeper** — run-time cognitive adaptations |
+| `economy.py` | **CognitiveEconomy** — cost-aware cognition, model tiering, phase gating, EV calculation |
+| `plugins.py` | **MemoryPlugin**, **RACPlugin**, **KernelPlugin**, **EvolutionPlugin**, **RLPlugin** — cognitive loop plugins. `wire_cognitive_loop()` wires all dependencies |
 
 ---
 
@@ -227,10 +240,13 @@
 
 ---
 
+## `nil-sdk/tests/` — Test Suite
+
+20 pytest test files covering all subsystems (kernel, memory, evolution, cognition, agents, benchmarks, RL, compilation, affordance, hierarchical memory, graph execution, observability, world model, end-to-end). Run via `pytest tests/` from the `nil-sdk/` directory.
+
 ## Other Directories
 
 | Path | Contents |
 |---|---|
 | `docs/` | Project documentation: codebase map (`CODEBASE.md`), design docs |
-| `test_store/` | Pre-existing SQLite database (`nil.db`) from test executions |
-| `nil_store/`, `real_store/`, `evolution_test_store/` | Additional SQLite store directories created during development/testing |
+| `test_store/`, `nil_store/`, `real_store/`, `evolution_test_store/` | SQLite store directories created during development/testing |

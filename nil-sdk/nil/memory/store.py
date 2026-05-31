@@ -173,6 +173,22 @@ class PersistentMemory:
         ).fetchone()
         return row["cnt"] if row else 0
 
+    def update_trace_success(self, run_id: str, success: bool) -> None:
+        """Update the success column and trace_data JSON for a stored trace (used when domain.evaluate() is called after storage)."""
+        conn = self._get_conn()
+        row = conn.execute(
+            "SELECT trace_data FROM traces WHERE run_id = ?", (run_id,)
+        ).fetchone()
+        if not row:
+            return
+        trace_data = json.loads(row["trace_data"])
+        trace_data["outcome_success"] = success
+        conn.execute(
+            "UPDATE traces SET success = ?, trace_data = ? WHERE run_id = ?",
+            (1 if success else 0, json.dumps(trace_data), run_id),
+        )
+        conn.commit()
+
     def get_success_rate(self, domain: str, last_n: int = 50) -> float:
         """Calculate success rate over the last N runs."""
         conn = self._get_conn()
