@@ -4,6 +4,7 @@ import logging
 import time
 from typing import Any, Optional
 
+import nil
 from nil.cognition.economy import CognitiveEconomy
 from nil.cognition.loop import CognitiveLoop, LoopResult, Phase
 from nil.cognition.plugins import (
@@ -34,11 +35,11 @@ class Agent:
     def __init__(
         self,
         domain: Domain,
-        base_model: str = "claude-sonnet-4-20250514",
-        memory: Optional[PersistentMemory] = None,
-        evolution: Optional[EvolutionConfig] = None,
+        base_model: str = "nvidia/nemotron-3-super-120b-a12b:free",
+        memory: Optional[PersistentMemory] = nil.PersistentMemory("./agent_store"),
+        evolution: Optional[EvolutionConfig] = nil.EvolutionConfig(strategy="continuous"),
         config: Optional[NilConfig] = None,
-        provider: Optional[str] = None,
+        provider: Optional[str] = "openai",
         gradient_provider: Optional[GradientProvider] = None,
         rl_config: Optional[RLConfig] = None,
         enable_rl: bool = False,
