@@ -6,9 +6,9 @@ The **Intelligence Layer** is a Python framework for building **self-evolving AI
 
 The project consists of:
 
-1. **nil-sdk** (`nil/`) — Core framework: kernel execution, persistent memory, evolution pipeline, LLM providers, tools system, cost optimization
-2. **Extended Modules** — Retrieval-Augmented Cognition (RAC), Reinforcement Learning (RL), Multi-Agent Coordination, Environment Models (POMDP), Long-Horizon Benchmarking, Skill Compilation, Tool Embeddings & Affordance, Runtime Observability
-3. **Meta-Learning Experiments** (`experiments/`) — MAML-based meta-learning with LiquidNN for few-shot adaptation
+1. **nil-sdk** (`nil-sdk/nil/`) — Core framework: kernel execution (linear + DAG graph), persistent memory (SQLite + 7-tier hierarchical), evolution pipeline (7 stages), LLM providers, tools system, cost optimization, curriculum learning
+2. **Extended Modules** — Cognitive Loop (mode-based execution with plugins), Retrieval-Augmented Cognition (RAC), Reinforcement Learning (RL), Multi-Agent Coordination, Environment Models (POMDP), Long-Horizon Benchmarking, Skill Compilation, Tool Embeddings & Affordance, Tool Evolution, Runtime Observability, Cognitive Economy
+3. **Meta-Learning Experiments** (`experiments/` at workspace root) — MAML-based meta-learning with LiquidNN for few-shot adaptation
 4. **NIL-STACC Bridge** — Connects stacc robots to a NIL self-evolving agent (in separate `nil-stacc/` repo)
 
 ---
@@ -17,15 +17,17 @@ The project consists of:
 
 ### 1.1 Agent (`nil/agent.py`)
 
-- **Agent** class — top-level orchestrator connecting Kernel, Memory, and Evolution
-- `agent.run(task)` executes a task via KernelRunner, records trace in PersistentMemory, triggers evolution if enabled
+- **Agent** class — top-level orchestrator connecting Kernel, Memory, Evolution, Cognitive Loop, RAC, RL, Tool Evolution, Curriculum Learning, and Cognitive Economy
+- Constructor parameters: `domain`, `base_model`, `memory`, `evolution` (EvolutionConfig), `config` (NilConfig), `provider`, `gradient_provider`, `rl_config`, `enable_rl`, `enable_multi_agent`, `enable_tool_evolution`, `enable_curriculum`, `enable_economy`
+- `agent.run(task)` executes via CognitiveLoop wrapping KernelRunner, records trace in PersistentMemory, triggers evolution if enabled
 - Evolution strategies: `"continuous"` (every run), `"periodic"` (every N runs), `"manual"` (on demand)
-- Introspection API: `learned_skills()`, `success_rate()`, `stats()`, `evolution_history()`, `check_drift()`, `get_world_model()`, `get_strategy()`, `get_skill_prompt()`
+- Introspection API: `learned_skills()`, `success_rate()`, `stats()`, `evolution_history()`, `check_drift()`, `get_world_model()`, `get_strategy()`, `get_skill_prompt()`, `run_count`
+- Internal wiring: `KernelRunner` + `EvolutionPipeline` + `CognitiveLoop` + optional `RACEngine`, `RLEnabledAgent`, `ToolEvolver`, `CurriculumEngine`, `CognitiveEconomy`
 - Auto-rebuilds runner after evolution changes strategy
 
 ### 1.2 Domain (`nil/domain.py`)
 
-- **Domain** dataclass — defines problem space: name, tool list, objectives, success_signal callback
+- **Domain** dataclass — defines problem space: name, tool list, objectives, success_signal callback, metadata dict
 - Domain name normalized to lowercase, hyphenated for filesystem/db usage
 - `domain.evaluate(outcome)` — evaluates run success; optimistic default (True) if no signal defined
 
@@ -37,6 +39,13 @@ The project consists of:
 ### 1.4 Kernel — Execution Engine (`nil/kernel/`)
 
 - **KernelRunner** (`runner.py`) — Agentic loop: build system prompt → LLM call → tool execution → repeat up to 25 steps. Model-agnostic; auto-detects provider from env vars
+- **Graph Execution** (`graph/`) — DAG-based execution replacing linear loop:
+  - `ExecutionGraph`, `ExecutionNode`, `SubagentNode`, `SpeculativeNode` — graph types for parallel execution
+  - `Planner` — decomposes tasks into execution DAGs with planning strategies
+  - `GraphScheduler` — schedules nodes respecting dependencies
+  - `GraphAgentRunner` — runs full DAG execution end-to-end
+  - `Critic` — critiques outputs; `CritiqueVerdict` for pass/fail decisions
+  - `TemplateLibrary`, `GraphTemplate` — reusable graph templates
 - **Tracer** (`tracer.py`) — Structured experience capture per run. Records LLM calls, tool invocations, events into a `Trace` dataclass for Evolution Engine consumption
 - **ToolManager** (`tool_manager.py`) — Registers tools, converts to LLM-compatible function-calling schemas, dispatches with timing + error capture
 - **RunOutcome** + **StepRecord** (`outcome.py`) — Structured run result: output, success flag, step list, token counts, cost estimation ($3/M input, $15/M output tokens), tool sequence
@@ -47,19 +56,34 @@ The project consists of:
   - `traces` — run_id, domain, task, trace_data (JSON), success, duration, tokens, cost, tool_sequence, error
   - `skills` — domain, name, description, pattern (JSON), source_runs, confidence, usage_count
   - `strategy_versions` — domain, version, strategy_data (JSON), score, is_active
-  - CRUD: store/get/list traces, skills, strategies; success rate calculation
-- **HierarchicalMemory** (`hierarchical.py`) — Multi-tier memory: episodic, semantic, procedural, working, world state, social/user, meta-memory (design phase)
+  - `concepts` — domain, name, concept_type, representation (JSON), confidence, source
+  - CRUD: store/get/list traces, skills, strategies, concepts; success rate calculation
+- **HierarchicalMemory** (`hierarchical.py`) — Fully implemented 7-tier memory:
+  - **Episodic** (`episodic.py`) — Episodes with retention tiers (working/short/long/archival)
+  - **Semantic** (`semantic.py`) — Facts, entity graph, typed fact relationships
+  - **Procedural** (`procedural.py`) — Procedures with refinement tracking
+  - **Working** (`working.py`) — Content blocks with goals, prioritization
+  - **World State** (`world_state.py`) — Snapshots with delta tracking
+  - **Social/User** (`social_memory.py`) — User profiles, corrections, preferences
+  - **Meta-Memory** (`meta_memory.py`) — Knowledge gaps, contradictions, self-awareness
+  - **Consolidation** (`consolidation.py`) — Cross-tier consolidation pipeline
+  - **Concept Learning** (`concept.py`, `abstraction.py`) — Concept graphs, abstraction engine, trace clustering
+  - **Experience Query** (`experience.py`) — Memory query interface
+  - **Skill Registry** (`skill_registry.py`) — Skill metadata management
+  - **Strategy Versioning** (`strategy_version.py`) — Strategy history and rollback
 
 ### 1.6 Evolution — Self-Improvement (`nil/evolution/`)
 
-- **EvolutionPipeline** (`pipeline.py`) — Orchestrates 6 stages:
+- **EvolutionPipeline** (`pipeline.py`) — Orchestrates 7 stages:
   1. **Analyze** — Causal analysis: counterfactual step importance, contiguous subsequence mining, Fisher's exact test, Wilson CI, temporal decay weighting, Markov transition matrices, regression trend detection
   2. **Extract Skills** — Compress patterns into reusable skills with trigger conditions, pre/postconditions; dedup, merge, deprecate
   3. **Compute Gradients** — Textual gradient descent: LLM-based critique of failed traces → strategy deltas (system prompt edits, tool ordering, reasoning hints)
-  4. **Evaluate** — Replay-test candidates against historical traces; paired sign test for statistical significance; promote/reject/inconclusive
+  4. **Evaluate & Apply** — Replay-test candidates against historical traces; paired sign test for statistical significance; promote/reject/inconclusive
   5. **Build World Model** — Tool profiles, task clusters, domain constraints, state transition graphs, health metrics
   6. **Check Drift** — Multi-signal: success rate regression, new errors, tool degradation, cost inflation, task shift; auto-recovery (rollback on critical, targeted evolution on significant)
-- **PipelineResult** — Tracks stages run, skills extracted/deprecated, deltas applied, strategy promoted, drift detected
+  7. **Evolve Tools** — Detect repeated workflows from traces and synthesize new composite tools; only runs if ToolEvolver is configured
+- **PipelineResult** — Tracks stages run, skills extracted/deprecated, deltas applied, strategy promoted, drift detected, tools evolved, recovery triggered
+- Sub-modules: `analyzer.py`, `skill_extractor.py`, `gradient_engine.py`, `evaluator.py`, `world_model.py`, `drift_detector.py`, `strategy_mutator.py`
 
 ### 1.7 Tools System (`nil/tools/`)
 
@@ -69,6 +93,7 @@ The project consists of:
 - **Affordance** (`affordance.py`) — Learns emergent tool properties: enabled transitions, associated goals, pre/postconditions, substitutes, complements, failure contexts; typed relationship graph
 - **Composition** (`composition.py`) — Frequent sequence mining; synthesizes composite tools with aggregated metadata
 - **Selection** (`selection.py`) — Latent tool selection via embedding similarity; precondition gating; affordance match + exploration bonus ranking
+- **Tool Evolution** (`evolver.py`) — `ToolEvolver` discovers repeated workflows from traces, detects workflow patterns, compiles them into new tools, and evolves the tool set autonomously
 
 ### 1.8 LLM Providers (`nil/providers/`)
 
@@ -89,15 +114,28 @@ The project consists of:
 
 ## 2. Extended Modules
 
-### 2.1 Retrieval-Augmented Cognition — RAC (`nil/cognition/`)
+### 2.1 Cognitive Loop & Economy (`nil/cognition/`)
 
-- Dynamic retrieval replacing static skill injection
-- Multi-source retrieval: skills, failures, trajectories, constraints, facts
-- Hybrid sparse + dense retrieval with cross-encoder re-ranking
-- Context assembler with per-source token budget allocation
-- Strategy selection by task type (debug/fix, investigate, routine, recovery)
-- Relevance scoring: semantic match + recency + specificity + confidence + diversity
-- Feedback loop: boost/penalty retrieval scores from outcome
+- **CognitiveLoop** (`loop.py`) — Phase-based execution engine wrapping KernelRunner:
+  - Phases: Plan, Execute, Reflect, Adapt, Learn
+  - **CognitiveMode** (`modes.py`) — Mode profiles (explore, exploit, investigate, recover) with uncertainty estimation
+  - **Plugins** (`plugins.py`) — Pluggable stage handlers: EvolutionPlugin, KernelPlugin, MemoryPlugin, RACPlugin, RLPlugin
+  - **Policy Engine** (`policy.py`) — `CognitivePolicyEngine` decides mode selection, escalation, and phase management
+- **LiveSupervisor** (`supervisor.py`) — Online supervision with SupervisionReport (warnings, recommendations, interventions)
+- **SimulationEngine** (`simulation.py`) — Simulates candidate actions before execution; produces SimulationCandidate with expected value
+- **Retrieval-Augmented Cognition** (`runner.py`, `retrieval.py`, `sources.py`, `scoring.py`, `assembler.py`, `index.py`, `query.py`, `feedback.py`):
+  - **RACEngine** — Dynamic retrieval replacing static skill injection
+  - Multi-source retrieval: skills, failures, trajectories, constraints, facts
+  - Hybrid sparse + dense retrieval with cross-encoder re-ranking (`HybridRetriever`)
+  - Context assembler with per-source token budget allocation
+  - Strategy selection by task type (debug/fix, investigate, routine, recovery)
+  - Relevance scoring: semantic match + recency + specificity + confidence + diversity
+  - Feedback loop: boost/penalty retrieval scores from outcome
+- **CognitiveEconomy** (`economy.py`) — Budget-aware execution:
+  - **CognitiveBudget** — Tracks token, cost, and step budgets per run
+  - **CostModel** — Provider-specific cost estimation
+  - **ExpectedValueCalculator** — EV-based action selection
+- **Adapters** (`adapters.py`) — AgentSpawner, ModelSwitcher, ReasoningDeeper, RetrievalAlterer — cognition-triggered system modifications
 
 ### 2.2 Reinforcement Learning Signals (`nil/rl/`)
 
@@ -109,7 +147,7 @@ The project consists of:
 - Offline RL (Conservative Q-Learning), Online RL (PPO), Behavioral Cloning
 - Advantage estimation (GAE) and value function learning
 - Bandit exploration (UCB1, Thompson Sampling, epsilon-greedy)
-- Monte Carlo Tree Search (MCTS) for high-stakes decisions
+- Monte Carlo Tree Search (MCTS) for high-stakes decisions (via `nil/models/planners.py`)
 - Full integration via RLEnabledAgent with replay buffer
 
 ### 2.3 Multi-Agent Coordination (`nil/agents/`)
@@ -142,7 +180,7 @@ The project consists of:
 - Memory retention: forgetting curves, interference testing, delayed recall
 - Transfer & adaptation: zero-shot and few-shot (1/3/5/10) across domain similarity levels
 - System benchmarks: cost, latency, memory growth, evolution overhead, retrieval quality
-- Unified BenchmarkRunner with composite scoring and visualization
+- Unified NilBenchmarkSuite with composite scoring and visualization
 
 ### 2.6 Skill Compilation (`nil/compilation/`)
 
@@ -174,9 +212,17 @@ The project consists of:
 - Strategy lineage: version history tree with branching, rollback, merge visualization
 - Live debugger: pause/resume/step/inspect/edit_prompt/set_breakpoint/snapshot/rollback
 
+### 2.9 Curriculum Learning & Training (`nil/training/`)
+
+- **CurriculumEngine** — Analyzes historical weaknesses and generates targeted practice tasks
+- **WeaknessAnalyzer** — Identifies skill gaps, frequent failure modes, and underutilized tools
+- **PracticeEngine** — Generates synthetic tasks for identified weaknesses
+- **SyntheticTaskGenerator** — Creates varied practice scenarios from domain definition
+- Integrates with Agent via `enable_curriculum=True`; runs after each evolution cycle
+
 ---
 
-## 3. Meta-Learning Experiments (`experiments/`)
+## 3. Meta-Learning Experiments (`experiments/` at workspace root)
 
 - **Model**: LiquidNN (4→32→2, 5 layers) — liquid time-constant networks for continuous-time dynamics
 - **Algorithm**: MAML (Model-Agnostic Meta-Learning) — inner_lr=0.01, 5 inner steps, outer_lr=0.001, 1000 epochs, 5 tasks per batch
@@ -189,7 +235,7 @@ The project consists of:
 
 ## 4. NIL-STACC Bridge (`nil-stacc/nil_stacc/bridge.py`)
 
-- **`bridge_tools(robot)`** — Auto-generates NIL tools from a stacc Robot:
+- **`bridge_tools(robot)`** — Auto-generates NIL tools from a stacc Robot (separate repository, not included in this workspace):
   - `get_joint_state()` — joint positions and velocities
   - `move_joints(angles)` — set joint positions (comma-separated radians)
   - `set_torques(torques)` — apply joint torques
@@ -211,13 +257,13 @@ The project consists of:
 - Python >= 3.10
 - Zero infrastructure: all storage local (SQLite)
 - Model-agnostic: Anthropic, OpenAI, Gemini, or any OpenAI-compatible endpoint (Ollama, vLLM)
-- Optional dependencies: `anthropic`, `openai` provider packages
+- Zero core dependencies (stdlib only); optional: `anthropic`, `openai`, `google-genai` provider packages
 - Dev dependencies: `pytest>=8.0`, `pytest-cov`, `ruff`
-- Package name: `nil-sdk` v0.1.0
+- Package name: `nil-sdk` v0.1.0; build system: `pyproject.toml` (setuptools)
 
 ---
 
-## 6. Design Documents (`docs/`)
+## 6. Design Documents (`docs/` at workspace root)
 
 | Document | Topic |
 |---|---|
@@ -237,14 +283,15 @@ The project consists of:
 
 ## 7. Public API
 
-Five primary exports from `nil`:
+Six primary exports from `nil`:
 
 | Symbol | Source | Purpose |
 |---|---|---|
 | `nil.tool` | `nil/tools/base.py` | Decorator to convert function into Tool with auto-generated JSON Schema |
 | `nil.Domain` | `nil/domain.py` | Binds tools, objectives, success signal |
 | `nil.PersistentMemory` | `nil/memory/store.py` | SQLite-backed persistent storage |
-| `nil.Agent` | `nil/agent.py` | Primary orchestrator — Kernel + Memory + Evolution |
+| `nil.HierarchicalMemory` | `nil/memory/hierarchical.py` | 7-tier hierarchical memory system |
+| `nil.Agent` | `nil/agent.py` | Primary orchestrator — Kernel + Memory + Evolution + Cognition + RL |
 | `nil.EvolutionConfig` | `nil/config.py` | Evolution settings (strategy, interval, approval gates) |
 
 ---
