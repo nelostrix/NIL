@@ -55,7 +55,7 @@ class Tool:
             sig = inspect.signature(self.fn)
             valid_args = {k: v for k, v in arguments.items() if k in sig.parameters}
             return self.fn(**valid_args)
-        raise NotImplemetedError(
+        raise NotImplementedError(
             f"tool '{self.name}'has no implementation."
             "Either override invoke() or use the @tool decorator."
         )

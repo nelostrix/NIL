@@ -37,7 +37,7 @@ class Agent:
         domain: Domain,
         base_model: str = "nvidia/nemotron-3-super-120b-a12b:free",
         memory: Optional[PersistentMemory] = nil.PersistentMemory("./agent_store"),
-        evolution: Optional[EvolutionConfig] = nil.EvolutionConfig(strategy="continuous"),
+        evolution: Optional[EvolutionConfig] = EvolutionConfig(strategy="continuous"),
         config: Optional[NilConfig] = None,
         provider: Optional[str] = "openai",
         gradient_provider: Optional[GradientProvider] = None,
