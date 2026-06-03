@@ -39,7 +39,7 @@ class Agent:
         memory: Optional[PersistentMemory] = nil.PersistentMemory("./agent_store"),
         evolution: Optional[EvolutionConfig] = EvolutionConfig(strategy="continuous"),
         config: Optional[NilConfig] = None,
-        provider: Optional[str] = "openai",
+        provider: Optional[str] = None,
         gradient_provider: Optional[GradientProvider] = None,
         rl_config: Optional[RLConfig] = None,
         enable_rl: bool = False,

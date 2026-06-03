@@ -70,6 +70,8 @@ class RunOutcome:
     total_tokens_out: int = 0
     error: Optional[str] = None
     metadata: dict[str, Any] = field(default_factory=dict)
+    evolution_triggered: bool = False
+    evolution_duration: float = 0.0
 
     @property
     def step_count(self) -> int:
