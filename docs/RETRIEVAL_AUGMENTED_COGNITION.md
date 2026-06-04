@@ -1,14 +1,18 @@
 # Retrieval-Augmented Cognition (RAC)
 
-**Beyond Static Prompt Injection**
-
-Currently, Nil injects all learned skills into the system prompt as a flat block of text. Every run, every task, every domain context — the agent sees the complete skill list regardless of relevance.
-
-This document proposes replacing static injection with a dynamic retrieval system inspired by retrieval-augmented generation (RAG), but extended to cover all memory types and optimized for agentic cognition rather than document Q&A.
+> **Status: Implemented** — The full RAC system exists in `nil/cognition/`. `RetrievalQuery`, `RetrievalIndex` (dense + sparse + constraint-based), `HybridRetriever` (fused dense/sparse/structure retrieval with cross-encoder re-ranking), `ContextAssembler` (token-budget-optimized prompt assembly), `RetrievalFeedback` (outcome-driven score updates), `RetrievalStrategySelector`, and `RACEngine` are all implemented. The `CognitiveLoop` (10-phase unified cognitive loop) integrates RAC as the retrieval phase.
 
 ---
 
-## Current State
+## Background
+
+Nil originally injected all learned skills into the system prompt as a flat block of text. Every run, every task, every domain context — the agent saw the complete skill list regardless of relevance.
+
+Retrieval-Augmented Cognition (RAC) replaces static injection with a dynamic retrieval system inspired by retrieval-augmented generation (RAG), extended to cover all memory types and optimized for agentic cognition rather than document Q&A.
+
+---
+
+## Before RAC
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -47,7 +51,7 @@ This document proposes replacing static injection with a dynamic retrieval syste
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
                 Task: "API latency spike on /v2/users"
@@ -421,29 +425,17 @@ class RetrievalFeedback:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Sparse retrieval (BM25) | Replace static skill injection with keyword-based top-k retrieval. Same data, better presentation |
-| 2 | Dense embeddings | Add embedding index. Hybrid sparse+dense retrieval. Cross-encoder re-ranking |
-| 3 | Multi-source retrieval | Index failures, trajectories, constraints alongside skills. Query construction from task + state |
-| 4 | Context assembler | Token budget management. Per-source allocation. Compact mode for low-scoring items |
-| 5 | Strategy selection | Route retrieval strategy by task type. Different sources/weights per context |
-| 6 | Feedback loop | Learn from outcomes. Boost/penalty retrieval scores. Update retriever weights |
-| 7 | Online indexing | Real-time index updates on new traces/skills/constraints |
-
----
-
-## Key Metrics
-
-| Metric | Target | Why |
-|---|---|---|
-| Retrieval recall@5 | >90% | Top-5 should contain relevant item if one exists |
-| Context token savings | >60% | Compared to static injection of all skills |
-| Response accuracy | No degradation | Retrieved context should be as good as or better than full injection |
-| Retrieval latency | <50ms | Must not add perceptible delay to agent loop |
-| Index freshness | <1s | New knowledge must be retrievable immediately |
+| 1 | Sparse retrieval (BM25) | **Done** — keyword-based top-k retrieval replaces static injection |
+| 2 | Dense embeddings | **Done** — embedding index, hybrid sparse+dense, cross-encoder re-ranking |
+| 3 | Multi-source retrieval | **Done** — indexes failures, trajectories, constraints, skills |
+| 4 | Context assembler | **Done** — token budget management, per-source allocation, compact mode |
+| 5 | Strategy selection | **Done** — route retrieval strategy by task type |
+| 6 | Feedback loop | **Done** — outcome-driven score boost/penalty, retriever weight updates |
+| 7 | Online indexing | **Done** — real-time index updates on new traces/skills/constraints |
 
 ---
 
@@ -454,6 +446,3 @@ The agent sees everything, all the time. More experience → more token bloat �
 
 **With RAC:**
 The agent sees only what's relevant, right now. More experience → better retrieval candidates → more precise context → better performance. Scale improves quality.
-
-Static injection is a tax that grows with experience.
-Retrieval-augmented cognition is a leverage that grows with experience.

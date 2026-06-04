@@ -1,8 +1,12 @@
 # Reinforcement Learning Signals
 
-**Beyond Textual Gradients**
+> **Status: Implemented** — The full RL signal layer exists in `nil/rl/`. `DenseRewardModel`, `ShapedRewardModel`, `InverseRLRewardModel`, `TrajectoryScorer`, `EloTrajectoryRating`, `DirectPreferenceOptimizer`, `Policy` / `BehavioralCloning`, `ValueFunction` / `AdvantageEstimator`, `ExplorationScheduler`, `ReplayBuffer`, and `RLEnabledAgent` are all implemented.
 
-The current evolution engine operates through textual gradients — LLM-generated critiques of failed traces that get converted into prompt modifications. This is prompt optimization dressed as evolution. It works initially but plateaus because:
+---
+
+## Background
+
+The evolution engine originally operated through textual gradients — LLM-generated critiques of failed traces that get converted into prompt modifications. This was prompt optimization dressed as evolution. It worked initially but plateaued because:
 
 1. **Textual gradients are high-variance** — an LLM's critique of a trace is non-deterministic and may miss the actual failure mode
 2. **No credit assignment** — a 10-step trace with 1 bad step gets critiqued as a whole; the good 9 steps are not distinguished
@@ -10,11 +14,11 @@ The current evolution engine operates through textual gradients — LLM-generate
 4. **No reward modeling** — success/failure is binary; there's no notion of *how much* better one trajectory is over another
 5. **No policy representation** — the "policy" is a text prompt, not a parameterized function that can be optimized with gradient descent
 
-This document proposes adding formal RL signals to transform Nil from a prompt-optimization system into a true policy-optimization system.
+Formal RL signals transform Nil from a prompt-optimization system into a true policy-optimization system.
 
 ---
 
-## Current State
+## Before RL Signals
 
 ```
 Textual Gradient Evolution:
@@ -33,7 +37,7 @@ Textual Gradient Evolution:
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -1063,20 +1067,20 @@ class RLBackgroundConsolidation:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Dense reward model | Replace binary success/fail with per-step multi-factor rewards. Add cost, progress, info-gain signals |
-| 2 | Trajectory scoring & ranking | Score every trajectory on efficiency, quality, novelty. Build ranked leaderboard |
-| 3 | Behavioral cloning | Learn policy from top-ranked trajectories. Fast bootstrapping |
-| 4 | Bandit exploration | UCB1 + Thompson sampling for action selection. Replace greedy "always take best-known" |
-| 5 | Advantage estimation | GAE for credit assignment. Value function for baseline |
-| 6 | Offline RL (CQL) | Learn from all historical traces. Conservative to avoid out-of-distribution overestimation |
-| 7 | Preference optimization (DPO) | Pairwise trajectory comparison. Elo ratings. No reward model needed |
-| 8 | Online RL (PPO) | Active policy improvement during runs. Replay buffer. Periodic updates |
-| 9 | MCTS planning | For high-stakes decisions. Uses learned transition + reward models as world simulators |
-| 10 | Full integration | All signals active. Auto-selection of algorithm by data availability. Textual + RL hybrid |
+| 1 | Dense reward model | **Done** — per-step multi-factor rewards (progress, cost, info-gain) |
+| 2 | Trajectory scoring & ranking | **Done** — score every trajectory on efficiency, quality, novelty |
+| 3 | Behavioral cloning | **Done** — learn policy from top-ranked trajectories |
+| 4 | Bandit exploration | **Done** — UCB1 + Thompson sampling for action selection |
+| 5 | Advantage estimation | **Done** — GAE for credit assignment, value function baseline |
+| 6 | Offline RL (CQL) | **Done** — Conservative Q-Learning from all historical traces |
+| 7 | Preference optimization (DPO) | **Done** — pairwise trajectory comparison with Elo ratings |
+| 8 | Online RL (PPO) | **Done** — active policy improvement, replay buffer, periodic updates |
+| 9 | MCTS planning | **Done** — for high-stakes decisions |
+| 10 | Full integration | **Done** — `RLEnabledAgent` integrates all signals |
 
 ---
 
@@ -1090,5 +1094,3 @@ Every step of every run — successful or failed — becomes a training datum. T
 
 Prompt optimization asks: "What should I tell the LLM?"
 Policy optimization asks: "What should the agent do?"
-
-Those are fundamentally different questions with fundamentally different ceilings.

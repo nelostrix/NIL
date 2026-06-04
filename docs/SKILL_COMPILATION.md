@@ -1,14 +1,18 @@
 # Skill Compilation
 
-**Beyond Textual Skills**
-
-Skills in Nil are currently stored as text — a name, description, compressed instruction, and tool sequence. They are injected into prompts as natural language fragments. The agent reads the text and (hopefully) follows the instruction. This works but is fragile: there is no guarantee the LLM will execute the skill correctly, no notion of a skill as an executable program, no compilation into deterministic behavior.
-
-This document proposes *skill compilation* — converting learned textual skills into executable policies, deterministic workflows, reusable planners, and parameterized macros. The goal: skills that are not just *read* by the LLM but *executed* by the runtime.
+> **Status: Partially Implemented** — The compilation pipeline exists in `nil/compilation/pipeline.py`. `SkillParser` (regex-based tool extraction), `IntermediateRepresentation`, `SkillOptimizer` (fusion/specialization), `SkillCodeGenerator` (linear Python output), `HybridSkillExecutor`, `CompilationLearner`, `SkillMacro`, `MacroRegistry`, and `SkillCompilationEngine` are all implemented. Compilation up to `COMPILED_TREE` level is supported. **Not yet implemented:** `DSL_SCRIPT` and `NATIVE_BINARY` compilation levels, conditional/loop control flow, cross-skill composition, and template instantiation.
 
 ---
 
-## Current State
+## Background
+
+Skills in Nil were originally stored as text — a name, description, compressed instruction, and tool sequence. They were injected into prompts as natural language fragments. The agent read the text and (hopefully) followed the instruction. This worked but was fragile: there was no guarantee the LLM would execute the skill correctly, no notion of a skill as an executable program, no compilation into deterministic behavior.
+
+*Skill compilation* converts learned textual skills into executable policies, deterministic workflows, reusable planners, and parameterized macros. The goal: skills that are not just *read* by the LLM but *executed* by the runtime.
+
+---
+
+## Before Compilation
 
 ```
 Textual Skill (current):
@@ -33,7 +37,7 @@ Textual Skill (current):
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -779,20 +783,20 @@ class SkillCompilationEngine:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Skill parser | Extract tool sequences and control flow from textual skills |
-| 2 | IR format | Intermediate representation dataclass with optimization passes |
-| 3 | Dead-step elimination | Remove tools whose outputs are never consumed |
-| 4 | Tool fusion | Merge always-adjacent tool pairs into composite calls |
-| 5 | Constrained generation grammar | Structured tool sequence that LLM fills parameters into |
-| 6 | DSL interpreter | Simple script format + runtime interpreter |
-| 7 | Native code generation | Emit Python functions, exec into callable |
-| 8 | Compilation learner | Decide when/what level to compile based on determinism + confidence |
-| 9 | Macro system | Promote high-usage skills to single-call macros |
-| 10 | Hybrid executor | Mix compiled and LLM-guided steps within one skill |
+| 1 | Skill parser | **Done** — regex-based tool sequence extraction from skill descriptions |
+| 2 | IR format | **Done** — `IntermediateRepresentation` dataclass with linear/conditional detection, optimization passes |
+| 3 | Dead-step elimination | **Done** — data-dependency tracing, removes unconsumed outputs |
+| 4 | Tool fusion | **Done** — fusion map merging always-adjacent pairs |
+| 5 | Constrained generation grammar | **Done** — structured tool sequence with parameter fill-in for LLM |
+| 6 | DSL interpreter | **Not implemented** — no DSL runtime yet |
+| 7 | Native code generation | **Done** — Python function generation + `exec` to callable |
+| 8 | Compilation learner | **Done** — determinism measurement, level selection (confidence × frequency) |
+| 9 | Macro system | **Done** — `SkillMacro` / `MacroRegistry` with promotion from candidate → active |
+| 10 | Hybrid executor | **Done** — mixes compiled and LLM-guided steps within one skill |
 
 ---
 
@@ -803,5 +807,3 @@ The agent reads instructions and hopes to follow them. Every execution is a fres
 
 **With skill compilation:**
 Skills become executable assets. The system determines which skills are deterministic enough to compile, generates optimized code, and registers them as callable macros. The agent executes them with the same reliability as a function call — no interpretation, no deviation, no cost per step.
-
-This is the difference between giving someone a recipe and giving them a vending machine. One requires interpretation and judgment. The other just works.

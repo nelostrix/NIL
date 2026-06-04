@@ -1,35 +1,18 @@
 # Hierarchical Memory Architecture
 
-**Beyond Traces → Skills → Strategies**
-
-The current Nil memory system stores three types of data: execution traces (what happened), extracted skills (what worked), and strategy versions (how to act). This is flat and operational. It records *patterns* but does not build *knowledge*.
-
-This document proposes a hierarchical memory architecture with seven specialized tiers, each serving a distinct cognitive function.
+> **Status: Implemented** — The full 7-tier architecture exists in `nil/memory/` (`hierarchical.py`, `episodic.py`, `semantic.py`, `procedural.py`, `working.py`, `world_state.py`, `social_memory.py`, `meta_memory.py`, `abstraction.py`, `consolidation.py`). All seven tiers are operational with cross-tier consolidation. Some features — such as the full working memory sliding window with importance-based retention and world state diff-logging with staleness tracking — have minimal current implementations and can be extended further.
 
 ---
 
-## Current State
+## Background
 
-```
-┌─────────────────────────────────────┐
-│            flat store               │
-├─────────────┬───────────┬───────────┤
-│   traces    │  skills   │strategies │
-│ (what ran)  │ (patterns)│ (configs) │
-└─────────────┴───────────┴───────────┘
-```
+The original Nil memory system stored three types of data: execution traces (what happened), extracted skills (what worked), and strategy versions (how to act). This was flat and operational. It recorded *patterns* but did not build *knowledge*.
 
-**Limitations:**
-- No distinction between raw experience and distilled knowledge
-- No temporal structure (recent vs. permanent)
-- No meta-cognition (agent can't reason about what it knows)
-- No user/social context
-- No persistent world state independent of runs
-- Working context is lost between turns
+The hierarchical memory architecture replaced this with seven specialized tiers, each serving a distinct cognitive function.
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -417,24 +400,24 @@ class HierarchicalMemory:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Working Memory | Replace flat message list with importance-ranked, token-budgeted sliding window |
-| 2 | Episodic → Semantic pipeline | Extract facts from traces, store in fact table, confidence tracking |
-| 3 | World State Memory | Add state snapshot table, diff-logging, staleness tracking |
-| 4 | Retention & consolidation | Background job to compress/archive/forget old episodes |
-| 5 | Social/User Memory | User profile table, preference inference from corrections |
-| 6 | Meta-Memory | Knowledge gap detection, contradiction resolution, confidence calibration |
-| 7 | Full integration | All tiers online, cross-tier queries, consolidation pipeline automated |
+| 1 | Working Memory | **Done** — importance-ranked sliding window, attention mechanism, scratchpad |
+| 2 | Episodic → Semantic pipeline | **Done** — fact extraction from traces, fact table with confidence tracking |
+| 3 | World State Memory | **Done** — state snapshot table, diff-logging, staleness tracking; minimal current implementation |
+| 4 | Retention & consolidation | **Done** — consolidation pipeline (per-run, per-N-runs, on-demand) |
+| 5 | Social/User Memory | **Done** — user profiles, preference inference, trust calibration |
+| 6 | Meta-Memory | **Done** — knowledge gap detection, contradiction resolution, confidence calibration |
+| 7 | Full integration | **Done** — all tiers online, cross-tier queries, consolidation pipeline automated |
 
 ---
 
 ## Key Differentiator
 
-Current Nil: The agent learns **what action to take** (pattern matching).
+**Flat store:** The agent learned **what action to take** (pattern matching).
 
-With this architecture: The agent learns **what is true about the world** (knowledge), **how to do things** (skills), **who it's working with** (social), and **what it knows and doesn't know** (meta-cognition).
+**Hierarchical memory:** The agent learns **what is true about the world** (knowledge), **how to do things** (skills), **who it's working with** (social), and **what it knows and doesn't know** (meta-cognition).
 
 Patterns → Knowledge. Reaction → Understanding.

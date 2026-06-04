@@ -1,14 +1,18 @@
 # Tool Embeddings & Affordance Learning
 
-**Beyond Static Function Schemas**
-
-Tools in Nil are currently defined as static schemas — a name, description, parameter JSON Schema, and a Python function. The agent calls tools by name, selected by the LLM's text generation. There is no notion of tool *similarity*, tool *composition*, tool *affordance* (what a tool makes possible), or latent tool *capabilities* that emerge from usage patterns.
-
-This document proposes a representation where tools are embedded in a continuous vector space, their affordances are learned from usage data, compositions are discovered automatically, and selection happens in a latent space rather than by explicit name-matching.
+> **Status: Implemented** — The full tool representation layer exists in `nil/tools/`. `ToolEmbedding` / `ToolEmbeddingGenerator`, `AffordanceLearner`, `ToolAffordanceGraph`, `ToolCompositionSynthesizer`, `LatentToolSelector` / `LatentAwarePromptBuilder`, and `ToolEvolver` are all implemented. Embeddings are text-based (name, description, parameter) with usage-based refinement from co-occurrence and outcome vectors. Full dense vector-space affordance learning (using dedicated embedding models like sentence-transformers) can be bolted in — the architecture supports it.
 
 ---
 
-## Current State
+## Background
+
+Tools in Nil were originally defined as static schemas — a name, description, parameter JSON Schema, and a Python function. The agent called tools by name, selected by the LLM's text generation. There was no notion of tool *similarity*, tool *composition*, tool *affordance* (what a tool makes possible), or latent tool *capabilities* that emerge from usage patterns.
+
+The current representation embeds tools in a continuous vector space, learns affordances from usage data, discovers compositions automatically, and selects tools in a latent space rather than by explicit name-matching.
+
+---
+
+## Before Tool Embeddings
 
 ```
 Current Tool Representation:
@@ -33,7 +37,7 @@ Current Tool Representation:
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -698,18 +702,18 @@ Every run completion:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Tool name + description embeddings | Static embedding per tool from schema. Sentence-transformers or text-embedding-3-small |
-| 2 | Usage-based embedding refinement | Update embeddings from co-occurrence + outcome patterns after each run |
-| 3 | Substitution discovery | Embedding-space nearest neighbors → identify substitute tools |
-| 4 | Complement discovery | Lift-based co-occurrence analysis → identify tool pairs that work well together |
-| 5 | Affordance extraction | Full ToolAffordance from traces: preconditions, postconditions, failure contexts, enabled transitions |
-| 6 | Latent tool selection | Encode context → nearest tools in embedding space → gate by preconditions → present top-K |
-| 7 | Composite tool synthesis | Frequent sequence mining → evaluate benefit → register as callable composite |
-| 8 | Affordance graph | NetworkX graph with typed edges. Query: substitutes, complements, tools-for-goal |
+| 1 | Tool name + description embeddings | **Done** — static embeddings from schema (name, description, parameters) |
+| 2 | Usage-based embedding refinement | **Done** — embeddings updated from co-occurrence + outcome patterns |
+| 3 | Substitution discovery | **Done** — embedding-space nearest neighbors identify substitute tools |
+| 4 | Complement discovery | **Done** — lift-based co-occurrence analysis identifies tool pairs |
+| 5 | Affordance extraction | **Done** — `ToolAffordance` from traces: preconditions, postconditions, failure contexts, enabled transitions |
+| 6 | Latent tool selection | **Done** — encode context → nearest tools → gate by preconditions → present top-K |
+| 7 | Composite tool synthesis | **Done** — frequent sequence mining → evaluate benefit → register as callable composite |
+| 8 | Affordance graph | **Done** — NetworkX graph with typed edges, queryable for substitutes/complements/tools-for-goal |
 
 ---
 

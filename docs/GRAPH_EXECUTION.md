@@ -1,14 +1,18 @@
 # Graph Execution Engine
 
-**Beyond Linear Agent Loops**
-
-The current Nil kernel runs a single-threaded loop: LLM → tool → LLM → tool → ... → final answer. This is fundamentally sequential. Every step waits for the previous step. There is no parallelism, no planning, no delegation, no speculative execution.
-
-This document proposes replacing the linear loop with a DAG (Directed Acyclic Graph) execution engine where tasks are decomposed into a graph of nodes, executed with dependency-aware parallelism, and orchestrated by a planner/critic architecture.
+> **Status: Implemented** — The DAG execution engine exists in `nil/kernel/graph/`. `Planner` (6 strategies: monolithic, sequential, parallel fan-out, explore-exploit, hypothesis testing, contingency), `GraphScheduler` (dependency-aware parallelism with `concurrent.futures`), `ExecutionGraph` / `ExecutionNode` / `DependencyEdge`, `CriticNode` (PASS / NEEDS_REVISION / FAIL with fallback routing), `SubagentNode` (nested execution graphs), `SpeculativeNode` (parallel hypothesis branches), and `GraphTemplate` (5 built-in templates) are all implemented.
 
 ---
 
-## Current State
+## Background
+
+The original Nil kernel ran a single-threaded loop: LLM → tool → LLM → tool → ... → final answer. This was fundamentally sequential. Every step waited for the previous step. There was no parallelism, no planning, no delegation, no speculative execution.
+
+The graph execution engine replaced the linear loop with a DAG (Directed Acyclic Graph) execution engine where tasks are decomposed into a graph of nodes, executed with dependency-aware parallelism, and orchestrated by a planner/critic architecture.
+
+---
+
+## Before Graph Execution
 
 ```
 Linear Agent Loop:
@@ -30,7 +34,7 @@ Linear Agent Loop:
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
                      ┌─────────────┐
@@ -450,20 +454,20 @@ class GraphTemplate:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | DAG data model | `ExecutionGraph`, `ExecutionNode`, `DependencyEdge` — the core types |
-| 2 | Sequential graph executor | Execute linear DAGs (one node after another) — same as current but structured |
-| 3 | Parallel executor | Dependency-aware scheduler with concurrency limits |
-| 4 | Planner module | LLM-based task decomposition into DAGs. Start with templates, add freeform |
-| 5 | Critic module | Post-execution validation node. Retry with feedback on NEEDS_REVISION |
-| 6 | Fallback/rollback | Conditional edges, alternative paths, rollback node execution |
-| 7 | Subagent spawning | Nested execution graphs with isolated memory namespaces |
-| 8 | Speculative execution | Parallel hypothesis branches, confirmation merge |
-| 9 | Graph templates | Save successful graphs, retrieve by similarity, instantiate |
-| 10 | Full integration | Planner → Scheduler → Workers → Critic. Replaces linear loop entirely |
+| 1 | DAG data model | **Done** — `ExecutionGraph`, `ExecutionNode`, `DependencyEdge` |
+| 2 | Sequential graph executor | **Done** — linear DAG execution |
+| 3 | Parallel executor | **Done** — dependency-aware scheduler with concurrency limits |
+| 4 | Planner module | **Done** — 6 planning strategies (monolithic through contingency) |
+| 5 | Critic module | **Done** — PASS / NEEDS_REVISION / FAIL with retry feedback |
+| 6 | Fallback/rollback | **Done** — conditional edges, alternative paths, rollback node execution |
+| 7 | Subagent spawning | **Done** — nested execution graphs with isolated memory namespaces |
+| 8 | Speculative execution | **Done** — parallel hypothesis branches, confirmation merge |
+| 9 | Graph templates | **Done** — 5 built-in templates, retrievable by similarity |
+| 10 | Full integration | **Done** — Planner → Scheduler → Workers → Critic pipeline |
 
 ---
 
@@ -474,5 +478,3 @@ The agent reacts step-by-step, never looking more than one action ahead. It's a 
 
 **Graph execution:**
 The agent plans before it acts. It explores multiple hypotheses in parallel. It delegates specialized work to specialized sub-agents. It validates before proceeding. It rolls back cleanly when wrong. It reuses successful graph structures across runs.
-
-The difference is between **reactive cognition** and **deliberate cognition** — the same leap that separates reflex from reasoned action in biological intelligence.

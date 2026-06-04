@@ -1,16 +1,18 @@
 # Long-Horizon Benchmarking
 
-**Beyond Single-Run Correctness**
-
-Most agent benchmarks measure one thing: did the agent complete the task correctly in a single run? This measures accuracy at a point in time — it does not measure learning, adaptation, memory retention, or robustness.
-
-Nil is a *self-improving* system. Its core value proposition is that agents get better over time. To validate this, we need benchmarks that measure not just *what an agent does* but *how it improves across runs*.
-
-This document proposes benchmark suites designed specifically for measuring cross-run adaptation curves, long-horizon tasks, recovery from failure, and system-level learning dynamics.
+> **Status: Implemented** — The full benchmark suite exists in `nil/benchmarks/`. `BenchmarkSuite` / `BenchmarkTask` / `BenchmarkResult` (base framework), `LearningCurveBenchmark` / `LearningAnalyzer`, `HorizonBenchmark`, `RecoveryBenchmark`, `MemoryBenchmark`, `TransferBenchmark`, `SystematicVariationBenchmark`, `BenchmarkRunner` (unified runner with structured JSON export), and `BenchmarkVisualizer` are all implemented.
 
 ---
 
-## Current State
+## Background
+
+Most agent benchmarks measure one thing: did the agent complete the task correctly in a single run? This measures accuracy at a point in time — it does not measure learning, adaptation, memory retention, or robustness.
+
+Nil is a *self-improving* system. Its core value proposition is that agents get better over time. To validate this, the benchmark suite measures not just *what an agent does* but *how it improves across runs* — cross-run adaptation curves, long-horizon tasks, recovery from failure, and system-level learning dynamics.
+
+---
+
+## Before Long-Horizon Benchmarking
 
 ```
 Existing benchmarks measure:
@@ -28,7 +30,7 @@ Existing benchmarks measure:
 
 ---
 
-## Proposed Benchmark Suite
+## Benchmark Suite
 
 ```
 ┌───────────────────────────────────────────────────────────────────────┐
@@ -756,21 +758,21 @@ class BenchmarkVisualizer:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Learning curve benchmarks | Repeated runs on same task family. Measure accuracy vs. run number |
-| 2 | Long-horizon tasks | 10/25/50/100-step tasks with step-level scoring |
-| 3 | Error recovery measurement | Inject tool failures, measure strategy switching and completion |
-| 4 | Distribution shift | Task type changes mid-benchmark. Measure drop and recovery speed |
-| 5 | Forgetting curves | Delayed recall at [1, 5, 10, 25, 50, 100] intervening runs |
-| 6 | Interference testing | Learn A → Learn conflicting B → Test A. Measure catastrophic forgetting |
-| 7 | Transfer benchmarks | Zero-shot and few-shot (1/3/5/10) transfer across domain similarity levels |
-| 8 | System benchmarks | Cost, latency, memory growth, evolution overhead, retrieval quality |
-| 9 | Unified runner | Single entry point, structured report, JSON export |
-| 10 | Visualizer | Learning curves, forgetting curves, transfer matrices, radar charts |
-| 11 | CI integration | Run nightly, track regression, alert on degradation |
+| 1 | Learning curve benchmarks | **Done** — repeated runs on same task family, accuracy vs. run number |
+| 2 | Long-horizon tasks | **Done** — 10/25/50/100-step tasks with step-level scoring |
+| 3 | Error recovery measurement | **Done** — inject tool failures, measure strategy switching and completion |
+| 4 | Distribution shift | **Done** — task type changes mid-benchmark, drop and recovery speed |
+| 5 | Forgetting curves | **Done** — delayed recall at [1, 5, 10, 25, 50, 100] intervening runs |
+| 6 | Interference testing | **Done** — Learn A → Learn conflicting B → Test A, catastrophic forgetting measurement |
+| 7 | Transfer benchmarks | **Done** — zero-shot and few-shot (1/3/5/10) transfer |
+| 8 | System benchmarks | **Done** — cost, latency, memory growth, evolution overhead, retrieval quality |
+| 9 | Unified runner | **Done** — single entry point, structured report, JSON export |
+| 10 | Visualizer | **Done** — learning curves, forgetting curves, transfer matrices, radar charts |
+| 11 | CI integration | **Not implemented** — no nightly regression tracking yet |
 
 ---
 

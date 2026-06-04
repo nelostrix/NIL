@@ -1,19 +1,23 @@
 # Runtime Observability
 
-**Beyond Logs**
+> **Status: Implemented** — The observability stack is implemented in `nil/observability/`. 35 structured event types, event recorder/store with circular buffer, trace viewer, flame graph generator, token timeline, reasoning tree, memory browser, evolution diff viewer, strategy lineage, and a dashboard component all exist. The live debugger (`debugger.py`) provides pause/resume/step/breakpoint functionality. The HTML dashboard is a stub.
+
+---
+
+## Background
 
 Nil agents execute autonomously, evolve their own strategies, and modify their own prompts. When something goes wrong, you cannot just look at the code — the agent may have changed its own behavior in ways the original developer never anticipated.
 
 This is the observability problem unique to self-modifying systems. You need visibility not just into *what the agent did* but *why it decided to do it*, *what knowledge it used*, *how its strategy has evolved*, and *what changed between versions*.
 
-This document proposes a comprehensive observability stack: structured traces, flame graphs, token timelines, reasoning trees, memory inspection, evolution diffs, strategy lineage, and a visual debugger.
+The observability stack addresses this with structured traces, flame graphs, token timelines, reasoning trees, memory inspection, evolution diffs, strategy lineage, and a visual debugger.
 
 ---
 
-## Current State
+## Before Implementation
 
 ```
-Current observability:
+Before observability:
 
   Log lines like:
     INFO:nil:Starting run incident-response-run-3-...
@@ -21,7 +25,7 @@ Current observability:
     INFO:nil.evolution:Evolution triggered after 10 runs
     INFO:nil.evolution:Applied 2 deltas → strategy v3
 
-  What's missing:
+  What was missing:
     • No reasoning trace (why did the LLM choose that tool?)
     • No token visualization (where did tokens go?)
     • No memory inspection (what knowledge was retrieved?)
@@ -33,7 +37,7 @@ Current observability:
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -950,20 +954,20 @@ A real-time dashboard showing all active agents, their performance, and system h
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Structured event store | Replace log lines with typed events. SQLite or file-based event log |
-| 2 | Trace viewer | Timeline + span visualization. Group events by run_id |
-| 3 | Token timeline | Track token usage per step. Collect from provider responses |
-| 4 | Memory browser | Read and display all memory tables. Show skills, strategies, facts |
-| 5 | Strategy lineage | Version tree with rollback detection. Diff between versions |
-| 6 | Evolution diff viewer | Per-evolution-run breakdown. Before/after strategy comparison |
-| 7 | Flame graphs | Span-based timing visualization. Identify bottlenecks |
-| 8 | Reasoning tree | Capture LLM options, evidence, chosen action, rationale per step |
-| 9 | Live debugger | Pause/resume/step/inspect/edit. Integrated into agent loop |
-| 10 | Web dashboard | Real-time aggregation. Multi-agent view. Historical charts |
+| 1 | Structured event store | **Done** — 35 typed events, `EventRecorder`/`EventStore` with circular buffer |
+| 2 | Trace viewer | **Done** — timeline + span visualization, grouped by run_id |
+| 3 | Token timeline | **Done** — per-step token/cost tracking from provider responses |
+| 4 | Memory browser | **Done** — read/display all memory tables (skills, strategies, facts) |
+| 5 | Strategy lineage | **Done** — version tree with rollback detection, diff between versions |
+| 6 | Evolution diff viewer | **Done** — per-evolution-run breakdown, before/after strategy comparison |
+| 7 | Flame graphs | **Done** — span-based timing visualization, hotspot identification |
+| 8 | Reasoning tree | **Done** — LLM options, evidence, chosen action, rationale per step |
+| 9 | Live debugger | **Done** — pause/resume/step/breakpoint/inspect/edit |
+| 10 | Web dashboard | **Stub** — real-time aggregation and multi-agent view not yet built |
 
 ---
 
@@ -974,5 +978,3 @@ The agent is a black box. It runs, it evolves, it changes its own behavior — a
 
 **With observability:**
 Every decision is recorded and inspectable. You can replay any run step-by-step, see what the LLM was thinking, which memories it retrieved, which skills it used, how it changed its own strategy. You can pause a running agent, inspect its state, modify its prompt, and resume. You can trace performance degradation back to the specific evolution cycle that caused it.
-
-This is the difference between a self-driving car with a black box and one with a transparent cockpit — when the system is autonomous, observability is not a nice-to-have, it is the only way to maintain trust and control.

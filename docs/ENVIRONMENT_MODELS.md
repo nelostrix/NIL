@@ -1,14 +1,18 @@
 # Environment Models & State Machines
 
-**Beyond Trace Analysis**
-
-The current `WorldModelBuilder` analyzes past traces to discover tool profiles, constraints, and transition probabilities. This is retrospective pattern mining — it describes what happened, not what the environment *is* in a formal sense.
-
-This document proposes formalizing environment models as POMDPs (Partially Observable Markov Decision Processes) with explicit state spaces, transition functions, reward models, and belief tracking. This shift turns the agent from a pattern-matcher into a system that truly models its environment.
+> **Status: Implemented** — The full POMDP environment model layer exists in `nil/models/`. `EnvironmentState` / `StateSpace` / `StateSpaceLearner`, `TransitionModel`, `ObservationModel`, `RewardModel` / `RewardLearner`, `BeliefTracker`, `ValuePlanner` / `MCTSPlanner` / `HeuristicPolicy`, `OnlineModelLearner`, and `ModelAwareAgent` / `EnvironmentModel` are all implemented.
 
 ---
 
-## Current State
+## Background
+
+The original `WorldModelBuilder` analyzed past traces to discover tool profiles, constraints, and transition probabilities. This was retrospective pattern mining — it described what happened, not what the environment *is* in a formal sense.
+
+The environment model layer formalizes these as POMDPs (Partially Observable Markov Decision Processes) with explicit state spaces, transition functions, reward models, and belief tracking. This turns the agent from a pattern-matcher into a system that truly models its environment.
+
+---
+
+## Before Environment Models
 
 ```
 WorldModelBuilder (current):
@@ -33,7 +37,7 @@ WorldModelBuilder (current):
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
                     ┌─────────────────────────────────────┐
@@ -701,20 +705,20 @@ class ModelAwareAgent(Agent):
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | State space discovery | Factorize trace contexts into discrete states. Clustering + dimensionality reduction on existing traces |
-| 2 | Transition counting | Count P(s' \| s, a) from trace history. Store as sparse matrix |
-| 3 | Reward model | Formal R(s, a) from success_signal + cost + duration. Replace binary success/fail |
-| 4 | Belief tracker | Bayes filter over states. Track uncertainty via entropy |
-| 5 | Observation model | P(o \| s, a) — model which observations are diagnostic of which states |
-| 6 | Model-based planning | Value iteration / look-ahead for action selection in KernelRunner |
-| 7 | MCTS planner | For high-stakes decisions where planning latency is acceptable |
-| 8 | Online learning | Incremental model update after every run. Novel state detection |
-| 9 | Counterfactual query | "What if I had done X instead?" — simulate alternative trajectory |
-| 10 | Visualization | Render state machine graph, belief distribution, transition matrices |
+| 1 | State space discovery | **Done** — factorize trace contexts into discrete states, clustering + dimensionality reduction |
+| 2 | Transition counting | **Done** — P(s' \| s, a) from trace history, stored as sparse matrix |
+| 3 | Reward model | **Done** — formal R(s, a) from success_signal + cost + duration |
+| 4 | Belief tracker | **Done** — Bayes filter over states, uncertainty via entropy |
+| 5 | Observation model | **Done** — P(o \| s, a), diagnostic value of observations |
+| 6 | Model-based planning | **Done** — value iteration / look-ahead for action selection |
+| 7 | MCTS planner | **Done** — for high-stakes decisions |
+| 8 | Online learning | **Done** — incremental model update after every run, novel state detection |
+| 9 | Counterfactual query | **Done** — "What if I had done X instead?" simulation |
+| 10 | Visualization | **Done** — state machine graph, belief distribution, transition matrices |
 
 ---
 
@@ -725,5 +729,3 @@ The agent sees a pattern and repeats it. It has no concept of "if I do X, Y will
 
 **With environment models:**
 The agent builds an internal model of how its world works — what states exist, how actions change them, what outcomes are valuable, and how certain it is about each belief. It can simulate, predict, and plan. When uncertainty is high, it takes information-gathering actions. When it's low, it acts decisively.
-
-This is the difference between an agent that has **experience** and an agent that has **understanding**.

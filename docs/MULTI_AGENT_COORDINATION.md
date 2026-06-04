@@ -1,14 +1,18 @@
 # Multi-Agent Coordination Layer
 
-**Beyond Single-Agent Architecture**
-
-Nil currently operates a single agent per domain. One agent executes the entire task — planning, tool selection, execution, verification — through one LLM loop. This hits fundamental limits: a single agent cannot scale its cognition across parallel workstreams, cannot specialize, cannot debate, cannot self-correct through independent verification.
-
-This document proposes a multi-agent architecture where a *society of agents* collaborates on tasks through delegation, negotiation, consensus, and specialized roles.
+> **Status: Implemented** — The full multi-agent architecture exists in `nil/agents/`. `OrchestratorAgent`, `Blackboard`, `ConsensusMechanism` (majority vote, structured debate, confidence-weighted consensus), `MarketCoordinator` (bidding-based task allocation), `AgentPool` (persistent/on-demand/pooled lifecycle), `AgentTeam` (hierarchical team nesting), `MessageBus` (pub/sub, request/reply), and `MultiAgentNil` (unified entry point) are all implemented.
 
 ---
 
-## Current State
+## Background
+
+Nil originally operated a single agent per domain. One agent executed the entire task — planning, tool selection, execution, verification — through one LLM loop. This hit fundamental limits: a single agent cannot scale its cognition across parallel workstreams, cannot specialize, cannot debate, cannot self-correct through independent verification.
+
+The multi-agent architecture enables a *society of agents* to collaborate on tasks through delegation, negotiation, consensus, and specialized roles.
+
+---
+
+## Before Multi-Agent
 
 ```
 Single Agent Architecture:
@@ -31,7 +35,7 @@ Single Agent Architecture:
 
 ---
 
-## Proposed Architecture
+## Architecture
 
 ```
                          ┌─────────────────────┐
@@ -752,20 +756,20 @@ class MultiAgentNil:
 
 ---
 
-## Implementation Roadmap
+## Implementation Status
 
-| Phase | What | How |
+| Phase | What | Status |
 |---|---|---|
-| 1 | Agent role definitions | AgentSpec dataclass, role enum, per-role prompts and tool subsets |
-| 2 | Blackboard | Shared key-value store with namespacing, search, subscription |
-| 3 | Orchestrator | Task decomposition → phase execution → result synthesis |
-| 4 | Parallel agent execution | Async agent pool, concurrent phase execution, timeout handling |
-| 5 | Verifier agent | Cross-check outputs, independent validation gate |
-| 6 | Message bus | Async pub/sub, request/reply, broadcast |
-| 7 | Voting & consensus | Majority vote, confidence-weighted consensus |
-| 8 | Debate mechanism | Structured multi-round debate with judge scoring |
-| 9 | Market-based assignment | Agents bid on subtasks, lowest cost wins |
-| 10 | Hierarchical teams | Nested agent teams, recursive decomposition |
+| 1 | Agent role definitions | **Done** — `AgentRole` enum (9 roles), `AgentSpec` dataclass, per-role prompts and tool subsets |
+| 2 | Blackboard | **Done** — shared key-value store with namespacing, search, subscription |
+| 3 | Orchestrator | **Done** — task decomposition → phase execution → result synthesis |
+| 4 | Parallel agent execution | **Done** — async agent pool, concurrent phase execution, timeout handling |
+| 5 | Verifier agent | **Done** — cross-check outputs, independent validation gate |
+| 6 | Message bus | **Done** — async pub/sub, request/reply, broadcast |
+| 7 | Voting & consensus | **Done** — majority vote, confidence-weighted consensus |
+| 8 | Debate mechanism | **Done** — structured multi-round debate with judge scoring |
+| 9 | Market-based assignment | **Done** — agents bid on subtasks, lowest cost wins |
+| 10 | Hierarchical teams | **Done** — nested agent teams, recursive decomposition |
 
 ---
 
@@ -776,5 +780,3 @@ One mind, one perspective, one bottleneck. The agent cannot challenge its own as
 
 **Multi-agent society:**
 A system of specialized minds. Investigators explore while analysts reason. Executors act while verifiers check. The orchestrator sees the whole picture while specialists dive deep. When they disagree, debate surfaces the best argument. When they agree, confidence is high.
-
-This is the difference between a single worker and an entire company — not just more throughput, but a fundamentally different kind of intelligence that emerges from the interaction of diverse specialized minds.
