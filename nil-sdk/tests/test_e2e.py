@@ -39,6 +39,9 @@ def verify(check: str) -> str:
 def workspace():
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
+        import gc
+
+        gc.collect()
 
 
 class TestFullLifecycle:

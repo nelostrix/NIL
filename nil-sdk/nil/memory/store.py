@@ -417,3 +417,7 @@ class PersistentMemory:
         if self._conn:
             self._conn.close()
             self._conn = None
+
+    def __del__(self) -> None:
+        """Destructor to ensure database connection is closed."""
+        self.close()
