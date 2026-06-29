@@ -299,6 +299,11 @@ class Agent:
     def run_count(self) -> int:
         return self._run_count
 
+    def close(self) -> None:
+        """Close the agent's memory connection to release locks."""
+        if hasattr(self, "memory") and self.memory:
+            self.memory.close()
+
     def __repr__(self) -> str:
         return (
             f"Agent(domain='{self.domain.name}', model='{self.base_model}', "

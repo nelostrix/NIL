@@ -194,6 +194,9 @@ def test_agent_run_with_stub():
         # Verify trace was stored
         assert memory.get_trace_count("test-integration") == 1
 
+        # Release SQLite file lock for Windows cleanup
+        agent.close()
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
