@@ -15,10 +15,12 @@ from nil.benchmarks.base import (
 
 
 class SystemBenchmark:
-    def __init__(self, seed: int = 42):
+    def __init__(self, seed: int = 42, n_runs: int = 100):
         self.rng = random.Random(seed)
+        self.n_runs = n_runs
 
-    def run(self, agent: Agent, n_runs: int = 100) -> SystemReport:
+    def run(self, agent: Agent, n_runs: Optional[int] = None) -> SystemReport:
+        n_runs = n_runs or self.n_runs
         tasks = [self._task() for _ in range(n_runs)]
         runs = [agent.run(t) for t in tasks]
 

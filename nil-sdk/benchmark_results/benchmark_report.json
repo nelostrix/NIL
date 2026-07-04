@@ -1,0 +1,109 @@
+{
+  "agent_name": "Agent(domain='incident-response', model='llama3.2', runs=0, skills=0)",
+  "composite": {
+    "learning_score": 0.1667,
+    "horizon_score": 0.3,
+    "recovery_score": 0.75,
+    "memory_score": 1.0,
+    "transfer_score": 1.0,
+    "system_score": 0.998,
+    "total": 0.6015
+  },
+  "learning_curves": {
+    "tool_selection": {
+      "insufficient_data": false,
+      "initial_accuracy": 0.0,
+      "final_accuracy": 0.0,
+      "learning_velocity": 0.0,
+      "runs_to_plateau": 1,
+      "sample_efficiency": 0.0,
+      "plateau_accuracy": 0.0,
+      "forgetting_events": [],
+      "total_runs": 50,
+      "composite": 0.0
+    },
+    "sequential_reasoning": {
+      "insufficient_data": false,
+      "initial_accuracy": 0.0,
+      "final_accuracy": 0.0,
+      "learning_velocity": 0.0,
+      "runs_to_plateau": 1,
+      "sample_efficiency": 0.0,
+      "plateau_accuracy": 0.0,
+      "forgetting_events": [],
+      "total_runs": 50,
+      "composite": 0.0
+    },
+    "context_dependence": {
+      "insufficient_data": false,
+      "initial_accuracy": 0.5,
+      "final_accuracy": 0.5,
+      "learning_velocity": 0.0,
+      "runs_to_plateau": 1,
+      "sample_efficiency": 0.0,
+      "plateau_accuracy": 0.5,
+      "forgetting_events": [],
+      "total_runs": 50,
+      "composite": 0.5
+    }
+  },
+  "horizon_results": {
+    "10": {
+      "task_length": 10,
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "error_recovery_rate": 1.0,
+      "completion_rate": 0.0,
+      "composite": 0.3
+    },
+    "25": {
+      "task_length": 25,
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "error_recovery_rate": 1.0,
+      "completion_rate": 0.0,
+      "composite": 0.3
+    },
+    "50": {
+      "task_length": 50,
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "error_recovery_rate": 1.0,
+      "completion_rate": 0.0,
+      "composite": 0.3
+    },
+    "100": {
+      "task_length": 100,
+      "mean_accuracy": 0.0,
+      "std_accuracy": 0.0,
+      "error_recovery_rate": 1.0,
+      "completion_rate": 0.0,
+      "composite": 0.3
+    }
+  },
+  "recovery_results": {
+    "overall_recovery_score": 0.75,
+    "per_test": {
+      "tool_failure": "TestResult(completion_rate=1.0, tool_switch_latency=0.0, unnecessary_retries=0, pre_shift_accuracy=0.0, shift_drop=0.0, recovery_runs=0, post_shift_accuracy=0.0, score=1.0)",
+      "tool_degradation": "TestResult(completion_rate=1.0, tool_switch_latency=0.0, unnecessary_retries=0, pre_shift_accuracy=0.0, shift_drop=0.0, recovery_runs=0, post_shift_accuracy=0.0, score=1.0)",
+      "distribution_shift": "TestResult(completion_rate=0.0, tool_switch_latency=0.0, unnecessary_retries=0, pre_shift_accuracy=1.0, shift_drop=0.0, recovery_runs=1, post_shift_accuracy=1.0, score=0.0)",
+      "delayed_rewards": "TestResult(completion_rate=1.0, tool_switch_latency=0.0, unnecessary_retries=0, pre_shift_accuracy=0.0, shift_drop=0.0, recovery_runs=0, post_shift_accuracy=0.0, score=1.0)"
+    }
+  },
+  "system_metrics": {
+    "cost_per_run": 0.0,
+    "cost_p50": 0.0,
+    "cost_p95": 0.0,
+    "latency_per_run": 0.008111958503723144,
+    "latency_p50": 0.007884502410888672,
+    "latency_p95": 0.009676706790924071,
+    "memory_growth_per_run": 0.0,
+    "total_memory_after": 0,
+    "avg_evolution_time": 0,
+    "evolution_overhead_pct": 0.0,
+    "retrieval_recall": 0.0,
+    "retrieval_latency": 0.0,
+    "composite": 0.9979883289660201
+  },
+  "total_duration": 6.525200128555298
+}
