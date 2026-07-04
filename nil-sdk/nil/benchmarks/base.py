@@ -21,7 +21,23 @@ class Outcome:
     error: str = ""
     evolution_duration: float = 0.0
     evolution_triggered: bool = False
-    step_scores: list[float] = field(default_factory=list)
+    step_scores: li
+    class Agent(Protocol):
+        def run(self, task: str) -> Outcome:
+            ...
+
+
+    @dataclass
+    class Outcome:
+        success: bool = False
+        steps: list[dict] = field(default_factory=list)
+        total_cost: float = 0.0
+        duration: float = 0.0
+        error: str = ""
+        evolution_duration: float = 0.0
+        evolution_triggered: bool = False
+        step_scores: list[float] = field(default_factory=list)
+st[float] = field(default_factory=list)
     had_errors: bool = False
     error_steps: list[dict] = field(default_factory=list)
 
@@ -133,7 +149,8 @@ class InterferenceResult:
     composite: float = 0.0
 
     def __post_init__(self):
-        self.composite = self.accuracy_a_after / max(self.accuracy_a_before, 1e-6)
+        ratio = self.accuracy_a_after / max(self.accuracy_a_before, 1e-6)
+        self.composite = min(1.0, ratio)
 
 
 @dataclass
@@ -182,10 +199,10 @@ class SystemReport:
     composite: float = 0.0
 
     def __post_init__(self):
-        cost_eff = 1.0 / max(self.cost_per_run, 1e-6)
-        lat_eff = 1.0 / max(self.latency_per_run, 1e-6)
-        mem_eff = 1.0 / max(self.memory_growth_per_run + 1, 1e-6)
-        evo_eff = 1.0 / max(self.evolution_overhead_pct + 1, 1e-6)
+        cost_eff = 1.0 / (1.0 + self.cost_per_run)
+        lat_eff = 1.0 / (1.0 + self.latency_per_run)
+        mem_eff = 1.0 / (1.0 + self.memory_growth_per_run)
+        evo_eff = max(0.0, 1.0 - self.evolution_overhead_pct / 100.0)
         self.composite = (cost_eff + lat_eff + mem_eff + evo_eff) / 4.0
 
 
@@ -202,32 +219,53 @@ class BenchmarkReport:
     total_duration: float = 0.0
     generated_at: float = field(default_factory=time.time)
 
+    def _pass_mark(self, v: float) -> str:
+        if v >= 0.7:
+            return "PASS"
+        if v >= 0.4:
+            return "WARN"
+        return "FAIL"
+
     def summary(self) -> str:
         lines = [f"Benchmark Report — {self.agent_name}", "=" * 60]
 
         if self.learning_curves:
             lines.append(f"\nLearning Curves ({len(self.learning_curves)} benchmarks):")
             for name, lr in self.learning_curves.items():
-                lines.append(
-                    f"  {name}: initial={lr.initial_accuracy:.2f}, "
-                    f"plateau={lr.plateau_accuracy:.2f}, "
-                    f"velocity={lr.learning_velocity:.4f}, "
-                    f"runs_to_plateau={lr.runs_to_plateau}"
-                )
+                status = "insufficient data" if lr.insufficient_data else f"plateau={lr.plateau_accuracy:.2f}, velocity={lr.learning_velocity:.4f}"
+                lines.append(f"  {name}: initial={lr.initial_accuracy:.2f}, {status}")
 
         if self.horizon_results:
             lines.append("\nLong-Horizon Tasks:")
             for length, hr in sorted(self.horizon_results.items()):
-                lines.append(
-                    f"  {length}-step: accuracy={hr.mean_accuracy:.2f}, "
-                    f"recovery={hr.error_recovery_rate:.2f}, "
-                    f"completion={hr.completion_rate:.2f}"
-                )
+                c = hr.composite
+                lines.append(f"  {length:>4}-step: accuracy={hr.mean_accuracy:.2f} recovery={hr.error_recovery_rate:.2f} completion={hr.completion_rate:.2f}  [{self._pass_mark(c)}]")
 
-        lines.append(f"\nRecovery: {self.recovery_results.overall_recovery_score:.3f}")
-        lines.append(f"System: cost={self.system_metrics.cost_per_run:.4f}, "
-                      f"latency={self.system_metrics.latency_per_run:.2f}s")
-        lines.append(f"\nComposite Score: {self.composite.total:.4f}")
+        r = self.recovery_results
+        lines.append(f"\nRecovery: score={r.overall_recovery_score:.3f}  [{self._pass_mark(r.composite)}]")
+
+        mem_entries = []
+        for k, v in self.memory_results.items():
+            if hasattr(v, "composite"):
+                mem_entries.append(f"{k}={v.composite:.2f}")
+        if mem_entries:
+            lines.append(f"Memory: {', '.join(mem_entries)}")
+
+        t = self.transfer_results
+        lines.append(f"Transfer: score={t.composite:.3f}  [{self._pass_mark(t.composite)}]")
+
+        s = self.system_metrics
+        lines.append(f"System: cost={s.cost_per_run:.6f} lat={s.latency_per_run:.2f}s growth={s.memory_growth_per_run:.1f} evol={s.evolution_overhead_pct:.1f}%  [{self._pass_mark(s.composite)}]")
+
+        lines.append(f"\nComposite Score Breakdown:")
+        c = self.composite
+        lines.append(f"  Learning  (25%): {c.learning_score:.4f}")
+        lines.append(f"  Horizon   (20%): {c.horizon_score:.4f}")
+        lines.append(f"  Recovery  (20%): {c.recovery_score:.4f}")
+        lines.append(f"  Memory    (15%): {c.memory_score:.4f}")
+        lines.append(f"  Transfer  (10%): {c.transfer_score:.4f}")
+        lines.append(f"  System    (10%): {c.system_score:.4f}")
+        lines.append(f"  TOTAL: {c.total:.4f}  [{self._pass_mark(c.total)}]")
 
         lines.append(f"\nDuration: {self.total_duration:.1f}s")
         return "\n".join(lines)
