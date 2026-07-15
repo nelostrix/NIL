@@ -64,7 +64,9 @@ class ConsensusMechanism:
             votes[p.id] = 0
 
         for voter in voters:
-            chosen = voter_evaluations.get(voter.name) or voter_evaluations.get(voter.role.value)
+            chosen = voter_evaluations.get(voter.name) or voter_evaluations.get(
+                voter.role.value
+            )
             if chosen and chosen in votes:
                 votes[chosen] += 1
             elif proposals:
@@ -102,12 +104,14 @@ class ConsensusMechanism:
             con_argument = f"Argue against: {thesis} (round {round_num})"
             score = 0.5 + (round_num * 0.1) / rounds
 
-            self._debate_log.append({
-                "round": round_num,
-                "pro_argument": pro_argument,
-                "con_argument": con_argument,
-                "score": score,
-            })
+            self._debate_log.append(
+                {
+                    "round": round_num,
+                    "pro_argument": pro_argument,
+                    "con_argument": con_argument,
+                    "score": score,
+                }
+            )
             final_score = score
 
         return DebateOutcome(
@@ -131,9 +135,10 @@ class ConsensusMechanism:
         weighted_sum = sum(o.value * o.confidence for o in opinions)
         average = weighted_sum / total_weight
 
-        variance = sum(
-            o.confidence * (o.value - average) ** 2 for o in opinions
-        ) / total_weight
+        variance = (
+            sum(o.confidence * (o.value - average) ** 2 for o in opinions)
+            / total_weight
+        )
 
         return ConsensusResult(
             value=average,
@@ -141,7 +146,9 @@ class ConsensusMechanism:
             n_agents=len(opinions),
         )
 
-    def _compute_confidence(self, votes: dict[str, int], voters: list[AgentSpec]) -> float:
+    def _compute_confidence(
+        self, votes: dict[str, int], voters: list[AgentSpec]
+    ) -> float:
         if not votes or not voters:
             return 0.0
         total = sum(votes.values())

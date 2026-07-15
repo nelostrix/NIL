@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 from nil.agents.roles import AgentResult, AgentRole, AgentSpec
 
@@ -47,12 +46,14 @@ class AgentPool:
         for role_key, spec in self.agent_specs.items():
             pool_size = len(self.pooled_agents.get(role_key, []))
             total = self._agent_count.get(role_key, 0)
-            agents.append({
-                "role": role_key,
-                "spec_name": spec.name,
-                "pool_size": pool_size,
-                "total_spawned": total,
-            })
+            agents.append(
+                {
+                    "role": role_key,
+                    "spec_name": spec.name,
+                    "pool_size": pool_size,
+                    "total_spawned": total,
+                }
+            )
         return agents
 
 
