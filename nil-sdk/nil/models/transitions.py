@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-import json
 import logging
 import math
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass, field
-from typing import Any, Optional
 
 from nil.models.state_space import StateKey
 
 logger = logging.getLogger("nil.models.transitions")
-
+# usecase to Log system information
 ActionKey = str
 
 
@@ -27,11 +25,19 @@ class TransitionOutcome:
 
 @dataclass
 class TransitionModel:
-    transitions: dict[tuple[StateKey, ActionKey], dict[StateKey, float]] = field(default_factory=dict)
+    transitions: dict[tuple[StateKey, ActionKey], dict[StateKey, float]] = field(
+        default_factory=dict
+    )
     raw_counts: dict[tuple[StateKey, ActionKey], Counter] = field(default_factory=dict)
     total_transitions: int = 0
 
-    def record(self, from_state: StateKey, action: ActionKey, to_state: StateKey, count: int = 1) -> None:
+    def record(
+        self,
+        from_state: StateKey,
+        action: ActionKey,
+        to_state: StateKey,
+        count: int = 1,
+    ) -> None:
         key = (from_state, action)
         if key not in self.raw_counts:
             self.raw_counts[key] = Counter()
@@ -39,7 +45,9 @@ class TransitionModel:
         self.total_transitions += count
         self._recompute(key)
 
-    def record_batch(self, transitions: list[tuple[StateKey, ActionKey, StateKey, int]]) -> None:
+    def record_batch(
+        self, transitions: list[tuple[StateKey, ActionKey, StateKey, int]]
+    ) -> None:
         for from_state, action, to_state, count in transitions:
             self.record(from_state, action, to_state, count)
 
@@ -49,15 +57,17 @@ class TransitionModel:
             self.transitions.pop(key, None)
             return
         total = sum(counter.values())
-        self.transitions[key] = {
-            state: cnt / total for state, cnt in counter.items()
-        }
+        self.transitions[key] = {state: cnt / total for state, cnt in counter.items()}
 
-    def prob(self, from_state: StateKey, action: ActionKey, to_state: StateKey) -> float:
+    def prob(
+        self, from_state: StateKey, action: ActionKey, to_state: StateKey
+    ) -> float:
         probs = self.transitions.get((from_state, action), {})
         return probs.get(to_state, 0.0)
 
-    def predict(self, state: StateKey, action: ActionKey) -> list[tuple[StateKey, float]]:
+    def predict(
+        self, state: StateKey, action: ActionKey
+    ) -> list[tuple[StateKey, float]]:
         probs = self.transitions.get((state, action), {})
         return sorted(probs.items(), key=lambda x: x[1], reverse=True)
 
@@ -80,10 +90,7 @@ class TransitionModel:
         return entropy / max_entropy if max_entropy > 0 else 1.0
 
     def known_actions(self, state: StateKey) -> list[ActionKey]:
-        return [
-            action for (s, action) in self.transitions
-            if s == state
-        ]
+        return [action for (s, action) in self.transitions if s == state]
 
     def merge(self, other: TransitionModel) -> None:
         for (state, action), counter in other.raw_counts.items():

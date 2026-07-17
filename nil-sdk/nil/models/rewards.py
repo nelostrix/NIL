@@ -22,15 +22,26 @@ class RewardModel:
     failure_penalty: float = -5.0
     progress_reward_per_stage: float = 0.2
 
-    def reward(self, state: EnvironmentState, action_name: str, action_cost: float, action_duration: float, next_state: EnvironmentState) -> float:
+    def reward(
+        self,
+        state: EnvironmentState,
+        action_name: str,
+        action_cost: float,
+        action_duration: float,
+        next_state: EnvironmentState,
+    ) -> float:
         progress = self._progress_reward(state, next_state)
         success_reward = self._terminal_reward(next_state)
         cost_penalty = -self.cost_sensitivity * action_cost
         time_penalty = -self.time_sensitivity * action_duration
-        exploration = self.exploration_bonus if self._is_novel(state, action_name) else 0.0
+        exploration = (
+            self.exploration_bonus if self._is_novel(state, action_name) else 0.0
+        )
         return progress + success_reward + cost_penalty + time_penalty + exploration
 
-    def _progress_reward(self, state: EnvironmentState, next_state: EnvironmentState) -> float:
+    def _progress_reward(
+        self, state: EnvironmentState, next_state: EnvironmentState
+    ) -> float:
         try:
             s_idx = INVESTIGATION_STAGES.index(state.investigation_stage)
             ns_idx = INVESTIGATION_STAGES.index(next_state.investigation_stage)
@@ -96,7 +107,9 @@ class RewardLearner:
         avg_cost_success = sum(o.cost for o in successful) / max(len(successful), 1)
         avg_cost_failure = sum(o.cost for o in failed) / max(len(failed), 1)
 
-        avg_duration_success = sum(o.duration for o in successful) / max(len(successful), 1)
+        avg_duration_success = sum(o.duration for o in successful) / max(
+            len(successful), 1
+        )
         avg_duration_failure = sum(o.duration for o in failed) / max(len(failed), 1)
 
         cost_sensitivity = 1.0

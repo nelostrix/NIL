@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import math
 import uuid
 from dataclasses import dataclass, field
 from typing import Optional
 
 from nil.agents.blackboard import Blackboard
 from nil.agents.pool import _PooledAgent
-from nil.agents.roles import AgentRole, AgentSpec
 
 
 @dataclass

@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import enum
-import time
-import uuid
 from dataclasses import dataclass, field
-from typing import Any, Optional
 
 
 class AgentRole(enum.Enum):
@@ -60,16 +57,25 @@ _DEFAULT_PROMPTS = {
 
 _DEFAULT_TOOLS: dict[AgentRole, list[str]] = {
     AgentRole.INVESTIGATOR: [
-        "search_logs", "query_metrics", "check_db", "read_file",
+        "search_logs",
+        "query_metrics",
+        "check_db",
+        "read_file",
     ],
     AgentRole.ANALYST: [
-        "analyze_trace", "query_db",
+        "analyze_trace",
+        "query_db",
     ],
     AgentRole.EXECUTOR: [
-        "restart_service", "deploy", "scale_up", "drain_connections",
+        "restart_service",
+        "deploy",
+        "scale_up",
+        "drain_connections",
     ],
     AgentRole.VERIFIER: [
-        "check_endpoint", "run_test", "validate_config",
+        "check_endpoint",
+        "run_test",
+        "validate_config",
     ],
 }
 

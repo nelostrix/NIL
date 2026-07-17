@@ -1,15 +1,17 @@
-# Intelligence Layer — Overall Requirements
+# NIL SDK — Requirements & Specification
 
 ## Overview
 
-The **Intelligence Layer** is a Python framework for building **self-evolving AI agents** that improve across runs. Agents remember what worked, extract reusable skills, detect when strategies stop working, and optimize their own performance — all autonomously, with SQLite-backed persistence and zero infrastructure.
+**NIL SDK** is a Python framework for building **self-evolving AI agents** that improve across runs. Agents remember what worked, extract reusable skills, detect when strategies stop working, and optimize their own performance — all autonomously, with SQLite-backed persistence and zero infrastructure.
 
-The project consists of:
+The SDK (`nil-sdk/nil/`) contains:
 
-1. **nil-sdk** (`nil-sdk/nil/`) — Core framework: kernel execution (linear + DAG graph), persistent memory (SQLite + 7-tier hierarchical), evolution pipeline (7 stages), LLM providers, tools system, cost optimization, curriculum learning
+1. **Core Framework** — Kernel execution (linear + DAG graph), persistent memory (SQLite + 7-tier hierarchical), evolution pipeline (7 stages), LLM providers, tools system, cost optimization, curriculum learning
 2. **Extended Modules** — Cognitive Loop (mode-based execution with plugins), Retrieval-Augmented Cognition (RAC), Reinforcement Learning (RL), Multi-Agent Coordination, Environment Models (POMDP), Long-Horizon Benchmarking, Skill Compilation, Tool Embeddings & Affordance, Tool Evolution, Runtime Observability, Cognitive Economy
-3. **Meta-Learning Experiments** (`experiments/` at workspace root) — MAML-based meta-learning with LiquidNN for few-shot adaptation
-4. **NIL-STACC Bridge** — Connects stacc robots to a NIL self-evolving agent (in separate `nil-stacc/` repo)
+
+**Related projects (separate repos, not part of this SDK):**
+- **Meta-Learning Experiments** (`experiments/` at workspace root) — MAML-based meta-learning with LiquidNN for few-shot adaptation
+- **NIL-STACC Bridge** (`nil-stacc/` at workspace root) — Connects stacc robots to a NIL self-evolving agent
 
 ---
 
@@ -184,13 +186,16 @@ The project consists of:
 
 ### 2.6 Skill Compilation (`nil/compilation/`)
 
-- Compilation levels: text → few-shot → constrained generation → DSL → native code → decision tree
-- SkillParser: extract tool sequences and control flow from textual skills
-- Intermediate Representation (IR) with optimization passes: dead-step elimination, tool fusion, constant folding, specialization
-- Code generation: Python functions, constrained grammar, DSL scripts
-- Hybrid executor: mix compiled (deterministic) and LLM-guided steps
-- Macro system: promote high-usage skills to single-call macros
-- CompilationLearner: decide when/what level to compile based on determinism + confidence
+- **All in `pipeline.py`** — consolidated compilation pipeline:
+  - `CompilationLevel` enum: text → few-shot → constrained generation → DSL → native code → decision tree
+  - `SkillParser`: extract tool sequences and control flow from textual skills
+  - `IntermediateRepresentation` + `ControlFlowNode` + `CompilationResult` — IR with optimization passes: dead-step elimination, tool fusion, constant folding, specialization
+  - `SkillOptimizer`: IR optimization passes
+  - `SkillCodeGenerator`: Python functions, constrained grammar, DSL scripts
+  - `CompiledSkillExecutor` + `HybridSkillExecutor`: mix compiled (deterministic) and LLM-guided steps
+  - `SkillMacro` + `MacroRegistry`: promote high-usage skills to single-call macros
+  - `CompilationLearner`: decide when/what level to compile based on determinism + confidence
+  - `SkillCompilationEngine`: orchestrates the full pipeline
 
 ### 2.7 Tool Embeddings & Affordance (`nil/tools/`)
 
@@ -214,11 +219,13 @@ The project consists of:
 
 ### 2.9 Curriculum Learning & Training (`nil/training/`)
 
-- **CurriculumEngine** — Analyzes historical weaknesses and generates targeted practice tasks
-- **WeaknessAnalyzer** — Identifies skill gaps, frequent failure modes, and underutilized tools
-- **PracticeEngine** — Generates synthetic tasks for identified weaknesses
-- **SyntheticTaskGenerator** — Creates varied practice scenarios from domain definition
-- Integrates with Agent via `enable_curriculum=True`; runs after each evolution cycle
+- **All in `curriculum.py`** — consolidated training module:
+  - `CurriculumEngine` — Analyzes historical weaknesses and generates targeted practice tasks
+  - `WeaknessAnalyzer` + `WeaknessProfile` — Identifies skill gaps, frequent failure modes, and underutilized tools
+  - `PracticeEngine` + `PracticeSession` — Generates synthetic tasks for identified weaknesses
+  - `SyntheticTaskGenerator` — Creates varied practice scenarios from domain definition
+  - `BenchmarkSuite` + `BenchmarkResult` — Evaluates practice effectiveness
+  - Integrates with Agent via `enable_curriculum=True`; runs after each evolution cycle
 
 ---
 
@@ -259,7 +266,7 @@ The project consists of:
 - Model-agnostic: Anthropic, OpenAI, Gemini, or any OpenAI-compatible endpoint (Ollama, vLLM)
 - Zero core dependencies (stdlib only); optional: `anthropic`, `openai`, `google-genai` provider packages
 - Dev dependencies: `pytest>=8.0`, `pytest-cov`, `ruff`
-- Package name: `nil-sdk` v0.1.0; build system: `pyproject.toml` (setuptools)
+- Package name: `nil-sdk` v0.1.0; build: `python -m build --wheel`
 
 ---
 
@@ -279,6 +286,8 @@ The project consists of:
 | `SKILL_COMPILATION.md` | Compilation pipeline: parse → IR → optimize → codegen → macro |
 | `TOOL_EMBEDDINGS_AND_AFFORDANCE.md` | Tool embeddings, affordance learning, composition, latent selection |
 
+> Note: These documents are at the workspace root (`docs/`), not inside `nil-sdk/`.
+
 ---
 
 ## 7. Public API
@@ -293,6 +302,22 @@ Six primary exports from `nil`:
 | `nil.HierarchicalMemory` | `nil/memory/hierarchical.py` | 7-tier hierarchical memory system |
 | `nil.Agent` | `nil/agent.py` | Primary orchestrator — Kernel + Memory + Evolution + Cognition + RL |
 | `nil.EvolutionConfig` | `nil/config.py` | Evolution settings (strategy, interval, approval gates) |
+
+Subpackages also expose public APIs via their `__init__.py`:
+- `nil.kernel` — `KernelRunner`, `Tracer`, `RunOutcome`, `ToolManager`, `ExecutionGraph`, `Planner`, `GraphAgentRunner`, `Critic`, etc.
+- `nil.memory` — All 7 memory tiers, `ConsolidationPipeline`, `ConceptGraph`, `AbstractionEngine`, `ExperienceQuery`
+- `nil.cognition` — `CognitiveLoop`, `RACEngine`, `CognitivePolicyEngine`, `SimulationEngine`, `CognitiveEconomy`, etc.
+- `nil.rl` — `RLEnabledAgent`, `DenseRewardModel`, `TrajectoryScorer`, `ExplorationScheduler`, `ReplayBuffer`, `DirectPreferenceOptimizer`
+- `nil.agents` — `AgentRole`, `OrchestratorAgent`, `Blackboard`, `MessageBus`, `ConsensusMechanism`, `AgentPool`, `AgentTeam`, `MultiAgentNil`
+- `nil.models` — `StateSpace`, `TransitionModel`, `ObservationModel`, `RewardModel`, `BeliefTracker`, `MCTSPlanner`, `ModelAwareAgent`
+- `nil.tools` — `tool`, `Tool`, `ToolEmbedding`, `ToolAffordance`, `CompositeTool`, `LatentToolSelector`, `ToolEvolver`
+- `nil.evolution` — `EvolutionPipeline`, `PipelineResult` (submodules: analyzer, skill_extractor, gradient_engine, evaluator, world_model, drift_detector, strategy_mutator)
+- `nil.benchmarks` — `NilBenchmarkSuite`, all benchmark types (learning, horizon, recovery, memory, transfer, system)
+- `nil.compilation` — `SkillCompilationEngine`, `CompilationLevel`, `IntermediateRepresentation`, `SkillParser`, `SkillOptimizer`, `SkillCodeGenerator`, `MacroRegistry`
+- `nil.observability` — `EventRecorder`, `TraceViewer`, `FlameGraphGenerator`, `TokenTimeline`, `ReasoningTree`, `MemoryBrowser`, `EvolutionDiffViewer`, `StrategyLineage`, `LiveDebugger`
+- `nil.training` — `CurriculumEngine`, `WeaknessAnalyzer`, `PracticeEngine`, `SyntheticTaskGenerator`
+- `nil.optimization` — `ModelRouter`, `ChainCompressor`, `CacheManager`, `BudgetController`
+- `nil.providers` — `AnthropicProvider`, `OpenAIProvider`, `GeminiProvider`, `StubProvider`
 
 ---
 
