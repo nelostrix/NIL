@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 from nil.agents.roles import AgentResult, AgentRole, AgentSpec
 
@@ -12,7 +11,7 @@ from nil.agents.roles import AgentResult, AgentRole, AgentSpec
 class AgentPool:
     def __init__(self):
         self.persistent_agents: dict[str, object] = {}
-        self.pooled_agents: dict[str, list[object]] = defaultdict(list)
+        self.pooled_agents: dict[str, list[_PooledAgent]] = defaultdict(list)
         self.agent_specs: dict[str, AgentSpec] = {}
         self._agent_count: dict[str, int] = defaultdict(int)
 
@@ -22,7 +21,11 @@ class AgentPool:
     def get_spec(self, role: AgentRole) -> Optional[AgentSpec]:
         return self.agent_specs.get(role.value)
 
-    def spawn(self, role: AgentRole, task_context: dict = None) -> _PooledAgent:
+<<<<<<< HEAD
+    def spawn(self, role: AgentRole ) -> _PooledAgent:
+=======
+    def spawn(self, role: AgentRole) -> _PooledAgent:
+>>>>>>> f0750a2c14fede477692762ed0c0ffda3ec4e090
         spec = self.get_spec(role)
         if not spec:
             raise ValueError(f"No spec registered for role {role.value}")
@@ -37,6 +40,8 @@ class AgentPool:
         pool = self.pooled_agents.get(role.value, [])
         if pool:
             return pool.pop()
+        if role.value not in self.agent_specs:
+            raise ValueError(f"No spec registered for role {role.value}") 
         return self.spawn(role)
 
     def release(self, agent: _PooledAgent) -> None:
@@ -47,12 +52,14 @@ class AgentPool:
         for role_key, spec in self.agent_specs.items():
             pool_size = len(self.pooled_agents.get(role_key, []))
             total = self._agent_count.get(role_key, 0)
-            agents.append({
-                "role": role_key,
-                "spec_name": spec.name,
-                "pool_size": pool_size,
-                "total_spawned": total,
-            })
+            agents.append(
+                {
+                    "role": role_key,
+                    "spec_name": spec.name,
+                    "pool_size": pool_size,
+                    "total_spawned": total,
+                }
+            )
         return agents
 
 

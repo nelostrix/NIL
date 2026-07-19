@@ -1,12 +1,8 @@
-from __future__ import annotations
-
-from typing import Any, Optional
-
-from nil.agents.blackboard import Blackboard
 from nil.agents.messages import MessageBus
 from nil.agents.orchestrator import OrchestratorAgent
 from nil.agents.pool import AgentPool
 from nil.agents.roles import AgentRole, AgentSpec, MultiAgentOutcome
+from nil.agents.blackboard import Blackboard
 
 
 class MultiAgentNil:
@@ -26,8 +22,12 @@ class MultiAgentNil:
         self.agent_pool.register_spec(spec)
 
     def register_default_specs(self) -> None:
-        self.register_agent_spec(AgentSpec(role=AgentRole.ORCHESTRATOR, name="orchestrator"))
-        self.register_agent_spec(AgentSpec(role=AgentRole.INVESTIGATOR, name="investigator"))
+        self.register_agent_spec(
+            AgentSpec(role=AgentRole.ORCHESTRATOR, name="orchestrator")
+        )
+        self.register_agent_spec(
+            AgentSpec(role=AgentRole.INVESTIGATOR, name="investigator")
+        )
         self.register_agent_spec(AgentSpec(role=AgentRole.ANALYST, name="analyst"))
         self.register_agent_spec(AgentSpec(role=AgentRole.EXECUTOR, name="executor"))
         self.register_agent_spec(AgentSpec(role=AgentRole.VERIFIER, name="verifier"))
