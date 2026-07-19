@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
-
 from nil.benchmarks.base import (
     Agent,
-    Outcome,
     TransferReport,
     TransferResult,
 )
@@ -30,17 +26,14 @@ class TransferBenchmark:
 
             few_shot_results = {}
             for n in [1, 3, 5, 10]:
-                for shot in range(n):
-                    agent.run(self._random_task(target_domain))
-                accuracy = self._measure_accuracy(agent, target_domain, n=10)
-                few_shot_results[n] = accuracy
-
+                accuracy = self._measure_accuracy(agent, target_domain, n_shots=n)
+                few_shot_results[n]=accuracy
             results[target_domain] = TransferResult(
                 domain=target_domain,
                 similarity=similarity,
                 zero_shot_accuracy=zero_shot,
                 few_shot_accuracy=few_shot_results,
-                transfer_efficiency=self._transfer_efficiency(source_domain, target_domain, zero_shot),
+                transfer_efficiency=self._transfer_efficiency(source_domain, target_domain, zero_shot, few_shot_results),
             )
 
         return TransferReport(
@@ -86,8 +79,11 @@ class TransferBenchmark:
         outcomes = [agent.run(self._random_task(domain)) for _ in range(n)]
         return sum(o.success for o in outcomes) / max(len(outcomes), 1)
 
-    def _transfer_efficiency(self, source: str, target: str, zero_shot: float) -> float:
-        return zero_shot
+    def _transfer_efficiency(self, _source: str, _target: str, zero_shot: float, few_shot_results: dict[int, float]) -> float:
+        if not few_shot_results:
+            return zero_shot
+        avg_few_shot = sum(few_shot_results.values()) / len(few_shot_results)
+        return avg_few_shot / max(zero_shot, 1e-6)
 
     def _composite_transfer(self, results: dict[str, TransferResult]) -> float:
         if not results:
