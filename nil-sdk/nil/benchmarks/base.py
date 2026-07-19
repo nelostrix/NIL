@@ -21,23 +21,7 @@ class Outcome:
     error: str = ""
     evolution_duration: float = 0.0
     evolution_triggered: bool = False
-    step_scores: li
-    class Agent(Protocol):
-        def run(self, task: str) -> Outcome:
-            ...
-
-
-    @dataclass
-    class Outcome:
-        success: bool = False
-        steps: list[dict] = field(default_factory=list)
-        total_cost: float = 0.0
-        duration: float = 0.0
-        error: str = ""
-        evolution_duration: float = 0.0
-        evolution_triggered: bool = False
-        step_scores: list[float] = field(default_factory=list)
-st[float] = field(default_factory=list)
+    step_scores: list[float] = field(default_factory=list)
     had_errors: bool = False
     error_steps: list[dict] = field(default_factory=list)
 

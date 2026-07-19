@@ -22,7 +22,6 @@ class Blackboard:
         self.store: dict[str, BlackboardEntry] = {}
         self._subscriptions: dict[str, list[Callable]] = {}
         self._lock = threading.Lock()
-
     def write(
         self, key: str, value: Any, metadata: Optional[dict] = None, writer: str = ""
     ) -> None:

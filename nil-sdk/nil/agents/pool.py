@@ -11,7 +11,7 @@ from nil.agents.roles import AgentResult, AgentRole, AgentSpec
 class AgentPool:
     def __init__(self):
         self.persistent_agents: dict[str, object] = {}
-        self.pooled_agents: dict[str, list[object]] = defaultdict(list)
+        self.pooled_agents: dict[str, list[_PooledAgent]] = defaultdict(list)
         self.agent_specs: dict[str, AgentSpec] = {}
         self._agent_count: dict[str, int] = defaultdict(int)
 
@@ -21,7 +21,7 @@ class AgentPool:
     def get_spec(self, role: AgentRole) -> Optional[AgentSpec]:
         return self.agent_specs.get(role.value)
 
-    def spawn(self, role: AgentRole, task_context: dict = None) -> _PooledAgent:
+    def spawn(self, role: AgentRole ) -> _PooledAgent:
         spec = self.get_spec(role)
         if not spec:
             raise ValueError(f"No spec registered for role {role.value}")
@@ -36,6 +36,8 @@ class AgentPool:
         pool = self.pooled_agents.get(role.value, [])
         if pool:
             return pool.pop()
+        if role.value not in self.agent_specs:
+            raise ValueError(f"No spec registered for role {role.value}") 
         return self.spawn(role)
 
     def release(self, agent: _PooledAgent) -> None:

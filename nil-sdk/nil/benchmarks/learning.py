@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import math
 import random
-from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from dataclasses import dataclass 
 
 from nil.benchmarks.base import (
     Agent,
@@ -27,7 +24,7 @@ class LearningVelocity:
 
         window = min(30, n)
         early_scores = run_scores[:window]
-        x = list(range(window))
+        x = [float(i) for i in range(window)]
         slope, _ = self._linear_regression(x, early_scores)
 
         plateau_window = min(10, max(1, n // 5))

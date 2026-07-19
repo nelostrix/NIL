@@ -4,8 +4,8 @@ import enum
 import time
 import uuid
 from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from dataclasses import dataclass
+from typing import Any, Callable 
 
 
 class MessageType(enum.Enum):
@@ -44,7 +44,7 @@ class AgentResponse:
     error: str = ""
 
     @classmethod
-    def error(cls, msg: str) -> AgentResponse:
+    def failure(cls, msg: str) -> AgentResponse:
         return cls(success=False, error=msg)
 
 

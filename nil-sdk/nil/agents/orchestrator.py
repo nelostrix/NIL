@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from nil.agents.blackboard import Blackboard
-from nil.agents.pool import AgentPool, _PooledAgent
+from nil.agents.pool import AgentPool 
 from nil.agents.roles import AgentResult, AgentRole, MultiAgentOutcome
 
 
