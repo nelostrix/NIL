@@ -21,7 +21,11 @@ class AgentPool:
     def get_spec(self, role: AgentRole) -> Optional[AgentSpec]:
         return self.agent_specs.get(role.value)
 
+<<<<<<< HEAD
     def spawn(self, role: AgentRole ) -> _PooledAgent:
+=======
+    def spawn(self, role: AgentRole) -> _PooledAgent:
+>>>>>>> f0750a2c14fede477692762ed0c0ffda3ec4e090
         spec = self.get_spec(role)
         if not spec:
             raise ValueError(f"No spec registered for role {role.value}")

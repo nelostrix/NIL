@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import math
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
-from nil.agents.roles import AgentRole, AgentSpec
+from nil.agents.roles import AgentSpec
 
 
 @dataclass
@@ -56,7 +55,7 @@ class ConsensusMechanism:
         self,
         proposals: list[AgentProposal],
         voters: list[AgentSpec],
-        voter_evaluations: dict[str, str] = None,
+        voter_evaluations: dict[str, str] | None = None,
     ) -> ConsensusResult:
         voter_evaluations = voter_evaluations or {}
         votes: dict[str, int] = {}
@@ -75,7 +74,7 @@ class ConsensusMechanism:
         if not votes:
             return ConsensusResult()
 
-        winner = max(votes, key=votes.get)
+        winner = max(votes, key=lambda k: votes[k])
         total = sum(votes.values())
         vote_share = votes[winner] / max(total, 1)
 

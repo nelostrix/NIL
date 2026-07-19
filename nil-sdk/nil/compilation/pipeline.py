@@ -106,7 +106,13 @@ class _SkillStub:
 
 
 class SkillParser:
-    _KNOWN_TOOLS_RE = re.compile(r'\b(search_logs|query_metrics|analyze_logs|check_db|restart_service|drain_connections|deploy|rollback|scale_up|slack_notify|pagerduty_alert|check_endpoint|diagnose|investigate)\b', re.IGNORECASE)
+    _KNOWN_TOOLS = [
+        "search_logs", "query_metrics", "analyze_logs", "check_db",
+        "restart_service", "drain_connections", "deploy", "rollback",
+        "scale_up", "slack_notify", "pagerduty_alert", "check_endpoint",
+        "diagnose", "investigate",
+    ]
+    _KNOWN_TOOLS_RE = re.compile(rf'\b({"|".join(_KNOWN_TOOLS)})\b', re.IGNORECASE)
 
     def parse(self, skill: _SkillStub) -> IntermediateRepresentation:
         tools = self._extract_tool_sequence(skill)

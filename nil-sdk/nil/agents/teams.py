@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import uuid
-from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Optional
-
+from nil.agents.pool import AgentPool
 from nil.agents.blackboard import Blackboard
 from nil.agents.orchestrator import OrchestratorAgent
 from nil.agents.roles import AgentRole, AgentSpec
@@ -22,11 +21,13 @@ class AgentTeam:
     def __init__(
         self,
         leader: Optional[AgentSpec] = None,
-        members: dict[str, AgentSpec] = None,
+        members: dict[str, AgentSpec] | None = None,
         coordination: str = "hierarchical",
         name: str = "",
     ):
-        self.leader = leader or AgentSpec(role=AgentRole.ORCHESTRATOR, name="team-leader")
+        self.leader = leader or AgentSpec(
+            role=AgentRole.ORCHESTRATOR, name="team-leader"
+        )
         self.members = members or {}
         self.coordination = coordination
         self.name = name or f"team-{uuid.uuid4().hex[:6]}"
@@ -66,9 +67,7 @@ class AgentTeam:
         )
         outcome = orchestrator.run(task)
 
-        all_success = outcome.success and all(
-            r.success for r in sub_results.values()
-        )
+        all_success = outcome.success and all(r.success for r in sub_results.values())
 
         return TeamResult(
             success=all_success,
@@ -78,7 +77,6 @@ class AgentTeam:
         )
 
     def _run_swarm(self, task: str) -> TeamResult:
-        from nil.agents.pool import AgentPool
 
         pool = AgentPool()
         for member in self.members.values():
@@ -101,9 +99,6 @@ class AgentTeam:
         )
 
     def _run_democratic(self, task: str) -> TeamResult:
-        from nil.agents.consensus import ConsensusMechanism
-        from nil.agents.pool import AgentPool
-
         pool = AgentPool()
         for member in self.members.values():
             pool.register_spec(member)
@@ -111,7 +106,9 @@ class AgentTeam:
         proposals = {}
         for role_key, spec in self.members.items():
             agent = pool.spawn(spec.role)
-            subtask = _SwarmTask(description=f"Analyze and propose for: {task} [{role_key}]")
+            subtask = _SwarmTask(
+                description=f"Analyze and propose for: {task} [{role_key}]"
+            )
             result = agent.run(subtask, self.blackboard)
             proposals[role_key] = result
             pool.release(agent)

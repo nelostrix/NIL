@@ -8,8 +8,7 @@ from typing import Any, Callable, Optional, Protocol
 
 
 class Agent(Protocol):
-    def run(self, task: str) -> Outcome:
-        ...
+    def run(self, task: str) -> Outcome: ...
 
 
 @dataclass
@@ -27,8 +26,9 @@ class Outcome:
 
     def steps_after(self, step: dict) -> list[dict]:
         idx = self.steps.index(step) if step in self.steps else -1
+
         if idx >= 0:
-            return self.steps[idx + 1:]
+            return self.steps[idx + 1 :]
         return []
 
     @property
@@ -121,7 +121,11 @@ class ForgettingCurve:
 
     def __post_init__(self):
         if self.points:
-            self.composite = self.points[-1].accuracy if len(self.points) > 1 else self.points[0].accuracy
+            self.composite = (
+                self.points[-1].accuracy
+                if len(self.points) > 1
+                else self.points[0].accuracy
+            )
 
 
 @dataclass
@@ -196,7 +200,9 @@ class BenchmarkReport:
     learning_curves: dict[str, LearningReport] = field(default_factory=dict)
     horizon_results: dict[int, HorizonResult] = field(default_factory=dict)
     recovery_results: RecoveryReport = field(default_factory=RecoveryReport)
-    memory_results: dict[str, ForgettingCurve | InterferenceResult] = field(default_factory=dict)
+    memory_results: dict[str, ForgettingCurve | InterferenceResult] = field(
+        default_factory=dict
+    )
     transfer_results: TransferReport = field(default_factory=TransferReport)
     system_metrics: SystemReport = field(default_factory=SystemReport)
     composite: CompositeScore = field(default_factory=lambda: CompositeScore())
@@ -216,17 +222,25 @@ class BenchmarkReport:
         if self.learning_curves:
             lines.append(f"\nLearning Curves ({len(self.learning_curves)} benchmarks):")
             for name, lr in self.learning_curves.items():
-                status = "insufficient data" if lr.insufficient_data else f"plateau={lr.plateau_accuracy:.2f}, velocity={lr.learning_velocity:.4f}"
+                status = (
+                    "insufficient data"
+                    if lr.insufficient_data
+                    else f"plateau={lr.plateau_accuracy:.2f}, velocity={lr.learning_velocity:.4f}"
+                )
                 lines.append(f"  {name}: initial={lr.initial_accuracy:.2f}, {status}")
 
         if self.horizon_results:
             lines.append("\nLong-Horizon Tasks:")
             for length, hr in sorted(self.horizon_results.items()):
                 c = hr.composite
-                lines.append(f"  {length:>4}-step: accuracy={hr.mean_accuracy:.2f} recovery={hr.error_recovery_rate:.2f} completion={hr.completion_rate:.2f}  [{self._pass_mark(c)}]")
+                lines.append(
+                    f"  {length:>4}-step: accuracy={hr.mean_accuracy:.2f} recovery={hr.error_recovery_rate:.2f} completion={hr.completion_rate:.2f}  [{self._pass_mark(c)}]"
+                )
 
         r = self.recovery_results
-        lines.append(f"\nRecovery: score={r.overall_recovery_score:.3f}  [{self._pass_mark(r.composite)}]")
+        lines.append(
+            f"\nRecovery: score={r.overall_recovery_score:.3f}  [{self._pass_mark(r.composite)}]"
+        )
 
         mem_entries = []
         for k, v in self.memory_results.items():
@@ -236,10 +250,14 @@ class BenchmarkReport:
             lines.append(f"Memory: {', '.join(mem_entries)}")
 
         t = self.transfer_results
-        lines.append(f"Transfer: score={t.composite:.3f}  [{self._pass_mark(t.composite)}]")
+        lines.append(
+            f"Transfer: score={t.composite:.3f}  [{self._pass_mark(t.composite)}]"
+        )
 
         s = self.system_metrics
-        lines.append(f"System: cost={s.cost_per_run:.6f} lat={s.latency_per_run:.2f}s growth={s.memory_growth_per_run:.1f} evol={s.evolution_overhead_pct:.1f}%  [{self._pass_mark(s.composite)}]")
+        lines.append(
+            f"System: cost={s.cost_per_run:.6f} lat={s.latency_per_run:.2f}s growth={s.memory_growth_per_run:.1f} evol={s.evolution_overhead_pct:.1f}%  [{self._pass_mark(s.composite)}]"
+        )
 
         lines.append(f"\nComposite Score Breakdown:")
         c = self.composite
@@ -259,7 +277,9 @@ class BenchmarkReport:
             "agent_name": self.agent_name,
             "composite": self.composite.to_dict(),
             "learning_curves": {k: v.__dict__ for k, v in self.learning_curves.items()},
-            "horizon_results": {str(k): v.__dict__ for k, v in self.horizon_results.items()},
+            "horizon_results": {
+                str(k): v.__dict__ for k, v in self.horizon_results.items()
+            },
             "recovery_results": self.recovery_results.__dict__,
             "system_metrics": self.system_metrics.__dict__,
             "total_duration": self.total_duration,

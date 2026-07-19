@@ -133,21 +133,25 @@ class TraceViewer:
             info["count"] += 1
             if "error" in str(e.payload):
                 info["status"] = "failed"
-            info["tokens"] += e.payload.get("tokens_in", 0) + e.payload.get("tokens_out", 0)
+            info["tokens"] += e.payload.get("tokens_in", 0) + e.payload.get(
+                "tokens_out", 0
+            )
             info["cost"] += e.payload.get("cost", 0.0)
             if "reasoning" in e.payload:
                 info["reasoning"] = str(e.payload.get("reasoning", ""))[:200]
 
         spans = []
         for key, info in sorted(unique_spans.items(), key=lambda x: x[1]["start"]):
-            spans.append(_Span(
-                name=info["name"],
-                depth=info["depth"],
-                start=info["start"],
-                end=info["end"],
-                status=info["status"],
-                reasoning=info["reasoning"],
-                tokens=info["tokens"],
-                cost=info["cost"],
-            ))
+            spans.append(
+                _Span(
+                    name=info["name"],
+                    depth=info["depth"],
+                    start=info["start"],
+                    end=info["end"],
+                    status=info["status"],
+                    reasoning=info["reasoning"],
+                    tokens=info["tokens"],
+                    cost=info["cost"],
+                )
+            )
         return spans

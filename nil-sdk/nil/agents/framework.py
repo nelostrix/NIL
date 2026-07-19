@@ -1,7 +1,8 @@
-import MessageBus
+from nil.agents.messages import MessageBus
 from nil.agents.orchestrator import OrchestratorAgent
 from nil.agents.pool import AgentPool
 from nil.agents.roles import AgentRole, AgentSpec, MultiAgentOutcome
+from nil.agents.blackboard import Blackboard
 
 
 class MultiAgentNil:

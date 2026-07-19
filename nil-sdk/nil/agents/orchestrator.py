@@ -3,10 +3,14 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 from nil.agents.blackboard import Blackboard
+<<<<<<< HEAD
 from nil.agents.pool import AgentPool 
+=======
+from nil.agents.pool import AgentPool
+>>>>>>> f0750a2c14fede477692762ed0c0ffda3ec4e090
 from nil.agents.roles import AgentResult, AgentRole, MultiAgentOutcome
 
 
@@ -59,7 +63,7 @@ class OrchestratorAgent:
         self._timeline: list[dict] = []
         self._phase_index = 0
 
-    def run(self, task: str, context: dict = None) -> MultiAgentOutcome:
+    def run(self, task: str, context: dict | None = None) -> MultiAgentOutcome:
         context = context or {}
         start = time.time()
         self._timeline = []
@@ -96,24 +100,51 @@ class OrchestratorAgent:
 
     def _decompose(self, task: str) -> ExecutionPlan:
         plan = ExecutionPlan()
-        investigation = Phase(id="phase_1", subtasks=[
-            Subtask(description=f"Gather data about: {task[:100]}", assigned_role=AgentRole.INVESTIGATOR),
-        ])
+        investigation = Phase(
+            id="phase_1",
+            subtasks=[
+                Subtask(
+                    description=f"Gather data about: {task[:100]}",
+                    assigned_role=AgentRole.INVESTIGATOR,
+                ),
+            ],
+        )
         plan.add_phase(investigation)
 
-        analysis = Phase(id="phase_2", subtasks=[
-            Subtask(description=f"Analyze findings for: {task[:100]}", assigned_role=AgentRole.ANALYST, depends_on=["phase_1"]),
-        ])
+        analysis = Phase(
+            id="phase_2",
+            subtasks=[
+                Subtask(
+                    description=f"Analyze findings for: {task[:100]}",
+                    assigned_role=AgentRole.ANALYST,
+                    depends_on=["phase_1"],
+                ),
+            ],
+        )
         plan.add_phase(analysis)
 
-        execution = Phase(id="phase_3", subtasks=[
-            Subtask(description=f"Execute remediation for: {task[:100]}", assigned_role=AgentRole.EXECUTOR, depends_on=["phase_2"]),
-        ])
+        execution = Phase(
+            id="phase_3",
+            subtasks=[
+                Subtask(
+                    description=f"Execute remediation for: {task[:100]}",
+                    assigned_role=AgentRole.EXECUTOR,
+                    depends_on=["phase_2"],
+                ),
+            ],
+        )
         plan.add_phase(execution)
 
-        verification = Phase(id="phase_4", subtasks=[
-            Subtask(description=f"Verify results for: {task[:100]}", assigned_role=AgentRole.VERIFIER, depends_on=["phase_3"]),
-        ])
+        verification = Phase(
+            id="phase_4",
+            subtasks=[
+                Subtask(
+                    description=f"Verify results for: {task[:100]}",
+                    assigned_role=AgentRole.VERIFIER,
+                    depends_on=["phase_3"],
+                ),
+            ],
+        )
         plan.add_phase(verification)
         return plan
 
@@ -135,13 +166,18 @@ class OrchestratorAgent:
     def _verify_phase(self, phase: Phase, results: dict[str, AgentResult]) -> bool:
         return all(r.success for r in results.values())
 
-    def _recover_phase(self, phase: Phase, results: dict[str, AgentResult]) -> dict[str, AgentResult]:
+    def _recover_phase(
+        self, phase: Phase, results: dict[str, AgentResult]
+    ) -> dict[str, AgentResult]:
         recovered: dict[str, AgentResult] = {}
         for subtask in phase.subtasks:
             if subtask.id in results and not results[subtask.id].success:
                 agent = self.agent_pool.acquire(subtask.assigned_role)
                 retry_result = agent.run(subtask, self.blackboard)
-                self._log("recover", f"retry {subtask.description[:40]}: {retry_result.success}")
+                self._log(
+                    "recover",
+                    f"retry {subtask.description[:40]}: {retry_result.success}",
+                )
                 self.agent_pool.release(agent)
                 recovered[f"{subtask.id}_retry"] = retry_result
         return recovered
@@ -152,9 +188,11 @@ class OrchestratorAgent:
         return f"Completed {successes}/{total} subtasks successfully."
 
     def _log(self, event: str, detail: str) -> None:
-        self._timeline.append({
-            "event": event,
-            "detail": detail,
-            "timestamp": time.time(),
-            "phase": self._phase_index,
-        })
+        self._timeline.append(
+            {
+                "event": event,
+                "detail": detail,
+                "timestamp": time.time(),
+                "phase": self._phase_index,
+            }
+        )
