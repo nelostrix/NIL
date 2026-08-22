@@ -1,8 +1,6 @@
 from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any, Optional
-
 from nil.rl.exploration import ExplorationScheduler
 from nil.rl.policy import BehavioralCloning, Policy
 from nil.rl.preference import DirectPreferenceOptimizer, EloTrajectoryRating
@@ -10,7 +8,6 @@ from nil.rl.replay import ReplayBuffer, Transition
 from nil.rl.rewards import DenseRewardModel, StepRecord
 from nil.rl.trajectory import TrajectoryScorer
 from nil.rl.value import AdvantageEstimator, ValueFunction
-
 
 @dataclass
 class RLConfig:

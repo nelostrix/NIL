@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Optional
 
 from nil.cognition.index import ScoredResult, StoredItem
 from nil.cognition.query import RetrievalQuery, RetrievalStrategy

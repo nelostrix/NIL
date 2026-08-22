@@ -23,6 +23,7 @@ from nil.kernel.graph import (
     GraphAgentRunner,
     GraphOutcome,
     GraphTemplate,
+    GraphScheduler,
     GraphMetadata,
     NodeResult,
     NodeStatus,
@@ -39,6 +40,9 @@ __all__ = [
     "Tracer",
     "RunOutcome",
     "ToolManager",
+
+
+
     # Graph execution
     "ExecutionGraph",
     "ExecutionNode",

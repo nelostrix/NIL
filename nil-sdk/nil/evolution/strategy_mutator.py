@@ -14,7 +14,7 @@ Each mutation is tested before promotion (see evaluator.py).
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any 
 
 from nil.memory.store import PersistentMemory
 

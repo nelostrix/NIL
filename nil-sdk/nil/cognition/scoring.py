@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import math
 import time
-from dataclasses import dataclass, field
-from typing import Any, Optional
 
 from nil.cognition.index import ScoredResult
 from nil.cognition.query import RetrievalQuery

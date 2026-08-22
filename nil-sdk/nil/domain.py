@@ -20,7 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
 
-from nil.tools.base import tool
+from nil.tools.base import  Tool
 
 
 @dataclass
