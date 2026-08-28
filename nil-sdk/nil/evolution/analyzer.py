@@ -393,8 +393,8 @@ class TraceAnalyzer:
     def find_causal_patterns(
         self,
         domain: str,
-        min_frequency: int = None,
-        traces: list[dict] = None,
+        min_frequency: Optional[int] = None,
+        traces: Optional[list[dict]] = None,
     ) -> list[CausalPattern]:
         """
         Find tool-call sequences with causal evidence for success.
@@ -520,7 +520,7 @@ class TraceAnalyzer:
     def compute_step_attributions(
         self,
         domain: str,
-        traces: list[dict] = None,
+        traces: Optional[list[dict]] = None,
     ) -> list[StepAttribution]:
         """
         Compute the causal contribution of each individual tool.
@@ -607,7 +607,7 @@ class TraceAnalyzer:
     def cluster_failures(
         self,
         domain: str,
-        traces: list[dict] = None,
+        traces: Optional[list[dict]] = None,
         systemic_threshold: int = 3,
     ) -> list[FailureCluster]:
         """Group failures by error signature and identify systemic patterns."""
@@ -666,7 +666,7 @@ class TraceAnalyzer:
     def build_transition_matrix(
         self,
         domain: str,
-        traces: list[dict] = None,
+        traces: Optional[list[dict]] = None,
     ) -> list[TransitionEdge]:
         """Build a Markov model of tool-to-tool transitions."""
         if traces is None:
@@ -723,7 +723,7 @@ class TraceAnalyzer:
         self,
         domain: str,
         window: int = 20,
-        traces: list[dict] = None,
+        traces: Optional[list[dict]] = None,
     ) -> dict[str, Any]:
         """
         Compare recent performance against historical baseline
@@ -793,7 +793,7 @@ class TraceAnalyzer:
     def counterfactual_step_importance(
         self,
         domain: str,
-        traces: list[dict] = None,
+        traces: Optional[list[dict]] = None,
     ) -> list[dict[str, Any]]:
         """
         Estimate each tool's importance via natural experiment:

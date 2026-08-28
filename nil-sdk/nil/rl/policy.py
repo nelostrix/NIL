@@ -13,7 +13,7 @@ class Policy:
     in_context_examples: list[dict] = field(default_factory=list)
     system_prompt_template: str = ""
 
-    def act(self, state: dict, task: str, available_actions: list[str] = None) -> str:
+    def act(self, state: dict, task: str, available_actions: list[str] | None = None) -> str:
         available_actions = available_actions or list(self.action_weights.keys())
         if not available_actions:
             return "explore"
@@ -30,10 +30,10 @@ class Policy:
             probs = [w / total for w in weights]
         return random.choices(available_actions, weights=probs, k=1)[0]
 
-    def log_probability(self, action: str, state: dict = None) -> float:
+    def log_probability(self, action: str) -> float:
         import math
         total = sum(self.action_weights.values()) or 1.0
-        prob = self.action_weights.get(action, 0.01) / total
+        prob = self.action_weights.get(action, 0.0) / total
         return math.log(max(prob, 1e-10))
 
     def log_probability_of_trace(self, trace: dict) -> float:

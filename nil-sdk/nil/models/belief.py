@@ -35,7 +35,7 @@ class BeliefTracker:
             self.belief = {}
         self.prior = dict(self.belief)
 
-    def incorporate_task(self, task: str, context: dict = None) -> None:
+    def incorporate_task(self, task: str, context: dict | None = None) -> None:
         context = context or {}
         keys = self.state_space.all_keys()
         if not keys:

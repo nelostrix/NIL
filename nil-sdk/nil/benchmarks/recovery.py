@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import random
 from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
 
 from nil.benchmarks.base import (
     Agent,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
@@ -13,8 +12,6 @@ from nil.cognition.adapters import (
     RetrievalAlterer,
 )
 from nil.cognition.loop import CognitiveMode, Phase, PhaseContext
-from nil.cognition.modes import MODE_PROFILES, Uncertainty
-
 logger = logging.getLogger("nil.cognition.supervisor")
 
 
@@ -214,7 +211,7 @@ class LiveSupervisor:
             current_mode = ctx.mode
             if current_mode != CognitiveMode.RECOVERY:
                 ctx.escalate_mode(CognitiveMode.RECOVERY)
-                self._report.escalations.append(f"{current_mode.value}->recovery")
+                self._report.escalations.append(f"{current_mode.value}->recovery:{last_error}")
                 return "escalated_to_recovery"
             if self.model_switcher and self.model_switcher.can_switch_up():
                 self.model_switcher.switch_up(ctx)
