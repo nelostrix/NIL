@@ -6,11 +6,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from nil.agents.blackboard import Blackboard
-<<<<<<< HEAD
-from nil.agents.pool import AgentPool 
-=======
 from nil.agents.pool import AgentPool
->>>>>>> f0750a2c14fede477692762ed0c0ffda3ec4e090
 from nil.agents.roles import AgentResult, AgentRole, MultiAgentOutcome
 
 
