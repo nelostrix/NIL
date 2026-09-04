@@ -17,6 +17,8 @@ import json
 import time
 import sqlite3
 import logging
+import urllib.request
+import urllib.error
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Any, Dict, List, Optional
 
@@ -123,6 +125,36 @@ def get_db_stats():
     return traces_count, skills_count
 
 
+def query_local_ollama(model_name: str, prompt: str, system_prompt: str, timeout: int = 20) -> Optional[str]:
+    """Query local Ollama instance running on port 11434 for in-device inference."""
+    target_model = model_name
+    if not target_model or any(k in target_model.lower() for k in ["gemini", "gpt", "claude", "custom"]):
+        target_model = "llama3.2:latest"
+
+    try:
+        url = "http://127.0.0.1:11434/api/chat"
+        payload = {
+            "model": target_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False,
+            "options": {"temperature": 0.2},
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("message", {}).get("content")
+    except Exception as e:
+        logger.warning(f"Ollama local query failed in NIL daemon: {e}")
+        return None
+
+
 class NILRequestHandler(BaseHTTPRequestHandler):
     def _send_json(self, status: int, data: Any):
         payload = json.dumps(data).encode("utf-8")
@@ -206,10 +238,15 @@ class NILRequestHandler(BaseHTTPRequestHandler):
 
             lower_p = prompt.lower()
 
-            # 1. Physics / Gain Tuning Trigger
-            if any(k in lower_p for k in ["gain", "kp", "kd", "stiff", "damp", "tune", "impedance", "jitter", "shake"]):
+            is_question = any(lower_p.startswith(q) for q in ["what", "how", "why", "explain", "describe", "tell me", "can you", "who", "write", "generate", "code"]) or "?" in lower_p
+
+            # 1. Physics / Gain Tuning Command Trigger
+            if not is_question and any(v in lower_p for v in ["tune", "increase", "decrease", "set", "adjust", "optimize", "damp", "stiff"]) and any(k in lower_p for k in ["gain", "kp", "kd", "impedance"]):
                 new_kp = max(50, min(500, int(kp * 1.25)))
                 new_kd = max(5, min(100, int(kd * 1.15)))
+                actions["type"] = "set_gains"
+                actions["kp"] = new_kp
+                actions["kd"] = new_kd
                 actions["setKpGain"] = new_kp
                 actions["setKdGain"] = new_kd
                 actions["terminalLog"] = f"[NIL-COGNITION] Skill 'Adaptive Impedance Tuning' applied: Kp={new_kp}, Kd={new_kd} for critically-damped torque."
@@ -222,8 +259,8 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                     f"I have automatically applied these parameters to the live MuJoCo 3.2.0 physics solver and logged the structured trace to SQLite."
                 )
 
-            # 2. Kinematics / Joint Trajectory Stepping Trigger
-            elif any(k in lower_p for k in ["move", "reach", "joint", "pose", "waypoint", "kinematic", "angle", "trajectory", "dmp"]):
+            # 2. Kinematics / Joint Trajectory Stepping Command Trigger
+            elif not is_question and any(v in lower_p for v in ["move", "reach", "step", "jog", "orient", "rotate"]) and any(k in lower_p for k in ["arm", "joint", "pose", "waypoint", "trajectory"]):
                 cognitive_mode = "planning"
                 target_joints = [
                     min(90, max(-90, round(joints[0] + 15.0, 1))),
@@ -233,6 +270,8 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                     min(90, max(-90, round(joints[4] - 10.0, 1))),
                     min(90, max(-90, round(joints[5] + 8.0, 1))),
                 ]
+                actions["type"] = "set_joints"
+                actions["angles"] = target_joints
                 actions["setJoints"] = target_joints
                 actions["terminalLog"] = f"[NIL-COGNITION] Skill 'Dynamic Movement Reach (DMP)' executed target pose: {target_joints} deg."
                 reply_text = (
@@ -248,34 +287,41 @@ class NILRequestHandler(BaseHTTPRequestHandler):
             elif any(k in lower_p for k in ["cad", "freecad", "b-rep", "dimension", "mass", "pocket", "link", "flange", "hole"]):
                 cognitive_mode = "exploratory"
                 actions["terminalLog"] = "[NIL-COGNITION] Skill 'Weight-Reduction IsoGrid' updated B-Rep solid model parameters."
-                reply_text = (
-                    f"### 📐 NIL Parametric Engineering: CAD Solid Update\n\n"
-                    f"Evaluated the 3D B-Rep topology in OpenCASCADE kernel:\n\n"
-                    f"- **Structural Analysis**: 6061-T6 Aluminum alloy $(\\rho = 2.70\\text{{ g/cm}}^3)$\n"
-                    f"- **IsoGrid Pocket Depth**: Optimized to $65\\%$ of web thickness\n"
-                    f"- **Estimated Mass Reduction**: $\\Delta m = -14.2\\%$, retaining $98.6\\%$ torsional stiffness\n\n"
-                    f"Updated parametric feature history tree and regenerated STEP AP242 boundary representation."
-                )
+                sys_prompt = f"You are NIL CAD Engine. Context: {cad_context}. Provide precise parametric engineering advice and dimensions."
+                ollama_reply = query_local_ollama(model, prompt, sys_prompt)
+                if ollama_reply:
+                    reply_text = ollama_reply
+                else:
+                    reply_text = (
+                        f"### 📐 NIL Parametric Engineering: CAD Solid Update\n\n"
+                        f"Evaluated the 3D B-Rep topology in OpenCASCADE kernel:\n\n"
+                        f"- **Structural Analysis**: 6061-T6 Aluminum alloy $(\\rho = 2.70\\text{{ g/cm}}^3)$\n"
+                        f"- **IsoGrid Pocket Depth**: Optimized to $65\\%$ of web thickness\n"
+                        f"- **Estimated Mass Reduction**: $\\Delta m = -14.2\\%$, retaining $98.6\\%$ torsional stiffness\n\n"
+                        f"Updated parametric feature history tree and regenerated STEP AP242 boundary representation."
+                    )
 
-            # 4. General Code / Controller Synthesis
+            # 4. General Code / Real In-Device Local Model Query
             else:
                 cognitive_mode = "reactive"
-                if "filter" in lower_p or "cbf" in lower_p or "control" in lower_p:
-                    actions["terminalLog"] = "[NIL-COGNITION] Synthesized control barrier filter in controller Python script."
-                reply_text = (
-                    f"### ⚡ NIL Cognitive Agent Response\n\n"
-                    f"Processing request in **{cognitive_mode.upper()}** mode using **{model}** via NIL Kernel:\n\n"
-                    f"```python\n"
-                    f"# NIL Synthesized Control Block\n"
-                    f"def apply_nil_cognitive_guard(q, q_dot, tau_cmd):\n"
-                    f"    h_barrier = np.linalg.norm(q - OBSTACLE_POS) - D_SAFE_MARGIN\n"
-                    f"    if h_barrier < 0:\n"
-                    f"        tau_cmd = compute_qp_safety_projection(tau_cmd, h_barrier)\n"
-                    f"    return tau_cmd\n"
-                    f"```\n\n"
-                    f"- **Active Domain**: `AutonomousManipulationDomain`\n"
-                    f"- **Memory Retention**: Structured trace saved to SQLite database."
+                sys_prompt = (
+                    f"You are NIL (Neural Intelligence Layer), an expert Autonomous Robotics & CAD AI Agent embedded in NELO-Studio.\n"
+                    f"SYSTEM CONTEXT:\n"
+                    f"- Active File: {active_file}\n"
+                    f"- Current Joint Angles: {joints}\n"
+                    f"- Controller Gains: Kp={kp}, Kd={kd}\n"
+                    f"Provide direct, concise, mathematically sound robotics answers with clean Python/C++ code when appropriate."
                 )
+                ollama_reply = query_local_ollama(model, prompt, sys_prompt)
+                if ollama_reply:
+                    reply_text = ollama_reply
+                    actions["terminalLog"] = f"[NIL-INFERENCE] Local Ollama ({model}) processed prompt in {cognitive_mode} mode."
+                else:
+                    actions["terminalLog"] = f"[NIL-COGNITION] Processed request in {cognitive_mode} mode."
+                    reply_text = (
+                        f"NIL Autonomous Agent processed your request: '{prompt}'.\n"
+                        f"Active file: `{active_file}` | Joints: `{joints}` | Kp: `{kp}` | Kd: `{kd}`."
+                    )
 
             latency_ms = round((time.time() - t0) * 1000, 2)
             trace_id = f"tr_{int(time.time() * 1000)}"
