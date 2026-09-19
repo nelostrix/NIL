@@ -5,10 +5,13 @@ Connects the NIL Self-Evolving Domain Agent Framework (@~/nil)
 directly to the NELO-Studio IDE & Robotics Workstation.
 
 Features:
-- Persistent SQLite memory store (~/nil/agent_store/nil.db)
-- 10-phase Unified Cognitive Loop & autonomous motor skill extraction
-- Live tool execution (Impedance gain tuning, joint trajectory stepping, CAD parametric edits, Code synthesis)
-- Real-time telemetry: Trace logging, skill registry, causal analysis, and evolution cycles
+- A real nil.Agent (10-phase Unified Cognitive Loop) whose tools call the
+  live stacc_server.py robotics backend over HTTP — this is the actual
+  nil<->stacc bridge, not a keyword-matched canned responder.
+- Persistent SQLite memory store (~/nil/agent_store/nil.db) for UI-facing
+  trace/skill display, plus the agent's own PersistentMemory for real
+  learning state.
+- Real-time telemetry: Trace logging, skill registry, and evolution cycles
 """
 
 import os
@@ -18,9 +21,8 @@ import time
 import sqlite3
 import logging
 import urllib.request
-import urllib.error
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 # Add NIL SDK to python path
 NIL_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -28,16 +30,86 @@ SDK_PATH = os.path.join(NIL_ROOT, "nil-sdk")
 if SDK_PATH not in sys.path:
     sys.path.insert(0, SDK_PATH)
 
+STACC_SERVER_URL = "http://127.0.0.1:8766"
+
+
+def _stacc_request(path: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Call the real stacc_server.py daemon (live MuJoCo + kinematics backend,
+    already spawned alongside this process by electron/main.js). GET when
+    payload is None, POST otherwise.
+    """
+    url = f"{STACC_SERVER_URL}{path}"
+    if payload is None:
+        req = urllib.request.Request(url)
+    else:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
 try:
     import nil
     from nil.memory.store import PersistentMemory
     from nil.domain import Domain
     from nil.agent import Agent
-    from nil.config import EvolutionConfig, NilConfig
+    from nil.config import EvolutionConfig
+    from nil.tools.base import tool
+
+    @tool
+    def get_robot_status() -> dict:
+        """Get the live robot's current status: physics engine, active model,
+        control loop rate, and total simulation steps, from the real STACC
+        simulation backend (not simulated/estimated here)."""
+        return _stacc_request("/v1/system/status")
+
+    @tool
+    def move_robot_joints(joints_deg: List[float]) -> dict:
+        """Command the live 6-DOF robot arm to a target joint configuration
+        (degrees, one per joint) and report the real resulting end-effector
+        pose, joint torques, and obstacle safety margin from the live MuJoCo
+        simulation."""
+        return _stacc_request("/v1/robot/simulate_step", {"joints": joints_deg})
+
+    @tool
+    def solve_inverse_kinematics(target_xyz: List[float]) -> dict:
+        """Solve for joint angles that reach a target [x, y, z] end-effector
+        position in meters, using the real damped-least-squares IK solver,
+        and drive the live arm to that solution."""
+        return _stacc_request("/v1/robot/ik", {"target_pos": target_xyz})
+
+    @tool
+    def tune_impedance_gains(kp: float, kd: float) -> dict:
+        """Tune the live robot's joint impedance controller gains: Kp
+        (stiffness, N*m/rad) and Kd (damping, N*m*s/rad)."""
+        return _stacc_request("/v1/robot/tune_gains", {"kp": kp, "kd": kd})
+
+    NIL_ROBOT_TOOLS = [get_robot_status, move_robot_joints, solve_inverse_kinematics, tune_impedance_gains]
+
+    NIL_DOMAIN = Domain(
+        name="nelo_studio_robotics",
+        tools=NIL_ROBOT_TOOLS,
+        objectives=[
+            "Help the operator understand and control the live STACC robot simulation",
+            "Only report real telemetry returned by the robot tools, never a fabricated value",
+        ],
+        success_signal=lambda run: run.success,
+    )
+
+    NIL_AGENT_MEMORY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "agent_store", "nil_agent_memory.db")
+    NIL_AGENT = Agent(
+        domain=NIL_DOMAIN,
+        memory=PersistentMemory(NIL_AGENT_MEMORY_PATH),
+        evolution=EvolutionConfig(strategy="manual"),
+    )
     NIL_SDK_AVAILABLE = True
 except Exception as e:
     NIL_SDK_AVAILABLE = False
-    print(f"[NIL-SERVER] Warning: NIL SDK import error ({e}). Using robust standalone cognitive kernel.")
+    NIL_AGENT = None
+    print(f"[NIL-SERVER] Warning: NIL SDK import error ({e}). Chat/evolution endpoints will report unavailable rather than fake a response.")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("nil.server")
@@ -98,7 +170,6 @@ def init_sqlite_db():
         initial_skills = [
             ("skill_imp_tune", "Adaptive Impedance Tuning", "physics", "contact_instability_or_vibration", json.dumps({"Kp_ratio": 1.25, "Kd_ratio": 1.15}), 0.94, 28, 27, now, now),
             ("skill_dmp_reach", "Dynamic Movement Reach (DMP)", "kinematics", "spatial_target_jog", json.dumps({"damping_ratio": 0.707, "basis_count": 20}), 0.91, 45, 42, now, now),
-            ("skill_brep_pocket", "Weight-Reduction IsoGrid", "cad", "mass_budget_exceeded", json.dumps({"pocket_depth_ratio": 0.65, "rib_thickness_mm": 3.0}), 0.88, 19, 18, now, now),
             ("skill_cbf_safety", "Control Barrier Function Safety", "robotics", "obstacle_proximity_less_45mm", json.dumps({"barrier_gamma": 0.85}), 0.98, 62, 62, now, now),
             ("skill_shm_sync", "Zero-Copy POSIX Shared Memory Sync", "system", "1000hz_rt_loop", json.dumps({"ringbuffer_slots": 10000}), 0.96, 120, 119, now, now),
         ]
@@ -125,34 +196,44 @@ def get_db_stats():
     return traces_count, skills_count
 
 
-def query_local_ollama(model_name: str, prompt: str, system_prompt: str, timeout: int = 20) -> Optional[str]:
-    """Query local Ollama instance running on port 11434 for in-device inference."""
-    target_model = model_name
-    if not target_model or any(k in target_model.lower() for k in ["gemini", "gpt", "claude", "custom"]):
-        target_model = "llama3.2:latest"
+def _extract_reply_and_actions(outcome: "Any") -> "Tuple[str, Dict[str, Any]]":
+    """Build the chat reply and UI-facing action dict from a real nil.Agent
+    RunOutcome — never templated text, always derived from what the agent
+    actually did (outcome.output / outcome.steps / outcome.error).
+    """
+    actions: Dict[str, Any] = {}
+    tool_calls_summary: List[str] = []
 
-    try:
-        url = "http://127.0.0.1:11434/api/chat"
-        payload = {
-            "model": target_model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ],
-            "stream": False,
-            "options": {"temperature": 0.2},
-        }
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-        )
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return data.get("message", {}).get("content")
-    except Exception as e:
-        logger.warning(f"Ollama local query failed in NIL daemon: {e}")
-        return None
+    for step in outcome.steps:
+        if not step.tool_name:
+            continue
+        tool_calls_summary.append(f"{step.tool_name}({step.tool_input}) -> {step.tool_output}")
+
+        if step.tool_name == "move_robot_joints" and isinstance(step.tool_output, dict):
+            actions["type"] = "set_joints"
+            actions["end_effector"] = step.tool_output.get("end_effector")
+            actions["torques_nm"] = step.tool_output.get("torques_nm")
+        elif step.tool_name == "tune_impedance_gains" and step.tool_input:
+            actions["type"] = "set_gains"
+            actions["setKpGain"] = step.tool_input.get("kp")
+            actions["setKdGain"] = step.tool_input.get("kd")
+        elif step.tool_name == "solve_inverse_kinematics" and isinstance(step.tool_output, dict):
+            actions["type"] = "ik_solution"
+            actions["setJoints"] = step.tool_output.get("solution_joints_deg")
+
+    if outcome.output:
+        reply_text = str(outcome.output)
+    elif tool_calls_summary:
+        reply_text = "Executed: " + "; ".join(tool_calls_summary)
+    elif outcome.error:
+        reply_text = f"NIL agent run failed: {outcome.error}"
+    else:
+        reply_text = "(NIL agent produced no output for this run)"
+
+    if tool_calls_summary:
+        actions["terminalLog"] = "[NIL] " + " | ".join(tool_calls_summary)
+
+    return reply_text, actions
 
 
 class NILRequestHandler(BaseHTTPRequestHandler):
@@ -207,124 +288,60 @@ class NILRequestHandler(BaseHTTPRequestHandler):
         req_data = json.loads(body) if body else {}
 
         if self.path == "/v1/evolution/trigger":
-            EVOLUTION_CYCLES += 1
-            traces_count, skills_count = get_db_stats()
-            self._send_json(200, {
-                "status": "evolved",
-                "message": f"Evolution cycle #{EVOLUTION_CYCLES} completed successfully.",
-                "causal_clusters_evaluated": 12,
-                "gradient_delta_applied": "+0.042 policy improvement",
-                "traces_analyzed": traces_count,
-                "total_skills": skills_count,
-            })
+            if NIL_AGENT is None:
+                self._send_json(503, {"status": "unavailable", "error": "NIL SDK not loaded on this server."})
+                return
+            try:
+                evo_result = NIL_AGENT.evolve()
+                EVOLUTION_CYCLES += 1
+                traces_count, skills_count = get_db_stats()
+                self._send_json(200, {
+                    "status": "evolved",
+                    "message": f"Evolution cycle #{EVOLUTION_CYCLES} completed.",
+                    "evolution_result": str(evo_result),
+                    "traces_analyzed": traces_count,
+                    "total_skills": skills_count,
+                })
+            except Exception as e:
+                logger.exception("nil.Agent.evolve failed")
+                self._send_json(500, {"status": "error", "error": str(e)})
             return
 
         if self.path in ["/v1/agent/chat", "/v1/agent/run"]:
             t0 = time.time()
             prompt = req_data.get("prompt", "")
             active_file = req_data.get("activeFileName", "robot_arm_controller.py")
-            code_content = req_data.get("codeContent", "")
             joints = req_data.get("joints", [0, 0, 0, 0, 0, 0])
             kp = req_data.get("kpGain", 180)
             kd = req_data.get("kdGain", 18)
-            provider = req_data.get("provider", "gemini")
-            model = req_data.get("model", "gemini-2.0-flash")
-            cad_context = req_data.get("cadContext", {})
 
-            # Execute NIL 10-Phase Cognitive Processing
-            cognitive_mode = "deliberative"
-            actions: Dict[str, Any] = {}
-            reply_text = ""
+            if NIL_AGENT is None:
+                self._send_json(503, {
+                    "reply": "The NIL SDK isn't loaded on this server, so there's no agent to run — "
+                             "no response was fabricated.",
+                    "actions": {},
+                    "nil_telemetry": {"error": "sdk_unavailable"},
+                })
+                return
 
-            lower_p = prompt.lower()
-
-            is_question = any(lower_p.startswith(q) for q in ["what", "how", "why", "explain", "describe", "tell me", "can you", "who", "write", "generate", "code"]) or "?" in lower_p
-
-            # 1. Physics / Gain Tuning Command Trigger
-            if not is_question and any(v in lower_p for v in ["tune", "increase", "decrease", "set", "adjust", "optimize", "damp", "stiff"]) and any(k in lower_p for k in ["gain", "kp", "kd", "impedance"]):
-                new_kp = max(50, min(500, int(kp * 1.25)))
-                new_kd = max(5, min(100, int(kd * 1.15)))
-                actions["type"] = "set_gains"
-                actions["kp"] = new_kp
-                actions["kd"] = new_kd
-                actions["setKpGain"] = new_kp
-                actions["setKdGain"] = new_kd
-                actions["terminalLog"] = f"[NIL-COGNITION] Skill 'Adaptive Impedance Tuning' applied: Kp={new_kp}, Kd={new_kd} for critically-damped torque."
-                reply_text = (
-                    f"### 🧠 NIL Cognitive Action: Impedance Gains Optimized\n\n"
-                    f"Through NIL's **Embodied Physical Skill Memory**, I diagnosed contact dynamics and synthesized critically-damped impedance gains:\n\n"
-                    f"- **$K_p$ Stiffness**: `{kp}` $\\to$ `{new_kp}` $\\text{{N}}\\cdot\\text{{m}}/\\text{{rad}}$\n"
-                    f"- **$K_d$ Damping**: `{kd}` $\\to$ `{new_kd}` $\\text{{N}}\\cdot\\text{{m}}\\cdot\\text{{s}}/\\text{{rad}}$\n"
-                    f"- **Damping Ratio $\\zeta$**: $\\frac{{{new_kd}}}{{2\\sqrt{{{new_kp} \\cdot I_{{eff}}}}}} \\approx 0.707$ (Critically Damped)\n\n"
-                    f"I have automatically applied these parameters to the live MuJoCo 3.2.0 physics solver and logged the structured trace to SQLite."
+            try:
+                outcome = NIL_AGENT.run(
+                    prompt,
+                    context={"active_file": active_file, "joints": joints, "kp": kp, "kd": kd},
                 )
+            except Exception as e:
+                logger.exception("nil.Agent.run failed")
+                self._send_json(500, {
+                    "reply": f"NIL agent run failed: {e}",
+                    "actions": {},
+                    "nil_telemetry": {"error": str(e)},
+                })
+                return
 
-            # 2. Kinematics / Joint Trajectory Stepping Command Trigger
-            elif not is_question and any(v in lower_p for v in ["move", "reach", "step", "jog", "orient", "rotate"]) and any(k in lower_p for k in ["arm", "joint", "pose", "waypoint", "trajectory"]):
-                cognitive_mode = "planning"
-                target_joints = [
-                    min(90, max(-90, round(joints[0] + 15.0, 1))),
-                    min(75, max(-75, round(joints[1] - 12.0, 1))),
-                    min(90, max(-90, round(joints[2] + 18.0, 1))),
-                    min(90, max(-90, round(joints[3] + 5.0, 1))),
-                    min(90, max(-90, round(joints[4] - 10.0, 1))),
-                    min(90, max(-90, round(joints[5] + 8.0, 1))),
-                ]
-                actions["type"] = "set_joints"
-                actions["angles"] = target_joints
-                actions["setJoints"] = target_joints
-                actions["terminalLog"] = f"[NIL-COGNITION] Skill 'Dynamic Movement Reach (DMP)' executed target pose: {target_joints} deg."
-                reply_text = (
-                    f"### 🤖 NIL Trajectory Generation: DMP Motor Rollout\n\n"
-                    f"Generated a smooth minimum-jerk trajectory rollout using **Dynamic Movement Primitives (DMP)** with 6-DOF safety bounds:\n\n"
-                    f"- **Target Waypoints (deg)**: `q = {target_joints}`\n"
-                    f"- **CBF Safety Gatekeeper**: Verified collision-free clearance ($> 45\\text{{mm}}$ safety margin)\n"
-                    f"- **POSIX SHM Packet**: Sent 1000Hz trajectory buffer to robot controller\n\n"
-                    f"Stepped the MuJoCo simulation arm into the target grasp orientation."
-                )
-
-            # 3. CAD / B-Rep Solid Parametric Trigger
-            elif any(k in lower_p for k in ["cad", "freecad", "b-rep", "dimension", "mass", "pocket", "link", "flange", "hole"]):
-                cognitive_mode = "exploratory"
-                actions["terminalLog"] = "[NIL-COGNITION] Skill 'Weight-Reduction IsoGrid' updated B-Rep solid model parameters."
-                sys_prompt = f"You are NIL CAD Engine. Context: {cad_context}. Provide precise parametric engineering advice and dimensions."
-                ollama_reply = query_local_ollama(model, prompt, sys_prompt)
-                if ollama_reply:
-                    reply_text = ollama_reply
-                else:
-                    reply_text = (
-                        f"### 📐 NIL Parametric Engineering: CAD Solid Update\n\n"
-                        f"Evaluated the 3D B-Rep topology in OpenCASCADE kernel:\n\n"
-                        f"- **Structural Analysis**: 6061-T6 Aluminum alloy $(\\rho = 2.70\\text{{ g/cm}}^3)$\n"
-                        f"- **IsoGrid Pocket Depth**: Optimized to $65\\%$ of web thickness\n"
-                        f"- **Estimated Mass Reduction**: $\\Delta m = -14.2\\%$, retaining $98.6\\%$ torsional stiffness\n\n"
-                        f"Updated parametric feature history tree and regenerated STEP AP242 boundary representation."
-                    )
-
-            # 4. General Code / Real In-Device Local Model Query
-            else:
-                cognitive_mode = "reactive"
-                sys_prompt = (
-                    f"You are NIL (Neural Intelligence Layer), an expert Autonomous Robotics & CAD AI Agent embedded in NELO-Studio.\n"
-                    f"SYSTEM CONTEXT:\n"
-                    f"- Active File: {active_file}\n"
-                    f"- Current Joint Angles: {joints}\n"
-                    f"- Controller Gains: Kp={kp}, Kd={kd}\n"
-                    f"Provide direct, concise, mathematically sound robotics answers with clean Python/C++ code when appropriate."
-                )
-                ollama_reply = query_local_ollama(model, prompt, sys_prompt)
-                if ollama_reply:
-                    reply_text = ollama_reply
-                    actions["terminalLog"] = f"[NIL-INFERENCE] Local Ollama ({model}) processed prompt in {cognitive_mode} mode."
-                else:
-                    actions["terminalLog"] = f"[NIL-COGNITION] Processed request in {cognitive_mode} mode."
-                    reply_text = (
-                        f"NIL Autonomous Agent processed your request: '{prompt}'.\n"
-                        f"Active file: `{active_file}` | Joints: `{joints}` | Kp: `{kp}` | Kd: `{kd}`."
-                    )
-
+            reply_text, actions = _extract_reply_and_actions(outcome)
+            cognitive_mode = "deliberative" if outcome.steps else "reactive"
             latency_ms = round((time.time() - t0) * 1000, 2)
-            trace_id = f"tr_{int(time.time() * 1000)}"
+            trace_id = outcome.run_id or f"tr_{int(time.time() * 1000)}"
 
             # Record Trace to SQLite DB
             try:
@@ -341,9 +358,9 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                     json.dumps({"active_file": active_file, "joints": joints, "kp": kp, "kd": kd}),
                     reply_text,
                     json.dumps(actions),
-                    0.95,
-                    342,
-                    latency_ms
+                    1.0 if outcome.success else 0.0,
+                    outcome.total_tokens_in + outcome.total_tokens_out,
+                    latency_ms,
                 ))
                 conn.commit()
                 conn.close()
@@ -358,10 +375,13 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                 "nil_telemetry": {
                     "trace_id": trace_id,
                     "cognitive_mode": cognitive_mode,
+                    "success": outcome.success,
                     "traces_recorded": traces_count,
                     "learned_skills_count": skills_count,
                     "evolution_cycles": EVOLUTION_CYCLES,
                     "latency_ms": latency_ms,
+                    "tokens_in": outcome.total_tokens_in,
+                    "tokens_out": outcome.total_tokens_out,
                     "db_path": DB_PATH,
                 }
             })
