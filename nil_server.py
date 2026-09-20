@@ -24,11 +24,25 @@ import urllib.request
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Any, Dict, List, Optional, Tuple
 
-# Add NIL SDK to python path
+# Add NIL SDK to python path.
 NIL_ROOT = os.path.dirname(os.path.abspath(__file__))
 SDK_PATH = os.path.join(NIL_ROOT, "nil-sdk")
 if SDK_PATH not in sys.path:
     sys.path.insert(0, SDK_PATH)
+
+# Where this process writes its persistent SQLite stores. Deliberately NOT
+# tied to __file__/NIL_ROOT when frozen by PyInstaller (see
+# packaging/build-nil-daemon.sh in the NELO-Studio repo): __file__ then
+# resolves inside the frozen bundle, which in --onefile mode is a fresh temp
+# extraction directory on every launch (silently discarding memory each run)
+# and in --onedir mode may sit somewhere the OS treats as read-only (a
+# macOS .app bundle, Program Files without elevation). Electron launches
+# this process with an explicit, writable `cwd` (its userData directory) for
+# exactly this reason — use it when frozen instead.
+if getattr(sys, "frozen", False):
+    DATA_ROOT = os.getcwd()
+else:
+    DATA_ROOT = NIL_ROOT
 
 STACC_SERVER_URL = "http://127.0.0.1:8766"
 
@@ -99,7 +113,7 @@ try:
         success_signal=lambda run: run.success,
     )
 
-    NIL_AGENT_MEMORY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "agent_store", "nil_agent_memory.db")
+    NIL_AGENT_MEMORY_PATH = os.path.join(DATA_ROOT, "agent_store", "nil_agent_memory.db")
     NIL_AGENT = Agent(
         domain=NIL_DOMAIN,
         memory=PersistentMemory(NIL_AGENT_MEMORY_PATH),
@@ -114,7 +128,7 @@ except Exception as e:
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("nil.server")
 
-DB_DIR = os.path.join(NIL_ROOT, "agent_store")
+DB_DIR = os.path.join(DATA_ROOT, "agent_store")
 os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.path.join(DB_DIR, "nil.db")
 
@@ -390,13 +404,29 @@ class NILRequestHandler(BaseHTTPRequestHandler):
         self._send_json(404, {"error": "Endpoint not found"})
 
 
-def run_server(port: int = 8765):
-    server_address = ("127.0.0.1", port)
-    httpd = HTTPServer(server_address, NILRequestHandler)
+def run_server(port: int = 8765, max_port_attempts: int = 10):
+    # A shipped desktop app can't assume its default port is free on every
+    # user's machine — try a few ports upward instead of crashing uncaught
+    # on OSError, and report whichever one actually bound so the Electron
+    # parent process can find it.
+    httpd = None
+    bound_port = port
+    for attempt in range(max_port_attempts):
+        bound_port = port + attempt
+        try:
+            httpd = HTTPServer(("127.0.0.1", bound_port), NILRequestHandler)
+            break
+        except OSError:
+            if attempt == max_port_attempts - 1:
+                raise
+            continue
+    assert httpd is not None
+    port = bound_port
     print(f"🚀 [NIL-SERVER] NIL Cognitive Backend Daemon listening on http://127.0.0.1:{port}")
     print(f"📦 [NIL-SERVER] SQLite Memory Store: {DB_PATH}")
     traces, skills = get_db_stats()
     print(f"🧠 [NIL-SERVER] Loaded {skills} learned skills | {traces} experience traces.")
+    print(f"NIL_BOUND_PORT={port}", flush=True)
     httpd.serve_forever()
 
 
