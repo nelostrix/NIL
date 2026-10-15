@@ -250,26 +250,71 @@ def _extract_reply_and_actions(outcome: "Any") -> "Tuple[str, Dict[str, Any]]":
     return reply_text, actions
 
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Local-only request guard
+#
+# This server binds to 127.0.0.1, but a browser will still let ANY web page the
+# user visits fire requests at it (and a rebinding attacker can point their own
+# hostname at 127.0.0.1). So requests are accepted only when:
+#   * the Host header names a loopback host (blocks DNS rebinding), and
+#   * any Origin header is NELO Studio's own origin.
+# Requests without an Origin header (the Next.js server, Electron's main
+# process, other local daemons, curl) are unaffected — browsers always send one.
+# ─────────────────────────────────────────────────────────────────────────────
+_STUDIO_PORT = os.environ.get("NELO_STUDIO_PORT", "3000")
+ALLOWED_ORIGINS = {
+    o.strip()
+    for o in os.environ.get(
+        "NELO_ALLOWED_ORIGINS",
+        f"http://127.0.0.1:{_STUDIO_PORT},http://localhost:{_STUDIO_PORT}",
+    ).split(",")
+    if o.strip()
+}
+LOOPBACK_HOSTNAMES = {"127.0.0.1", "localhost", "[::1]"}
+
+
 class NILRequestHandler(BaseHTTPRequestHandler):
+    def _cors_origin(self):
+        origin = self.headers.get("Origin")
+        return origin if origin in ALLOWED_ORIGINS else None
+
+    def _cors_headers(self):
+        origin = self._cors_origin()
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    def _guard(self) -> bool:
+        """Reject cross-origin / DNS-rebinding requests before any handler runs."""
+        hostname = (self.headers.get("Host") or "").rsplit(":", 1)[0].lower()
+        origin = self.headers.get("Origin")
+        if hostname not in LOOPBACK_HOSTNAMES or (origin is not None and origin not in ALLOWED_ORIGINS):
+            self._send_json(403, {"error": "Forbidden: request origin is not allowed"})
+            return False
+        return True
+
     def _send_json(self, status: int, data: Any):
         payload = json.dumps(data).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(payload)))
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self._cors_headers()
         self.end_headers()
         self.wfile.write(payload)
 
     def do_OPTIONS(self):
+        if not self._guard():
+            return
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self._cors_headers()
         self.end_headers()
 
     def do_GET(self):
+        if not self._guard():
+            return
         if self.path == "/v1/system/status" or self.path == "/health":
             traces_count, skills_count = get_db_stats()
             self._send_json(200, {
@@ -296,6 +341,8 @@ class NILRequestHandler(BaseHTTPRequestHandler):
             self._send_json(404, {"error": "Endpoint not found"})
 
     def do_POST(self):
+        if not self._guard():
+            return
         global EVOLUTION_CYCLES
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8")
