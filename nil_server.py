@@ -128,6 +128,112 @@ except Exception as e:
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("nil.server")
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-request model selection
+#
+# The agent above is built without a base_model/provider, so the SDK falls back
+# to StubProvider (a fake LLM for tests). The Studio lets the user pick a model,
+# so each chat request may carry an `llm` selection: {provider, model, apiKey,
+# baseUrl}. We build (and cache) a real Agent for it, sharing the same memory
+# and tools. API keys are applied to the process environment only while that
+# single run executes, then removed.
+# ─────────────────────────────────────────────────────────────────────────────
+import contextlib
+
+# UI provider id -> (nil provider adapter, OpenAI-compatible base URL or None)
+_OPENAI_COMPATIBLE_BASE_URLS = {
+    "local": "http://127.0.0.1:11434/v1",          # Ollama
+    "groq": "https://api.groq.com/openai/v1",
+    "openrouter": "https://openrouter.ai/api/v1",
+    "deepseek": "https://api.deepseek.com/v1",
+    "xai": "https://api.x.ai/v1",
+    "mistral": "https://api.mistral.ai/v1",
+}
+_PROVIDER_KEY_ENV = {
+    "openai": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "gemini": "GEMINI_API_KEY",
+}
+_LLM_ENV_VARS = ("OPENAI_API_KEY", "OPENAI_BASE_URL", "ANTHROPIC_API_KEY", "GEMINI_API_KEY")
+_AGENT_CACHE: Dict[Tuple[str, str, str, str], Any] = {}
+
+
+def _resolve_llm(llm: Dict[str, Any]) -> Tuple[str, str, Dict[str, str]]:
+    """(nil adapter name, model, env overrides) for a UI model selection.
+
+    Raises ValueError with a user-readable message when it cannot be honoured.
+    """
+    provider = str(llm.get("provider") or "local")
+    model = str(llm.get("model") or "").strip()
+    api_key = str(llm.get("apiKey") or "")
+    base_url = str(llm.get("baseUrl") or "")
+    if not model:
+        raise ValueError("No model selected.")
+
+    if provider in ("openai", "anthropic", "gemini"):
+        if not api_key:
+            raise ValueError(f"No API key is set for {provider}.")
+        env = {_PROVIDER_KEY_ENV[provider]: api_key}
+        if provider == "openai":
+            env["OPENAI_BASE_URL"] = ""  # real OpenAI endpoint
+        return provider, model, env
+
+    if provider == "custom":
+        if not base_url:
+            raise ValueError("The custom provider needs an endpoint URL.")
+        return "openai", model, {"OPENAI_API_KEY": api_key or "none", "OPENAI_BASE_URL": base_url}
+
+    base = _OPENAI_COMPATIBLE_BASE_URLS.get(provider)
+    if base is None:
+        raise ValueError(f"Unknown provider '{provider}'.")
+    if provider != "local" and not api_key:
+        raise ValueError(f"No API key is set for {provider}.")
+    return "openai", model, {"OPENAI_API_KEY": api_key or "ollama", "OPENAI_BASE_URL": base}
+
+
+@contextlib.contextmanager
+def _scoped_env(overrides: Dict[str, str]):
+    """Apply env overrides for the duration of one run and restore the previous state."""
+    saved = {k: os.environ.get(k) for k in _LLM_ENV_VARS}
+    try:
+        for k in _LLM_ENV_VARS:
+            os.environ.pop(k, None)
+        for k, v in overrides.items():
+            if v:
+                os.environ[k] = v
+        yield
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
+def _agent_for(llm: Optional[Dict[str, Any]]) -> Tuple[Any, Dict[str, str], Dict[str, str]]:
+    """(agent, env overrides, description of the model actually used)."""
+    if not llm or not llm.get("model"):
+        default_is_stub = type(NIL_AGENT._runner._provider).__name__ == "StubProvider"
+        return NIL_AGENT, {}, {"provider": "stub" if default_is_stub else "default", "model": NIL_AGENT.base_model}
+
+    adapter, model, env = _resolve_llm(llm)
+    key = (adapter, model, env.get("OPENAI_BASE_URL", ""), env.get("OPENAI_API_KEY") or env.get(_PROVIDER_KEY_ENV.get(adapter, ""), ""))
+    agent = _AGENT_CACHE.get(key)
+    if agent is None:
+        if len(_AGENT_CACHE) >= 8:
+            _AGENT_CACHE.pop(next(iter(_AGENT_CACHE)))
+        agent = Agent(
+            domain=NIL_DOMAIN,
+            base_model=model,
+            memory=NIL_AGENT.memory,
+            evolution=EvolutionConfig(strategy="manual"),
+            provider=adapter,
+        )
+        _AGENT_CACHE[key] = agent
+    return agent, env, {"provider": str(llm.get("provider")), "model": model}
+
+
+
 DB_DIR = os.path.join(DATA_ROOT, "agent_store")
 os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.path.join(DB_DIR, "nil.db")
@@ -322,6 +428,11 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                 "backend": "NIL-Self-Evolving-Framework",
                 "version": "1.0.0",
                 "sdk_loaded": NIL_SDK_AVAILABLE,
+                "default_llm": (
+                    "stub (no model configured — requests must carry a model selection)"
+                    if NIL_AGENT is not None and type(NIL_AGENT._runner._provider).__name__ == "StubProvider"
+                    else ("configured" if NIL_AGENT is not None else None)
+                ),
                 "db_path": DB_PATH,
                 "traces_count": traces_count,
                 "skills_count": skills_count,
@@ -386,10 +497,21 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                 return
 
             try:
-                outcome = NIL_AGENT.run(
-                    prompt,
-                    context={"active_file": active_file, "joints": joints, "kp": kp, "kd": kd},
-                )
+                agent, llm_env, llm_used = _agent_for(req_data.get("llm"))
+            except ValueError as e:
+                self._send_json(400, {
+                    "reply": f"Cannot use the selected model: {e}",
+                    "actions": {},
+                    "nil_telemetry": {"error": "model_unavailable"},
+                })
+                return
+
+            try:
+                with _scoped_env(llm_env):
+                    outcome = agent.run(
+                        prompt,
+                        context={"active_file": active_file, "joints": joints, "kp": kp, "kd": kd},
+                    )
             except Exception as e:
                 logger.exception("nil.Agent.run failed")
                 self._send_json(500, {
@@ -444,6 +566,9 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                     "tokens_in": outcome.total_tokens_in,
                     "tokens_out": outcome.total_tokens_out,
                     "db_path": DB_PATH,
+                    # which model actually answered; "stub" means a fake test LLM, not a real model
+                    "llm": llm_used,
+                    "is_stub": llm_used.get("provider") == "stub",
                 }
             })
             return
