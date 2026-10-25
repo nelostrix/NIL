@@ -283,20 +283,7 @@ def init_sqlite_db():
             updated_at REAL
         )
     """)
-    # Seed starter skills if empty
-    cursor.execute("SELECT COUNT(*) FROM nil_skills")
-    if cursor.fetchone()[0] == 0:
-        now = time.time()
-        initial_skills = [
-            ("skill_imp_tune", "Adaptive Impedance Tuning", "physics", "contact_instability_or_vibration", json.dumps({"Kp_ratio": 1.25, "Kd_ratio": 1.15}), 0.94, 28, 27, now, now),
-            ("skill_dmp_reach", "Dynamic Movement Reach (DMP)", "kinematics", "spatial_target_jog", json.dumps({"damping_ratio": 0.707, "basis_count": 20}), 0.91, 45, 42, now, now),
-            ("skill_cbf_safety", "Control Barrier Function Safety", "robotics", "obstacle_proximity_less_45mm", json.dumps({"barrier_gamma": 0.85}), 0.98, 62, 62, now, now),
-            ("skill_shm_sync", "Zero-Copy POSIX Shared Memory Sync", "system", "1000hz_rt_loop", json.dumps({"ringbuffer_slots": 10000}), 0.96, 120, 119, now, now),
-        ]
-        cursor.executemany("""
-            INSERT OR IGNORE INTO nil_skills (id, name, category, trigger_condition, parameters, confidence, executions_count, success_count, created_at, last_used)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, initial_skills)
+    # No seeded skills: the table only ever holds what the agent actually learned.
     conn.commit()
     conn.close()
 
@@ -428,6 +415,7 @@ class NILRequestHandler(BaseHTTPRequestHandler):
                 "backend": "NIL-Self-Evolving-Framework",
                 "version": "1.0.0",
                 "sdk_loaded": NIL_SDK_AVAILABLE,
+                "sdk_path": SDK_PATH,
                 "default_llm": (
                     "stub (no model configured — requests must carry a model selection)"
                     if NIL_AGENT is not None and type(NIL_AGENT._runner._provider).__name__ == "StubProvider"
