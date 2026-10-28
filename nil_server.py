@@ -470,10 +470,11 @@ class NILRequestHandler(BaseHTTPRequestHandler):
         if self.path in ["/v1/agent/chat", "/v1/agent/run"]:
             t0 = time.time()
             prompt = req_data.get("prompt", "")
-            active_file = req_data.get("activeFileName", "robot_arm_controller.py")
-            joints = req_data.get("joints", [0, 0, 0, 0, 0, 0])
-            kp = req_data.get("kpGain", 180)
-            kd = req_data.get("kdGain", 18)
+            # Missing values stay None ("not reported"); never stand-in joints, gains or file names.
+            active_file = req_data.get("activeFileName")
+            joints = req_data.get("joints")
+            kp = req_data.get("kpGain")
+            kd = req_data.get("kdGain")
 
             if NIL_AGENT is None:
                 self._send_json(503, {
