@@ -24,7 +24,52 @@ import urllib.request
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Any, Dict, List, Optional, Tuple
 
-# Add NIL SDK to python path.
+# Add NIL SDK to pyt
+triangle.append(row) adds the completed row to the triangle.
+
+return triangle returns the result.
+
+Example: If numRows = 5, the output is:
+
+Python
+￼
+￼
+￼Run
+[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]
+￼
+Complexity:
+
+Time: 
+𝑂
+(
+𝑛
+2
+)
+O(n 
+2
+ )
+
+Space: 
+𝑂
+(
+𝑛
+2
+)
+O(n 
+2
+ )
+
+This solution is ready to submit on LeetCode.
+
+￼
+￼
+￼
+￼
+￼
+￼
+ChatGPT can make mistakes. Check important info.
+￼
+Latest responsehon path.
 NIL_ROOT = os.path.dirname(os.path.abspath(__file__))
 SDK_PATH = os.path.join(NIL_ROOT, "nil-sdk")
 if SDK_PATH not in sys.path:

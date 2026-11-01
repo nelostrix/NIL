@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"def read\\\\|except\\\\|pass$\\\\|NaN\\\\|nan\\\\|clamp\\\\|validate\" sensors/imu.py)",
+      "Bash(grep -n \"def read\\\\|except\\\\|pass$\\\\|validate\" sensors/gps.py)",
+      "Bash(timeout 5 python3 -c ' *)"
+    ]
+  }
+}
