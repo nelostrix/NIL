@@ -76,6 +76,7 @@ class ToolManager:
             }
         start = time.perf_counter()
         try:
+            tool.validate(arguments)
             result = tool.invoke(arguments)
             elapsed = (time.perf_counter() - start) * 1000
             return {

@@ -8,8 +8,10 @@ from nil.robotics.skill_memory import EmbodiedSkillMemory, EmbodiedSkill
 from nil.robotics.safety_gatekeeper import PhysicalSafetyGatekeeper
 from nil.robotics.stacc_bridge import STACCRoboticsBridge
 from nil.robotics.domains import AutonomousManipulationDomain
+from nil.robotics.learning import policy, demonstrations
 
 __all__ = [
+    "policy", "demonstrations",
     "EmbodiedSensorium",
     "SensorFrame",
     "PhysicalWorldModel",

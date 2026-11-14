@@ -1,10 +1,7 @@
-"""Physical Safety Gatekeeper & Real-Time Control Barrier Filter.
+"""Joint position/velocity filter, not a collision or torque safety controller.
 
-Enforces physical robot safety invariants before hardware/actuator execution:
-- Position & Joint Velocity Limits: q_min <= q <= q_max, |q_dot| <= q_dot_max
-- Torque Limits: |tau| <= tau_max
-- Control Barrier Distance Constraints: Distance to obstacles >= d_safe
-- Self-Correction from Physical Failures: Attributes root causes to memory
+max_tau and d_safe are configuration metadata for external control systems.
+They are not enforced by sanitize_joint_commands. No hardware is accessed here.
 """
 
 from __future__ import annotations
@@ -26,6 +23,15 @@ class PhysicalSafetyGatekeeper:
         self.max_vel = float(max_joint_velocities_rad_s)
         self.max_tau = float(max_torque_nm)
         self.d_safe = float(min_obstacle_distance_m)
+        limits = np.asarray(self.joint_limits, dtype=np.float64)
+        if limits.ndim != 2 or limits.shape[1] != 2 or not np.isfinite(limits).all():
+            raise ValueError("Joint limits must be finite (lower, upper) pairs")
+        if not len(limits) or np.any(limits[:, 0] >= limits[:, 1]):
+            raise ValueError("Joint lower limits must be below upper limits")
+        if not np.isfinite([self.max_vel, self.max_tau, self.d_safe]).all() or min(
+            self.max_vel, self.max_tau, self.d_safe
+        ) <= 0:
+            raise ValueError("Velocity, torque and distance settings must be finite and positive")
 
     def sanitize_joint_commands(
         self,
@@ -36,6 +42,15 @@ class PhysicalSafetyGatekeeper:
         """Verify and clamp target joint angles to obey kinematic velocity and position bounds."""
         q_curr = np.asarray(q_current, dtype=np.float64)
         q_targ = np.asarray(q_target, dtype=np.float64)
+        if q_curr.ndim != 1 or q_targ.shape != q_curr.shape or len(q_curr) != len(self.joint_limits):
+            raise ValueError("Commands must match the configured joint count")
+        if not np.isfinite(q_curr).all() or not np.isfinite(q_targ).all():
+            raise ValueError("Joint values must be finite")
+        if not np.isfinite(dt) or dt <= 0:
+            raise ValueError("dt must be finite and positive")
+        limits = np.asarray(self.joint_limits)
+        if np.any(q_curr < limits[:, 0]) or np.any(q_curr > limits[:, 1]):
+            raise ValueError("Current joint state is outside limits; recovery requires external control")
 
         # 1. Clamp to position limits
         q_safe = q_targ.copy()

@@ -55,17 +55,14 @@ class STACCRoboticsBridge:
     def solve_spatial_ik(self, target_xyz: Tuple[float, float, float]) -> List[float]:
         """Solve inverse kinematics for a target end-effector position.
 
-        Returns real joint angles (radians) from stacc's damped-least-squares
-        solver — not a fixed canned pose. Only degrades (to the current robot's
-        zero pose) if the stacc SDK genuinely isn't importable here, and that
-        degraded path is explicit, not disguised as a real solve.
+        Returns joint angles (radians) from stacc's damped-least-squares solver.
+        Unavailable SDKs and solver failures raise; no fallback pose is issued.
         """
         if not self._stacc_available:
-            return [0.0] * 6
+            raise RuntimeError("STACC is unavailable; no IK solution was computed")
 
         try:
             solver = self._get_ik_solver()
             return solver.solve(list(target_xyz))
-        except Exception:
-            n = len(self._robot.dh_parameters) if self._robot is not None else 6
-            return [0.0] * n
+        except Exception as exc:
+            raise RuntimeError("STACC IK failed; no motion is authorized") from exc

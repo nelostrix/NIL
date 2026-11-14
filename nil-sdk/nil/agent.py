@@ -29,6 +29,7 @@ from nil.tools.evolver import ToolEvolver
 from nil.training.curriculum import CurriculumEngine
 
 logger = logging.getLogger("nil")
+_DEFAULT_EVOLUTION = object()
 
 
 class Agent:
@@ -36,8 +37,8 @@ class Agent:
         self,
         domain: Domain,
         base_model: str = "nvidia/nemotron-3-super-120b-a12b:free",
-        memory: Optional[PersistentMemory] = nil.PersistentMemory("./agent_store"),
-        evolution: Optional[EvolutionConfig] = EvolutionConfig(strategy="continuous"),
+        memory: Optional[PersistentMemory] = None,
+        evolution: Optional[EvolutionConfig] = _DEFAULT_EVOLUTION,
         config: Optional[NilConfig] = None,
         provider: Optional[str] = None,
         gradient_provider: Optional[GradientProvider] = None,
@@ -51,7 +52,11 @@ class Agent:
         self.domain = domain
         self.base_model = base_model
         self.config = config or NilConfig()
-        self.evolution_cfg = evolution or EvolutionConfig(enabled=False)
+        self.evolution_cfg = (
+            EvolutionConfig(strategy="continuous")
+            if evolution is _DEFAULT_EVOLUTION
+            else evolution or EvolutionConfig(enabled=False)
+        )
         self.memory = memory or PersistentMemory()
         self.provider = provider
 

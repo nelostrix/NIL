@@ -1,3 +1,18 @@
+# NIL AI Development SDK
+
+NIL 0.2.1 includes native PyTorch training, custom objectives, evaluation,
+checkpoint/resume, local causal LM construction and LoRA, CPU INT8 quantization,
+ONNX export/inference, run events and a local versioned artifact registry.
+It also includes early stopping, bounded grid search, LLM perplexity and CPU profiling.
+
+Start with [Model development](docs/MODEL_DEVELOPMENT.md) and
+[implementation and verification](SDK_IMPLEMENTATION_REPORT.md).
+The existing agent framework is retained below. See the model-development guide
+for the exact supported scope; this release does not claim universal recipes or
+production-safe physical autonomy.
+
+---
+
 # Nil — Self-Evolving Domain Agent Framework
 
 **AI agents that get better every time they run.**

@@ -1,3 +1,9 @@
+# NIL SDK 0.2
+
+For model-development installation, APIs, runnable examples and limitations, see
+[the model-development guide](../docs/MODEL_DEVELOPMENT.md) and
+[verification report](../SDK_IMPLEMENTATION_REPORT.md) in the repository root.
+
 # NIL SDK
 
 **Self-evolving AI agents that improve across runs.**
