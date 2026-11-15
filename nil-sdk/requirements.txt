@@ -23,7 +23,7 @@ pyyaml>=6.0                 # experiment configs (meta_reach.yaml)
 tensorboard>=2.14.0         # training logging (SummaryWriter)
 tqdm>=4.65.0                # training progress bars
 matplotlib>=3.7.0           # evaluation plots (evaluate_train_meta_learner.py)
-wandb>=0.15.0               # optional: experiment tracking (W&B)
+wandb>=0.31.0               # optional: experiment tracking (W&B)
 
 # ---------------------------------------------------------------------------
 # DEVELOPMENT
