@@ -7,7 +7,7 @@ name = "nil-sdk"
 version = "0.2.1"
 description = "AI model development SDK: native training, language models, optimization, artifacts and agents."
 readme = "README.md"
-license = {text = "Apache-2.0"}
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 authors = [
     {name = "Nelo Robotics Pvt Ltd"},
@@ -41,9 +41,9 @@ dev = ["pytest>=8.0", "pytest-cov", "ruff", "build", "wheel"]
 nil = "nil.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/nelo-robotics/nil"
+Homepage = "https://github.com/nelostrix/NIL"
 Documentation = "https://nil.nelo.dev"
-Repository = "https://github.com/nelo-robotics/nil"
+Repository = "https://github.com/nelostrix/NIL"
 
 [tool.setuptools.packages.find]
 where = ["nil-sdk"]
