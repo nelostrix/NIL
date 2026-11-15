@@ -1,0 +1,23 @@
+name: Pull request policy
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  metadata:
+    name: Validate pull request metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require a conventional pull request title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! printf '%s' "$TITLE" | grep -Eq '^(Add|Change|Fix|Docs|Refactor|Test|Build|Chore|Revert)(\([a-z0-9._/-]+\))?: .+'; then
+            echo "PR title must start with Add, Change, Fix, Docs, Refactor, Test, Build, Chore, or Revert followed by ': '."
+            exit 1
+          fi

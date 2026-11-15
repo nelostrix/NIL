@@ -1,5 +1,11 @@
 # NIL AI Development SDK
 
+[![CI](https://github.com/nelostrix/NIL/actions/workflows/sdk.yml/badge.svg)](https://github.com/nelostrix/NIL/actions/workflows/sdk.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+NIL is an independent open-source project. It supports OpenAI-compatible
+providers, but is not affiliated with or endorsed by OpenAI.
+
 NIL 0.2.1 includes native PyTorch training, custom objectives, evaluation,
 checkpoint/resume, local causal LM construction and LoRA, CPU INT8 quantization,
 ONNX export/inference, run events and a local versioned artifact registry.
