@@ -19,7 +19,7 @@ google-genai>=1.0.0         # GeminiProvider
 # ---------------------------------------------------------------------------
 torch>=2.0.0                # LiquidNN, MAML, meta-learning experiments
 numpy>=1.24.0               # data handling, eval scripts
-pyyaml>=6.0                 # experiment configs (meta_reach.yaml)
+pyyaml>=6.0.3                 # experiment configs (meta_reach.yaml)
 tensorboard>=2.14.0         # training logging (SummaryWriter)
 tqdm>=4.65.0                # training progress bars
 matplotlib>=3.7.0           # evaluation plots (evaluate_train_meta_learner.py)
