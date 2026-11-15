@@ -30,4 +30,4 @@ wandb>=0.15.0               # optional: experiment tracking (W&B)
 # ---------------------------------------------------------------------------
 pytest>=8.0                 # test runner
 pytest-cov>=4.0             # coverage reports
-ruff>=0.1.0                 # linter + formatter
+ruff>=0.17.5                 # linter + formatter
