@@ -57,7 +57,12 @@ class Run:
             "status": "created",
             "config": config or {},
         }
+        execution = os.environ.get("_NIL_EXECUTION_DIRECTORY")
+        if execution:
+            self.metadata["execution_job"] = Path(execution).name
         atomic_json(self.path / "run.json", self.metadata)
+        if execution:
+            atomic_json(Path(execution) / "runs" / f"{self.id}.json", {"path": str(self.path)})
 
     def event(self, kind, data=None, step=None):
         record = {

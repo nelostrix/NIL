@@ -85,7 +85,6 @@ The SDK (`nil-sdk/nil/`) contains:
   6. **Check Drift** — Multi-signal: success rate regression, new errors, tool degradation, cost inflation, task shift; auto-recovery (rollback on critical, targeted evolution on significant)
   7. **Evolve Tools** — Detect repeated workflows from traces and synthesize new composite tools; only runs if ToolEvolver is configured
 - **PipelineResult** — Tracks stages run, skills extracted/deprecated, deltas applied, strategy promoted, drift detected, tools evolved, recovery triggered
-- Sub-modules: `analyzer.py`, `skill_extractor.py`, `gradient_engine.py`, `evaluator.py`, `world_model.py`, `drift_detector.py`, `strategy_mutator.py`
 
 ### 1.7 Tools System (`nil/tools/`)
 
@@ -107,10 +106,9 @@ The SDK (`nil-sdk/nil/`) contains:
 
 ### 1.9 Optimization (`nil/optimization/`)
 
-- **ModelRouter** — Route subtasks to cheapest adequate model (stub)
-- **ChainCompressor** — Collapse deterministic multi-step chains (stub)
-- **CacheManager** — In-memory LRU cache (SHA256 keyed on tool_name+args; max 1000 entries)
-- **BudgetController** — Per-run ($1 default) and per-day ($50 default) cost limits
+- `quantize`: supported CPU dynamic INT8 conversion.
+- `export_onnx`: export and validate a compatible model.
+- `benchmark`, `profile`: explicit CPU inference measurements.
 
 ---
 
@@ -146,7 +144,9 @@ The SDK (`nil-sdk/nil/`) contains:
 - Inverse RL from expert demonstrations
 - Trajectory scoring and Elo-based pairwise ranking
 - Direct Preference Optimization (DPO)
-- Offline RL (Conservative Q-Learning), Online RL (PPO), Behavioral Cloning
+- Agent action-weight adaptation and action-frequency behavioral cloning; these
+  helpers are not neural PPO/CQL or full RLHF/DPO implementations. See TODO.md
+  and the RL help guide for validated environment-training coverage.
 - Advantage estimation (GAE) and value function learning
 - Bandit exploration (UCB1, Thompson Sampling, epsilon-greedy)
 - Monte Carlo Tree Search (MCTS) for high-stakes decisions (via `nil/models/planners.py`)
@@ -311,12 +311,12 @@ Subpackages also expose public APIs via their `__init__.py`:
 - `nil.agents` — `AgentRole`, `OrchestratorAgent`, `Blackboard`, `MessageBus`, `ConsensusMechanism`, `AgentPool`, `AgentTeam`, `MultiAgentNil`
 - `nil.models` — `StateSpace`, `TransitionModel`, `ObservationModel`, `RewardModel`, `BeliefTracker`, `MCTSPlanner`, `ModelAwareAgent`
 - `nil.tools` — `tool`, `Tool`, `ToolEmbedding`, `ToolAffordance`, `CompositeTool`, `LatentToolSelector`, `ToolEvolver`
-- `nil.evolution` — `EvolutionPipeline`, `PipelineResult` (submodules: analyzer, skill_extractor, gradient_engine, evaluator, world_model, drift_detector, strategy_mutator)
+- `nil.evolution` — `EvolutionPipeline`, `PipelineResult` (submodules: analyzer, skill_extractor, gradient_engine, evaluator, world_model, drift_detector)
 - `nil.benchmarks` — `NilBenchmarkSuite`, all benchmark types (learning, horizon, recovery, memory, transfer, system)
 - `nil.compilation` — `SkillCompilationEngine`, `CompilationLevel`, `IntermediateRepresentation`, `SkillParser`, `SkillOptimizer`, `SkillCodeGenerator`, `MacroRegistry`
 - `nil.observability` — `EventRecorder`, `TraceViewer`, `FlameGraphGenerator`, `TokenTimeline`, `ReasoningTree`, `MemoryBrowser`, `EvolutionDiffViewer`, `StrategyLineage`, `LiveDebugger`
 - `nil.training` — `CurriculumEngine`, `WeaknessAnalyzer`, `PracticeEngine`, `SyntheticTaskGenerator`
-- `nil.optimization` — `ModelRouter`, `ChainCompressor`, `CacheManager`, `BudgetController`
+- `nil.optimization` — `quantize`, `export_onnx`, `benchmark`, `profile`
 - `nil.providers` — `AnthropicProvider`, `OpenAIProvider`, `GeminiProvider`, `StubProvider`
 
 ---

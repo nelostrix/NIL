@@ -33,13 +33,34 @@ def main():
             check=True,
         )
         (wheel,) = wheels.glob("*.whl")
+        subprocess.run(
+            [sys.executable, str(root / "scripts/verify_core_install.py"), str(wheel)],
+            check=True,
+        )
         files = {
             f"wheels/{wheel.name}": wheel,
-            "README.md": root / "docs/MODEL_DEVELOPMENT.md",
+            "README.md": root / "README.md",
+            "TODO.md": root / "TODO.md",
+            "docs/MODEL_DEVELOPMENT.md": root / "docs/MODEL_DEVELOPMENT.md",
+            "docs/NEURAL_RL.md": root / "docs/NEURAL_RL.md",
+            "docs/SHALLOW_DESIGN.md": root / "docs/SHALLOW_DESIGN.md",
+            "docs/MODULE_REFERENCE.md": root / "docs/MODULE_REFERENCE.md",
+            "docs/CLASSICAL_SPECIALIZED.md": root / "docs/CLASSICAL_SPECIALIZED.md",
+            "docs/CLASSICAL_ML.md": root / "docs/CLASSICAL_ML.md",
+            "docs/CLASSICAL_GAPS.md": root / "docs/CLASSICAL_GAPS.md",
+            "docs/INSTALLATION.md": root / "docs/INSTALLATION.md",
+            "docs/USERGUIDE.md": root / "docs/USERGUIDE.md",
             "pyproject.toml": root / "pyproject.toml",
+            "scripts/verify_core_install.py": root / "scripts/verify_core_install.py",
         }
+        files['scripts/benchmark_workloads.py'] = root / 'scripts/benchmark_workloads.py'
+        for path in sorted((root / 'docs/benchmarks').glob('2026-11-21-*')):
+            if path.is_file():
+                files[path.relative_to(root).as_posix()] = path
         for path in sorted((root / "nil-sdk/examples").glob("*.py")):
             files[f"examples/{path.name}"] = path
+        for path in sorted((root / "nil-sdk/nil/_help").glob("*/help.md")):
+            files[path.relative_to(root).as_posix()] = path
         if (root / "SDK_IMPLEMENTATION_REPORT.md").is_file():
             files["SDK_IMPLEMENTATION_REPORT.md"] = root / "SDK_IMPLEMENTATION_REPORT.md"
         manifest = {

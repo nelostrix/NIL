@@ -1,26 +1,29 @@
-"""nil.robotics — Embodied AI & Autonomous Robotics Operating System."""
+"""Lazy robotics APIs: load each feature only when it is requested."""
 
-from nil.robotics.sensorium import EmbodiedSensorium, SensorFrame
-from nil.robotics.world_model import PhysicalWorldModel, PhysicalObject
-from nil.robotics.affordance import AffordanceQuery
-from nil.robotics.dmp import DynamicMovementPrimitive
-from nil.robotics.skill_memory import EmbodiedSkillMemory, EmbodiedSkill
-from nil.robotics.safety_gatekeeper import PhysicalSafetyGatekeeper
-from nil.robotics.stacc_bridge import STACCRoboticsBridge
-from nil.robotics.domains import AutonomousManipulationDomain
-from nil.robotics.learning import policy, demonstrations
+from importlib import import_module
 
-__all__ = [
-    "policy", "demonstrations",
-    "EmbodiedSensorium",
-    "SensorFrame",
-    "PhysicalWorldModel",
-    "PhysicalObject",
-    "AffordanceQuery",
-    "DynamicMovementPrimitive",
-    "EmbodiedSkillMemory",
-    "EmbodiedSkill",
-    "PhysicalSafetyGatekeeper",
-    "STACCRoboticsBridge",
-    "AutonomousManipulationDomain",
-]
+_EXPORTS = {
+    'EmbodiedSensorium': ('nil.robotics.sensorium', 'EmbodiedSensorium'),
+    'SensorFrame': ('nil.robotics.sensorium', 'SensorFrame'),
+    'PhysicalWorldModel': ('nil.robotics.world_model', 'PhysicalWorldModel'),
+    'PhysicalObject': ('nil.robotics.world_model', 'PhysicalObject'),
+    'AffordanceQuery': ('nil.robotics.affordance', 'AffordanceQuery'),
+    'DynamicMovementPrimitive': ('nil.robotics.dmp', 'DynamicMovementPrimitive'),
+    'EmbodiedSkillMemory': ('nil.robotics.skill_memory', 'EmbodiedSkillMemory'),
+    'EmbodiedSkill': ('nil.robotics.skill_memory', 'EmbodiedSkill'),
+    'PhysicalSafetyGatekeeper': ('nil.robotics.safety_gatekeeper', 'PhysicalSafetyGatekeeper'),
+    'STACCRoboticsBridge': ('nil.robotics.stacc_bridge', 'STACCRoboticsBridge'),
+    'AutonomousManipulationDomain': ('nil.robotics.domains', 'AutonomousManipulationDomain'),
+    'policy': ('nil.robotics.learning', 'policy'),
+    'demonstrations': ('nil.robotics.learning', 'demonstrations'),
+}
+__all__ = list(_EXPORTS)
+
+
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module, symbol = _EXPORTS[name]
+    value = getattr(import_module(module), symbol)
+    globals()[name] = value
+    return value

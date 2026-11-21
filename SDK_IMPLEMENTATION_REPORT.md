@@ -164,3 +164,278 @@ supply held-out validation data. Profiling measures a CPU clone's serialized
 state size and inference latency; it does not measure GPU or peak RAM. These
 features do not change the unfinished distributed-training or advanced LLM
 quantization scope above.
+
+## 2026-11-20 — Shallow catalog, modular imports and offline help
+
+Added a plain registry with 17 native model constructors in four groups, explicit lazy custom-model registration, and an offline help reader/CLI. Every catalog model and public module topic has its own help.md: 48 files, included in package data. Backend construction is direct; no additional per-prediction wrapper, automatic dependency installation or plugin scanning is introduced. Training and robotics exports now resolve individually instead of importing their optional application subsystems eagerly.
+
+Removed six unused/obsolete modules: model_router, chain_compressor, strategy_mutator, cache_manager, budget_controller and the canned nil.server bridge. The actual evolution pipeline, agents, neural/model workflows and real root daemon remain. The legacy Studio bundle bridge reports its removed NIL backend unavailable instead of generating a successful response. Simplified default requirements to the dependency-free core, removed obsolete verification checks, fixed the verification script filename/path, and replaced the duplicate entry-point feature claims with the current model-oriented guide. Historical audits retain their original evidence.
+
+Verification in the available Python 3.12 CPU environment: before changes 843 passed, five skipped, one local-serving failure; after changes 855 passed, six skipped, the same local-serving failure. The failure is sandbox socket creation denied with PermissionError, not a new test regression. Catalog/help focused checks pass (12 passed, one sklearn test skipped). Two legacy bridge tests pass without sockets. A wheel-only Python -S acceptance confirms 17 model names, 48 offline help files, lazy Trainer/policy access, no framework imports and no files created. Packaging verifies every ZIP manifest hash, all wheel Python syntax, package metadata parity and absence of the six removed modules. Scikit-learn and XGBoost execution require their optional backends and were not validated in this environment; real PyTorch model training passed. The available environment lacks a wheel package, so packaging uses a read-only cached wheel distribution on PYTHONPATH rather than modifying that environment.
+
+This remains a scoped alpha SDK: classical/native fit and neural training/evaluation/results are not yet one universal contract. See docs/SHALLOW_DESIGN.md and docs/MODULE_REFERENCE.md. Native engine computation still depends on model, data and hardware; shallow module organization alone does not guarantee execution speed.
+
+## 2026-11-20 — Classical workflow extension (native acceptance pending)
+
+Implemented the requested sequence: fitted numeric/categorical preprocessing and feature-selection pipelines; ClassicalResult with held-out metrics, warnings and compatibility dictionary access; complete trusted pipeline save/load with schema/version/integrity metadata; 28 additional constructor adapters (45 total); random/stratified/group/time-aware holdouts and fold-local cloned CV; count-bounded grid/random search with failure records and final refit; native/coefficient/permutation inspection, group-aware calibration and count-bounded learning curves. Top-level fit/pipeline/split/cross_validate/tune/save/load/transform functions keep the public structure shallow. Neural train/checkpoint behavior is retained, and evaluate/predict dispatch between classical and neural paths. Transform-only estimators use transform rather than fabricated predictive metrics.
+
+Default CV/search uses one worker, slices each fold's features/weights once, and clones preprocessing inside folds. Search budgets are checked before sampling parameter distributions or fitting; counts include the final refit. Fit-count budgets are not hard runtime/memory limits. Native estimator constraints, optional backend dependencies and explicit serialization trust remain visible. The boosting extra now includes scikit-learn for the native wrapper/metric dependency. The core remains dependency-free and has no new automatic service or backend import.
+
+Expanded per-model/module help to 80 guides, added the classical workflow guide, and added a runnable mixed-data/CV/tuning/inspection/save-reload example. Acceptance files cover leakage, missing/unseen categories, sample weighting, sparse and named data, native adapters, exact metric comparisons, artifact roundtrips/corruption, fold/group isolation, reproducibility, fit preflight limits, failed trials, calibration, importances, learning curves, and convergence reporting. Artifact rejection tests run without any model backend. scripts/verify_classical.py preflights a real sklearn installation before running acceptance; --full additionally requires pandas and XGBoost.
+
+Available-environment verification: 863 passed, 10 skipped, one preexisting local-serving failure (sandbox denies socket creation). Focused artifact/core/help/neural checks: 29 passed, two optional checks skipped. Python syntax and project metadata parity pass. Core-only Python -S resolves all new APIs, lists 45 models and 80 help topics, loads no compute backend and creates no state. The sandbox lacks scikit-learn, and installing the isolated classical environment failed because PyPI DNS/network access is blocked. Accordingly the four native classical acceptance modules are skipped here: the new classical implementation is not runtime-verified. No mock estimator outputs are substituted for native acceptance. An interpreter with sklearn is still required to run scripts/verify_classical.py (or --full) and resolve any backend-specific failures. See docs/CLASSICAL_ML.md for exact contracts and limits.
+
+## 2026-11-21 — Enforced NIL-only base installation
+
+Made the zero-dependency base requirement explicit in both project metadata files.
+Added scripts/verify_core_install.py and made bundle builds run it before creating
+an artifact. The verifier checks the wheel metadata/payload, creates an isolated
+temporary environment, inventories packages, installs offline with normal pip
+dependency resolution, and requires exactly NIL to be added. It checks imports,
+lazy APIs, offline help, CLI commands and missing-backend behavior from the
+installed wheel. The smoke check rejects network/process activity during API
+imports. The bundle includes the verifier and docs/INSTALLATION.md.
+
+Verification: the real clean-environment wheel installation passed and added
+only nil-sdk 0.2.1. Focused packaging, catalog, documentation and artifact checks:
+28 passed, one native sklearn check skipped. Missing backends now explicitly
+state that NIL does not install or download dependencies automatically. Optional
+extras remain explicit requests for external packages; current training adapters
+still need those engines. This change does not implement native replacements or
+the remaining classical-ML roadmap. Retrying the isolated sklearn development
+installation still failed at PyPI DNS resolution; native classical acceptance
+remains pending, rather than being reported as complete.
+
+## 2026-11-21 — Installed scikit-learn and mirrored its public API
+
+After network access was enabled, installed scikit-learn 1.9.1 and its numerical
+dependencies in /home/us/.nelo/nil-classical-env. A separate compatibility
+environment uses scikit-learn 1.4.2, NumPy 1.26.4 and SciPy 1.13.1. These are
+development environments; neither changes the base wheel's dependency policy.
+
+Added nil.sklearn with normal public/nested imports, root configuration/clone
+helpers and version reporting. A narrowly scoped finder is installed only on
+explicit mirror access. Namespace modules proxy backend exports; estimator
+classes/functions retain native identity, signatures, clone behavior, pickle
+paths and execution. Private underscore modules are excluded. Experimental
+enable-import gates and native optional requirements remain upstream behavior.
+This exposes the installed scikit-learn public API beyond NIL's curated catalog,
+without creating duplicate numerical implementations or per-prediction wrappers.
+Added a help.md guide (81 bundled guides), an executable text-classification
+example, compatibility tests and current documentation.
+
+Real native acceptance: 118 passed, three skipped with scikit-learn 1.9.1;
+116 passed, three skipped with 1.4.2 (module counts vary by version). The skips
+are the two unavailable XGBoost adapters and the separate neural adapter. Tests
+cover all installed public module exports, nested imports, original class and
+function identity, native serialization, text pipeline/search plus NIL complete
+pipeline persistence, incremental training and multioutput regression. The
+previous classical workflow checks also pass against both engines.
+
+The existing core/neural environment runs 873 passed, 11 optional-dependency
+skips. An attempted combined suite in the classical-only environment cannot
+collect two preexisting neural test files because they import torch directly;
+neural verification uses the existing torch environment instead. There is no
+remaining socket failure with the updated permissions. Both runnable classical
+and text examples pass using the installed NIL wheel from outside the repository;
+the synthetic classical pipeline's prediction roundtrip difference is zero.
+Offline clean-environment wheel acceptance still adds exactly nil-sdk alone.
+
+This is an optional backend API mirror, not a source vendoring effort or native
+engine replacement. Universal dependency-free training, specialized capabilities
+absent from scikit-learn, XGBoost execution and old-PC performance are not implied.
+
+## 2026-11-21 — Classical workflow gaps and failure handling
+
+Added multioutput/multilabel metrics and correct default folds/scorers; modern
+cluster-tag detection; a fix for mirror star imports containing blocked private
+exports; and multioutput class descriptions. Optional neural tests now skip at
+collection when torch is absent, allowing a classical-only full-suite run.
+
+Added training-time DataFrame column inference, ordinal/target encoding, text and
+polynomial helpers. Ordinal input normalization handles missing-only batches;
+target encoding explicitly distinguishes regression and configures CV without
+deprecated random_state arguments on sklearn 1.9. Added immutable bounded JSONL
+snapshots with checksum manifests, non-overwrite publication and independent
+reloads. They preserve JSON records, not typed DataFrame schemas.
+
+New shallow modules: imbalance (native fold-local samplers and vectorized
+weighted threshold selection); streaming (supervised partial_fit, frozen
+first-batch preprocessing, full checkpoints and a failed-batch guard); uncertainty
+(finite-sample split-conformal intervals and LAC sets); selection (optional
+Optuna TPE, persistent total-trial budgets, input/fold/config/version isolation).
+TPE uses two random startup trials before adaptive proposals. Added nested CV,
+same-fold candidate comparison and bounded numeric PDP/ICE. Normalized the
+older PDP grid alias so reports are compatible across tested engine versions.
+Artifact manifests now track NIL and optional estimator backends where used.
+
+No new mandatory dependency: tabular/imbalance/search are explicit extras and
+all imports stay lazy. Added four help guides (85 total), a runnable extended
+workflow, an --extended native acceptance preflight, and CLASSICAL_GAPS.md with
+the remaining work and concrete acceptance requirements. The distribution bundle
+includes the coverage ledger, guides, examples and clean-install verifier.
+
+Verification: full classical environment 978 passed, four optional skips; existing
+neural/core environment 876 passed, 12 optional skips. Native extended/full acceptance
+137 passed/one skipped on sklearn 1.9.1 with imbalanced-learn 0.14.2; 135
+passed/one skipped on sklearn 1.4.2 with imbalanced-learn 0.12.4. Both use
+Optuna 5.1.0, with real persistent resume, bounded trial extension, changed-data
+isolation and all-failed search checks. The only remaining native adapter skip
+is the separately tested neural adapter. New coverage includes weighted
+threshold parity against native scorer grids, conformal quantiles/sets,
+checkpoint/pipeline persistence, frozen coordinates, failed-batch rejection,
+multioutput metrics, inference leakage, snapshot corruption/bounds, PDP/ICE,
+nested fit preflight, comparison and native import behavior. The extended
+synthetic example completes with a saved/reloaded conformal model, 150 snapshot
+rows and two resumed streaming batches. Its tiny test coverage/accuracy is not
+a performance or useful-model-quality guarantee.
+
+Installed the optional xgboost-cpu 3.4.1 variant (5.5 MiB download) in both
+classical environments and added an explicit boosting-cpu extra. Native
+classifier/regressor checks and full-pipeline metrics/prediction roundtrips pass
+on both sklearn versions. Manifest and doctor metadata recognize the CPU
+distribution. Base-wheel dependencies remain empty; the CPU engine is not
+bundled or automatically installed. GPU XGBoost execution is unverified.
+
+Hard wall-time/RAM containment, distributed quotas/recovery, SHAP, typed dataset
+schema evolution, LightGBM/CatBoost acceptance and specialized forecasting,
+survival, ranking and recommendation workflows remain explicit gaps. Training
+still uses optional external numerical engines; no universal NIL-only engine
+or old-PC speed guarantee is claimed.
+
+
+## 2026-11-21 — Live ML/DL/RL checklist and validated execution/training batches
+
+Added TODO.md as the persistent completion checklist, covering common execution,
+classical ML, deep learning, reinforcement learning, independent engines and
+production/hardware acceptance. Each checked scope includes an acceptance gate
+and concrete evidence. CUDA, distributed/large-model, offline/recurrent/masked/
+multi-agent RL and remaining specialized workflows are deliberately not marked
+complete. docs/NEURAL_RL.md describes the implemented contracts and limitations.
+
+Implemented opt-in POSIX execution workers with automatic independently supervised timeout,
+cancellation/group cleanup, bounded logs/serialized payloads, thread environment
+settings, durable outcome/status, Linux virtual address-space limits and safe
+dead-worker recovery. Run records created in workers are reconciled on failure.
+Classical and actual DL worker/checkpoint tests pass, including a real memory
+allocation rejected by the cap. This is not a security sandbox, aggregate RSS/
+GPU quota; a detached client-independent supervisor is now implemented and tested.
+
+DL fixes/features: mean losses accumulate using actual loss denominators across
+uneven microbatches, weighted/ignored class labels and masked shifted LM tokens;
+sum/custom objective contracts are explicit. Added binary/multilabel tasks and
+metrics, ignored-label segmentation evaluation, CPU bf16 autocast and CUDA fp16
+GradScaler code with saved state/unscale-before-clip/unsafe-step rejection. CPU
+bf16 dropout resume is exact. Incompatible config/precision/environment/model/
+optimizer/scheduler states are rejected before restore. Optimizer ownership,
+subset gradients and parameter names/order are checked. Standard and plateau
+scheduler/momentum continuation is exact in native tests.
+
+Checkpoint publication now retains a committed immutable generation plus one
+previous generation and a normal .pt alias. Explicit recover repairs interrupted
+publication or rolls back one generation. Tests actually terminate a writer
+between alias publication and commit, inject commit failures, then reload the
+last valid state. Single-writer access and extra retained disk usage are required.
+CNN/LSTM/Transformer examples execute actual backward/learning and exact state
+roundtrips. Fixed generator-valued hidden widths being consumed during validation.
+
+RL audit removed misleading PPO/CQL claims for legacy action-weight agent
+heuristics. GAE/returns now respect terminal/truncation bootstrap boundaries and
+ordered rollouts. Replay uses bounded O(1) insertion, chronological access, local
+RNG and contents/cursor/RNG serialization. Fixed the agent value-gradient update
+using already-updated hidden weights and clear completed trajectory buffers.
+
+Added optional native SB3 PPO/A2C/DQN/SAC/TD3/DDPG/HER integration through nil.rl
+with bounded replay-array preflight, CPU-friendly defaults, real run records,
+step collection accounting, cancellation, separate bounded Gymnasium evaluation,
+normalization/RNG/mode isolation and trusted versioned policy/replay/normalization/
+RNG bundles. Root predict/evaluate dispatch to native RL models/results. An owned
+RL submit helper constructs/trains/saves inside its worker and returns plain
+bundle metadata instead of trying to pickle a live SB3 algorithm.
+
+Native control acceptance: 12 passed on SB3 2.9.2, Gymnasium 1.4.0, torch
+2.15.0+cpu, NumPy 2.5.4 / Python 3.12 Linux. All six algorithms update parameters
+and roundtrip; PPO/DQN learn a tiny discrete preference and SAC improves a tiny
+continuous reward. HER/replay/normalization continuation, environment isolation,
+step limits, cancellation, tampering and owned-worker bundle loading are tested.
+Pure helper acceptance: 51 passed. Focused DL matrix: 24 passed, one actual CUDA
+skip. These tiny tests establish execution/correctness paths, not general policy
+quality or old-PC performance. Full regressions and installed-wheel evidence are
+recorded in TODO.md. CUDA preflight exits 2 on this CPU-only machine; no GPU
+acceptance is claimed.
+
+The base dependency list stays empty. RL engines are explicit optional extras;
+SB3 was added only to the existing CPU torch development environment while keeping
+torch and NumPy pinned. No backend downloads, worker processes or services start
+on import. Bundle builds include the live checklist, updated help, DL/RL guide
+and runnable examples, and exercise an installed-wheel worker in a clean NIL-only
+environment. Broader production/distributed/independent-engine scope remains open.
+
+Final checklist batch acceptance: full classical environment 990 passed/seven
+optional skips; full neural/RL environment 924 passed/14 optional-hardware skips.
+Clean NIL-only installation, real installed-wheel stdlib execution, extracted
+CNN/LSTM/Transformer/PPO examples and an installed owned RL worker/bundle reload
+pass outside the source checkout. Lazy checkpoint-module resolution is also
+available in a fresh core-only process for recovery without importing torch.
+
+
+### 2026-11-21: supervision, bounded data continuation and measurements
+
+A detached stdlib supervisor now owns execution deadlines, group cleanup, bounded
+logs, durable status and Run reconciliation independently of the submitting
+client. Actual SIGKILL tests verify deadline and descendant cleanup, as well as
+successful-result recovery after client death. Reaping waits until owned group
+cleanup on waitid-capable hosts to avoid signalling a reused leader PID.
+Supervisor/machine death itself is outside the availability guarantee.
+
+DataLoader controls default to zero workers, with bounded workers/prefetch and
+explicit optional pinning. Checkpoints capture native loader/sampler generators
+and validated dataset/sampler state, call native sampler epoch hooks and reject
+changed contracts before model/optimizer/RNG restore. JSONL streaming uses a
+verified immutable source and byte cursor for bounded single-worker chunks.
+Persistent workers and iterable worker prefetch are refused to avoid untracked
+RNG/offset loss; this is a scoped epoch/chunk resume contract, not universal
+exactly-once ingestion. See the training/data help guides and loader_resume.py.
+
+Validation: full classical 992 passed/8 optional skips; full Torch/RL 931 passed/
+14 optional skips; final loader/execution focused suite 17 passed/1 optional
+sklearn skip; neural/RL preflight 130 passed/7 optional/platform skips. Actual
+CUDA/Windows/macOS/old-PC gates remain open. Measured current-host core import,
+100k×24 Ridge fit/predict and tiny CPU MLP training are documented under
+`docs/benchmarks/2026-11-21-*`; these cannot certify other hardware.
+
+
+Final installed acceptance: the rebuilt 0.2.1 wheel installs offline through
+normal dependency resolution with only nil-sdk added. Manifest hashes and all
+172 Python source files match the artifact. Both local development environments
+now use that regular wheel. From outside the source tree with PYTHONPATH removed,
+17 loader/execution tests pass (one unavailable sklearn skip in the Torch env),
+and the installed JSONL example verifies exact weights/history and the next
+unconsumed record. Independent supervision is exercised from the installed
+package by actual client SIGKILL tests. CUDA preflight exits 2 explicitly on
+this CPU-only host; it is not recorded as a GPU pass.
+
+
+### Classical/specialized completion batch — 2026-11-21
+
+Implemented the nine scoped milestones in TODO section 4: optional native CPU
+LightGBM/CatBoost pipelines; direct lag/horizon/calendar forecasting and rolling
+backtests; query-safe ranking/metrics; bounded sparse item-cosine/popularity
+recommendation; right-censored native Cox/KM workflows; bounded interventional
+permutation Shapley explanations; logical typed snapshots/migrations and atomic
+SQLite ingestion offsets; global same-host random-search attempts with leases and
+deterministic continuation; and simultaneous multioutput/fixed-group/known-ratio/
+exchangeable-block regression uncertainty. Native backend versions, survival
+assumptions, distributed-random versus adaptive-TPE scope and unsupported advanced
+methods are explicit in docs/CLASSICAL_SPECIALIZED.md and each module's help.md.
+
+The shallow catalog now has 54 constructors across ten groups and 101 offline
+help guides. No base dependency or implicit installation was introduced. Source
+acceptance: full current classical suite 1021 passed/8 unrelated optional skips;
+minimum sklearn 1.4.2 specialized/catalog acceptance 63 passed/11 missing optional
+backend skips. Actual native CPU versions: LightGBM 4.7.0, CatBoost 1.2.10,
+lifelines 0.30.0, sklearn 1.9.1, NumPy 2.5.5, pandas 3.1.1 and SciPy 1.18.1.
+The full source specialized example passes. New process tests use independent
+OS workers/connections, global attempt limits, actual killed-writer rollback and
+lease/token rejection. These checks do not imply all specialized algorithms,
+all-host performance, GPU support or end-to-end exactly-once model training.
