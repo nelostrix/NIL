@@ -59,7 +59,8 @@ assert 'site-packages' in str(pathlib.Path(nil.__file__).resolve()), nil.__file_
 assert nil.list_models() and nil.help('linear_regression')
 for name in ('pipeline', 'fit', 'save', 'load', 'split', 'cross_validate', 'tune',
              'Trainer', 'training', 'preprocessing', 'inspection', 'predict', 'evaluate', 'sklearn',
-             'streaming', 'uncertainty', 'imbalance', 'selection', 'execution', 'rl'):
+             'streaming', 'uncertainty', 'imbalance', 'selection', 'execution', 'rl',
+             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets'):
     assert getattr(nil, name) is not None, name
 assert nil.rl.algorithms() == ['a2c', 'ddpg', 'dqn', 'ppo', 'sac', 'td3']
 try:
@@ -74,6 +75,14 @@ except ImportError as error:
     assert 'does not install or download' in str(error), str(error)
 else:
     raise AssertionError('Clean core unexpectedly contains sklearn')
+for name in ('lag_forecaster', 'query_ranker', 'item_cosine', 'cox_ph', 'kaplan_meier',
+             'lightgbm_classifier', 'catboost_classifier'):
+    try:
+        nil.model(name)
+    except ImportError as error:
+        assert 'does not install or download' in str(error), (name, str(error))
+    else:
+        raise AssertionError('Clean core unexpectedly constructed ' + name)
 try:
     from nil.sklearn.linear_model import LinearRegression
 except ImportError as error:

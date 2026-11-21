@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible problem in NIL.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and the expected behavior.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: NIL version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest example that reproduces the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Python version, OS, and relevant optional dependencies.
+    validations:
+      required: true

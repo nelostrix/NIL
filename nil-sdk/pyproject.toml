@@ -51,9 +51,9 @@ dev = ["pytest>=8.0", "pytest-cov", "ruff", "build", "wheel"]
 nil = "nil.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/nelo-robotics/nil"
+Homepage = "https://github.com/nelostrix/NIL"
 Documentation = "https://nil.nelo.dev"
-Repository = "https://github.com/nelo-robotics/nil"
+Repository = "https://github.com/nelostrix/NIL"
 
 [tool.setuptools.packages.find]
 include = ["nil*"]
