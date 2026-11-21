@@ -9,7 +9,8 @@ def __getattr__(name):
 
 def mlp(input_dim, output_dim, hidden=(128, 64), activation="ReLU", dropout=0.0):
     torch = require("torch", "torch")
-    if any(not isinstance(n, int) or n < 1 for n in (input_dim, *hidden, output_dim)):
+    hidden = tuple(hidden)
+    if any(isinstance(n, bool) or not isinstance(n, int) or n < 1 for n in (input_dim, *hidden, output_dim)):
         raise ValueError("All layer dimensions must be positive integers")
     if not 0 <= dropout < 1:
         raise ValueError("dropout must be in [0, 1)")

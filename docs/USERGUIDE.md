@@ -215,7 +215,10 @@ Auto-detected from env vars. No import needed.
 - Inverse RL from expert demonstrations
 - Trajectory scoring and Elo-based pairwise ranking
 - Direct Preference Optimization (DPO)
-- Offline RL (Conservative Q-Learning), Online RL (PPO), Behavioral Cloning
+- Agent action-weight adaptation, terminal-aware return/advantage helpers and
+  action-frequency behavioral cloning. These agent helpers are not neural PPO,
+  CQL or full RLHF/DPO implementations. Environment-training integrations are
+  documented separately in `nil help rl` and the live TODO.md checklist.
 - Bandit exploration (UCB1, Thompson Sampling, epsilon-greedy)
 - Monte Carlo Tree Search (MCTS) for high-stakes decisions
 - Full integration via `RLEnabledAgent` with replay buffer
@@ -277,10 +280,9 @@ Auto-detected from env vars. No import needed.
 
 ### nil/optimization/ — Cost & Performance Optimization
 
-- **ModelRouter** — Route subtasks to cheapest adequate model (stub)
-- **ChainCompressor** — Collapse deterministic multi-step chains (stub)
-- **CacheManager** — In-memory LRU cache (SHA256 keyed on tool_name+args)
-- **BudgetController** — Per-run ($1 default) and per-day ($50 default) cost limits
+- `quantize`: supported CPU dynamic INT8 conversion.
+- `export_onnx`: export and validate a compatible model.
+- `benchmark`, `profile`: explicit CPU inference measurements.
 
 ---
 

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "timestamp_utc": "2026-11-21T07:06:55Z",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+  "logical_cpus": 8,
+  "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+  "versions": {
+    "nil-sdk": "0.2.1",
+    "numpy": "2.5.5",
+    "scikit-learn": "1.9.1"
+  },
+  "old_pc_acceptance": false,
+  "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+  "cases": {
+    "core_import": {
+      "samples": [
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00013782799942418933,
+          "peak_rss_mib": 19.9140625,
+          "process_wall_s": 0.07370724200154655
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00020081499678781256,
+          "peak_rss_mib": 19.9140625,
+          "process_wall_s": 0.07195053699979326
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.0001385790019412525,
+          "peak_rss_mib": 19.9140625,
+          "process_wall_s": 0.07426713799941353
+        }
+      ],
+      "median_wall_s": 0.07370724200154655,
+      "max_peak_rss_mib": 19.9140625
+    },
+    "ridge_native": {
+      "samples": [
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.03816236299826414,
+          "predict_s": 0.006186934999277582,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 1.4715425630020036,
+          "peak_rss_mib": 184.17578125,
+          "process_wall_s": 1.8235860770000727
+        },
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.02190093800163595,
+          "predict_s": 0.003103040002315538,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 0.9858692840025469,
+          "peak_rss_mib": 185.5625,
+          "process_wall_s": 1.3048668509982235
+        },
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.021481423998920945,
+          "predict_s": 0.0031337979999079835,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 0.9762048630000209,
+          "peak_rss_mib": 185.9921875,
+          "process_wall_s": 1.2846343019991764
+        }
+      ],
+      "median_wall_s": 1.3048668509982235,
+      "max_peak_rss_mib": 185.9921875
+    },
+    "ridge_nil": {
+      "samples": [
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.031026475997350644,
+          "predict_s": 0.0038357599987648427,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 0.9945881710009417,
+          "peak_rss_mib": 186.1171875,
+          "process_wall_s": 1.3216211500002828
+        },
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.028254115997697227,
+          "predict_s": 0.003556708001269726,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 0.9799219900014577,
+          "peak_rss_mib": 185.97265625,
+          "process_wall_s": 1.2953698950004764
+        },
+        {
+          "rows": 100000,
+          "features": 24,
+          "fit_s": 0.025113124000199605,
+          "predict_s": 0.002897786998801166,
+          "training_rmse": 5.366566898835421e-05,
+          "workload_s": 0.9786071960006666,
+          "peak_rss_mib": 185.875,
+          "process_wall_s": 1.3059494320004887
+        }
+      ],
+      "median_wall_s": 1.3059494320004887,
+      "max_peak_rss_mib": 186.1171875
+    }
+  }
+}

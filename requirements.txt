@@ -1,2 +1,2 @@
-# Install the framework and robotics extras; choose the appropriate PyTorch wheel for your device.
--e .[torch,robotics]
+# Minimal SDK. Select optional backends explicitly; see docs/MODEL_DEVELOPMENT.md.
+-e .
