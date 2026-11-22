@@ -15,21 +15,41 @@ def main():
     record.update(supervisor_pid=os.getpid(), supervisor_identity=_identity(os.getpid()))
     atomic_json(path / 'job.json', record)
     worker = None
+    quota = None
+    tree = None
     try:
-        worker = subprocess.Popen([sys.executable, '-m', 'nil._execution_worker', str(path)],
-                                  start_new_session=True, stdin=subprocess.DEVNULL,
-                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        limits=Limits(**record['limits'])
+        if limits.aggregate_memory_mb is not None:
+            from nil._execution_resources import Cgroup
+            quota=Cgroup(limits.cgroup_root,path.name,limits.aggregate_memory_mb)
+            record['cgroup_path']=str(quota.path)
+            atomic_json(path/'job.json',record)
+        args=[sys.executable,'-m','nil._execution_worker',str(path)]
+        if os.name=='nt':
+            from nil._execution_windows import launch
+            worker,tree=launch(args)
+            record['containment']='windows-job-object'
+        else:
+            worker = subprocess.Popen(args,start_new_session=True,stdin=subprocess.DEVNULL,
+                                      stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+            record['containment']='posix-process-group'
         record.update(status='running', pid=worker.pid, identity=_identity(worker.pid))
         atomic_json(path / 'job.json', record)
-        _Supervisor(path, worker, Limits(**record['limits']))._watch()
+        _Supervisor(path, worker, limits, quota=quota,tree=tree)._watch()
     except BaseException as exc:
         if worker is not None:
             try:
-                import signal
-                os.killpg(worker.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            worker.wait()
+                if tree is not None: tree.stop()
+                else:
+                    import signal
+                    os.killpg(worker.pid,signal.SIGKILL);worker.wait()
+            except (OSError,subprocess.TimeoutExpired): pass
+        if quota is not None:
+            try: quota.kill(); quota.close()
+            except OSError: pass
+        if tree is not None:
+            try: tree.close()
+            except OSError: pass
         error = f'Supervisor failed: {type(exc).__name__}: {exc}'
         record.update(status='failed', error=error)
         _finish_runs(path, 'failed', error)

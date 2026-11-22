@@ -60,8 +60,18 @@ assert nil.list_models() and nil.help('linear_regression')
 for name in ('pipeline', 'fit', 'save', 'load', 'split', 'cross_validate', 'tune',
              'Trainer', 'training', 'preprocessing', 'inspection', 'predict', 'evaluate', 'sklearn',
              'streaming', 'uncertainty', 'imbalance', 'selection', 'execution', 'rl',
-             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets'):
+             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets', 'native', 'distributed'):
     assert getattr(nil, name) is not None, name
+model = nil.native.Linear(1,1,seed=0)
+result = nil.native.fit(model, [[0.],[1.],[2.]], [[1.],[3.],[5.]], epochs=150, lr=.1)
+assert result['history'][-1] < .001
+assert nil.help('native') and nil.help('distributed')
+try:
+    nil.distributed.train(None,None,None,strategy='fsdp',resume='unused')
+except ValueError as error:
+    assert 'trusted_resume=True' in str(error)
+else:
+    raise AssertionError('Sharded trust gate must fail before backend loading')
 assert nil.rl.algorithms() == ['a2c', 'ddpg', 'dqn', 'ppo', 'sac', 'td3']
 try:
     nil.rl.load('unused')
@@ -120,8 +130,11 @@ def verify(path):
             raise ValueError(f'Expected only NIL to be added: before={before}, after={after}')
         print(run('-c', _SMOKE).stdout.strip())
         run('-c', "import nil; e=nil.execution; "
-            "assert not e.capabilities()['process_groups'] or "
+            "assert not e.capabilities()['owned_process_tree'] or "
             "e.run('builtins:sum', [1, 2, 3], job_root='jobs') == 6")
+        run('-c', "import nil; e=nil.execution; "
+            "assert not e.capabilities()['sampled_group_rss'] or "
+            "e.run('time:sleep', .1, limits=e.Limits(group_rss_mb=128), job_root='rss-jobs') is None")
         for command in (['models'], ['help', 'preprocessing'], ['doctor']):
             run('-m', 'nil', *command)
         print(json.dumps({'status': 'passed', 'added_packages': {'nil-sdk': version},

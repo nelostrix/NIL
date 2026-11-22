@@ -431,11 +431,151 @@ methods are explicit in docs/CLASSICAL_SPECIALIZED.md and each module's help.md.
 
 The shallow catalog now has 54 constructors across ten groups and 101 offline
 help guides. No base dependency or implicit installation was introduced. Source
-acceptance: full current classical suite 1021 passed/8 unrelated optional skips;
-minimum sklearn 1.4.2 specialized/catalog acceptance 63 passed/11 missing optional
+acceptance: full current classical suite 1026 passed/8 unrelated optional skips;
+minimum sklearn 1.4.2 specialized/catalog acceptance 67 passed/12 missing optional
 backend skips. Actual native CPU versions: LightGBM 4.7.0, CatBoost 1.2.10,
 lifelines 0.30.0, sklearn 1.9.1, NumPy 2.5.5, pandas 3.1.1 and SciPy 1.18.1.
 The full source specialized example passes. New process tests use independent
 OS workers/connections, global attempt limits, actual killed-writer rollback and
 lease/token rejection. These checks do not imply all specialized algorithms,
 all-host performance, GPU support or end-to-end exactly-once model training.
+
+
+Final installed acceptance: **30 specialized tests passed, zero skips** outside
+the source tree with PYTHONPATH removed, and the full extracted example passes
+all included workflows. The offline normal resolver installs only nil-sdk.
+All 186 Python source files match the wheel, all manifest hashes verify, and
+101 offline help guides ship. Both existing development environments now use
+the rebuilt regular wheel; the secondary environment received NIL alone and
+passes catalog/schema/help/import isolation checks. No universal classical,
+GPU, other-host or old-PC completion claim is implied by these scoped checks.
+
+
+## CPU completion — 2026-11-22
+
+Implemented dependency-free reference `nil.native`, scoped single-host CPU DDP,
+Sequential activation recomputation, offline neural imitation/fitted-Q, explicit
+structured RL workflows and CPU DQN simulator-state continuation/cancellation.
+Added bounded local inference process serving with hard deadlines/restart and
+authenticated metrics. CPU generative/LoRA/INT8/ONNX tests exercise real installed
+backends and local tiny models without model downloads. Five-seed learning and
+fresh-process native numerical benchmark raw reports are bundled.
+
+The numerical engine is deliberately a small dense float64 CPU reference, not a
+large vectorized/GPU engine. Optional Torch/SB3/Transformers/PEFT/etc remain explicit
+integrations. Classical source acceptance: 1034 passed/15 optional skips. Seven
+previous broad checklist gates close with scope recorded in TODO; GPU/other-OS,
+old-PC, FSDP, aggregate quotas, public production-serving and comprehensive release
+matrix acceptance remain open. Exact coverage/commands/limits: docs/CPU_COMPLETION.md.
+
+
+Full neural/RL run: 967 passed/13 optional or hardware skips. Final native/offline
+numerical-budget checks: 14 passed after adding output/allocation guards. Installed
+acceptance: 26 passed/one source-bootstrap deselection; installed completion example
+passes native persistence, neural inference and two-rank DDP. Clean offline base
+installation adds only nil-sdk; wheel/source parity covers 194 Python files and
+103 help guides. The approximately 476 KiB wheel is reinstalled in both existing
+development environments without resolving optional packages.
+
+
+Final installed numerical acceptance after the normalized-storage budget fix:
+**13 passed, one source-bootstrap deselection**. The installed --neural example
+passes again. No additional dependency was installed during either wheel update.
+
+
+## Ordered phases 1–2 — 2026-11-22
+
+PHASES.md defines nine ordered follow-on phases including all remaining broad
+acceptance gates plus independent-engine and advanced-RL scope. Implemented
+opt-in Linux group RSS monitoring and typed durable resource-limit failures,
+registered Run reconciliation and detached cleanup. Added explicit delegated
+cgroup-v2 memory/disabled-swap/group-OOM containment code; valid kernel behavior
+remains unaccepted without a delegated test host. Required-capability preflight
+reports failure, rather than a skipped pass.
+
+Fresh-process benchmark runner now has small/medium workload sizes, timeouts,
+raw failed-sample records, explicit small-profile memory/wall budgets and measured
+Ridge wrapper overhead. All four current-host small/medium classical/neural
+profiles execute successfully; small budgets pass, older-PC acceptance stays
+false. Source acceptance: classical 1045 passed/17 skips; neural 979 passed/15
+skips. Real Windows/macOS/GPU/kernel/older-PC targets remain open. Detailed
+measurements and commands: docs/benchmarks/2026-11-22-phases-1-2.md.
+
+
+Final installed acceptance for phases 1–2: **20 passed/three explicit skips**
+(two unconfigured delegated-kernel tests, one unrelated Torch test absent in the
+classical environment). The installed stdlib execution runner passes all five
+requested checks outside the source tree. Full source suites remain classical
+1045/17 skips and neural 979/15 skips. Clean offline dependency resolution adds
+only nil-sdk and executes the new RSS path. Source/wheel parity covers 195 Python
+files and 103 help guides; both development environments use the rebuilt wheel
+without adding dependencies. All bundle hashes pass. The approximately 478 KiB
+wheel, phase list, runners, budget files and measured reports are bundled.
+
+
+## CPU FSDP and target infrastructure — 2026-11-22
+
+Implemented opt-in same-world FP32 FSDP in nil.distributed, parameter/data limits,
+trusted native rank-local model/optimizer/RNG checkpoints with manifest-last
+publication and last-valid-epoch recovery. Actual CPU ranks validate local
+partitioning, serial SGD parity, exact resume, callback/rank faults, publication
+exception recovery and caller immutability. DDP hangs terminate within a bounded
+wall deadline. No GPU or meta-device/large-host-memory acceptance is inferred.
+
+Added required-hardware GPU test/report runner and executable AMP/DDP/FSDP cases;
+actual CPU-only preflight fails with exit 2. Added unexecuted nine-cell base
+platform/Python and manual-only trusted GPU CI configurations. Windows execution
+remains unsupported and checked for explicit refusal rather than advertised as
+contained. Native FSDP1 local state APIs have documented deprecation/version/trust
+limits. Full source tests: neural 985 passed/20 skips; classical 1046 passed/19
+skips; focused sharding/DDP/runner 12 passed. Commands and exact scope:
+docs/benchmarks/2026-11-22-sharding-gates.md.
+
+
+Installed initial acceptance outside the source tree: **12 passed**, and the
+installed --fsdp example passes actual two-rank training and checkpoint export.
+Final recovery handling also permits exporting an already-completed shard epoch
+without another optimizer update; the resumable manifest stays at its original
+location and the full export is written to the requested new output directory.
+The rebuilt distribution is revalidated for that final path below.
+
+
+Final rebuilt-wheel recovery acceptance outside the source tree: **3 passed**,
+including zero-update export of a completed epoch with a valid resumable manifest
+reference. Initial installed sharding/DDP/runner suite passed 12 tests; the FSDP
+example also passed. Both development environments use the final regular wheel
+without adding dependencies. Clean offline installation adds only nil-sdk;
+196 Python sources match and 103 help guides remain bundled. Installed offline
+help does not load Torch/NumPy/sklearn. CI YAML parses, but no remote jobs were
+executed. Hardware/OS/large-model acceptance remains open as listed above.
+
+
+## Windows containment — 2026-11-22
+
+Implemented suspended worker creation, Job Object assignment before resume,
+restricted inherited stdio handles, detached supervision and handle-owned tree
+termination. Windows kill-on-close ownership, process-time identity recovery and
+bounded atomic sharing-lock retry use only CPython/ctypes. No Windows memory/GPU
+quota is implied. Portable/Linux focus: 31 passed/three skips; final classical
+full suite: 1056 passed/29 skips. Prior full neural: 992 passed/29 skips. Ten
+Windows native tests are written and wired into CI but cannot execute on this
+Linux host. Required Windows preflight fails rather than passing mocks or skips.
+The implementation is complete for review; native platform acceptance stays open.
+See docs/WINDOWS_EXECUTION.md for mechanism, commands, target scope and limits.
+
+
+Final Windows launch review uses creation-time PROC_THREAD_ATTRIBUTE_JOB_LIST
+plus suspended startup and membership verification. This closes the documented
+create-then-assign orphan window. Windows 10+/Server 2016+ is required; native
+acceptance remains pending. No fallback to older unowned process creation exists.
+
+
+Final creation-time launch contracts/help/runner checks: **20 passed**. Installed
+Linux execution/resource/portable-Windows contracts outside the source tree:
+**26 passed, three explicit skips**. Installed stdlib execution acceptance passes
+including successful/timeout child cleanup and the RSS guard. Fresh offline
+installation adds only nil-sdk. Both development environments use the rebuilt
+regular wheel; 197 Python sources match and 103 help guides are bundled.
+Native Windows acceptance is still unrun; ten real-kernel cases and three Windows
+CI cells require a target host. The Linux --require-windows report fails with
+exit 2, so portable test success is not mistaken for Windows certification.

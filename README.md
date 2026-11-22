@@ -145,3 +145,28 @@ PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests -q
 Run this from the repository root with your chosen optional dependencies. Optional backend tests may skip when dependencies are absent. The dependency-free catalog and import-isolation tests run without them.
 
 Classical and specialized workflows now include forecasting, ranking, sparse recommendation, survival, optional LightGBM/CatBoost, bounded Shapley explanations, typed transactional datasets, distributed random search and additional conformal contracts. See [supported scope and acceptance](docs/CLASSICAL_SPECIALIZED.md).
+
+
+The CPU completion batch adds `nil.native` (dependency-free dense float64 reference
+autodiff/SGD), scoped two-rank `nil.distributed`, offline neural imitation/fitted-Q,
+recurrent/masked and independent multi-agent RL workflows, explicit supported
+simulator continuation, activation recomputation and restartable local serving.
+See [CPU acceptance and remaining limits](docs/CPU_COMPLETION.md). Installing
+plain NIL still adds only NIL; the optional `rl-contrib` extra is explicit.
+
+
+Ordered remaining development is tracked in [PHASES.md](PHASES.md). The current
+batch adds opt-in Linux resource budgets and repeatable small/medium performance
+acceptance; [measured scope and open targets](docs/benchmarks/2026-11-22-phases-1-2.md)
+distinguish current-host checks from old-PC, other-OS and GPU acceptance.
+
+
+`nil.distributed.train(..., strategy='fsdp')` adds explicit fixed-world FP32 FSDP
+with CPU-tested sharded checkpoint/resume and failure recovery. GPU acceptance
+requires actual devices through `scripts/accept_gpu.py`; see the
+[sharding scope and target gates](docs/benchmarks/2026-11-22-sharding-gates.md).
+
+
+Windows owned execution now has a standard-library Job Object implementation
+with suspended assignment and tree cleanup. [Windows scope and acceptance](docs/WINDOWS_EXECUTION.md)
+remain explicit: kernel tests are wired into CI and await actual Windows runs.

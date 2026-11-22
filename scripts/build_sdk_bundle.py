@@ -38,6 +38,9 @@ def main():
             check=True,
         )
         files = {
+            "PHASES.md": root / "PHASES.md",
+            "docs/WINDOWS_EXECUTION.md": root / "docs/WINDOWS_EXECUTION.md",
+            "docs/DEPLOYMENT.md": root / "docs/DEPLOYMENT.md",
             f"wheels/{wheel.name}": wheel,
             "README.md": root / "README.md",
             "TODO.md": root / "TODO.md",
@@ -53,8 +56,16 @@ def main():
             "pyproject.toml": root / "pyproject.toml",
             "scripts/verify_core_install.py": root / "scripts/verify_core_install.py",
         }
+        files['docs/CPU_COMPLETION.md'] = root / 'docs/CPU_COMPLETION.md'
+        files['scripts/benchmark_rl.py'] = root / 'scripts/benchmark_rl.py'
+        files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
+        files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
+        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py'):
+            files['scripts/'+name]=root/'scripts'/name
+        files['scripts/accept_gpu.py'] = root / 'scripts/accept_gpu.py'
+        files['scripts/accept_execution.py'] = root / 'scripts/accept_execution.py'
         files['scripts/benchmark_workloads.py'] = root / 'scripts/benchmark_workloads.py'
-        for path in sorted((root / 'docs/benchmarks').glob('2026-11-21-*')):
+        for path in sorted((root / 'docs/benchmarks').glob('*')):
             if path.is_file():
                 files[path.relative_to(root).as_posix()] = path
         for path in sorted((root / "nil-sdk/examples").glob("*.py")):
@@ -63,6 +74,14 @@ def main():
             files[path.relative_to(root).as_posix()] = path
         if (root / "SDK_IMPLEMENTATION_REPORT.md").is_file():
             files["SDK_IMPLEMENTATION_REPORT.md"] = root / "SDK_IMPLEMENTATION_REPORT.md"
+        for path in sorted((root / "nil-sdk/tests").glob("*.py")):
+            files[path.relative_to(root).as_posix()] = path
+        for path in sorted((root / "benchmarks/budgets").glob("*.json")):
+            files[path.relative_to(root).as_posix()] = path
+        for path in sorted((root / ".github/workflows").glob("sdk*.yml")):
+            files[path.relative_to(root).as_posix()] = path
+        for path in sorted((root/"deploy").glob("*")):
+            if path.is_file():files[path.relative_to(root).as_posix()]=path
         manifest = {
             "schema_version": 1,
             "wheel": wheel.name,

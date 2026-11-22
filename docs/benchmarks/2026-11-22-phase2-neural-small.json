@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "profile": "neural",
+  "size": "small",
+  "host_label": "current-host",
+  "budgets": {
+    "core_import": {
+      "max_wall_s": 0.5,
+      "max_peak_rss_mib": 35
+    },
+    "native_cpu": {
+      "max_wall_s": 1.0,
+      "max_peak_rss_mib": 35
+    },
+    "torch_cpu": {
+      "max_wall_s": 20.0,
+      "max_peak_rss_mib": 1024
+    }
+  },
+  "timestamp_utc": "2026-11-22T06:33:16Z",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+  "logical_cpus": 8,
+  "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+  "versions": {
+    "nil-sdk": "0.2.1",
+    "numpy": "2.5.4",
+    "torch": "2.15.0+cpu"
+  },
+  "old_pc_acceptance": false,
+  "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+  "cases": {
+    "core_import": {
+      "samples": [
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00013873200077796355,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.08782841599895619
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00041763899935176596,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.0849466619984014
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00037331500061554834,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.08860342999832937
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 0.08782841599895619,
+      "max_wall_s": 0.08860342999832937,
+      "max_peak_rss_mib": 20.703125,
+      "budget_violations": []
+    },
+    "native_cpu": {
+      "samples": [
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09111934099928476,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.09182473400142044,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.1843757500028005
+        },
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09155086600367213,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.09221883799909847,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.17766589600068983
+        },
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09099047900235746,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.09241382600157522,
+          "peak_rss_mib": 20.703125,
+          "process_wall_s": 0.17845067800226388
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 0.17845067800226388,
+      "max_wall_s": 0.1843757500028005,
+      "max_peak_rss_mib": 20.703125,
+      "budget_violations": []
+    },
+    "torch_cpu": {
+      "samples": [
+        {
+          "rows": 512,
+          "features": 8,
+          "epochs": 2,
+          "batch_size": 64,
+          "training_s": 1.1079815120028798,
+          "losses": [
+            7.867258548736572,
+            7.726565182209015
+          ],
+          "workload_s": 2.3080748520005727,
+          "peak_rss_mib": 306.859375,
+          "process_wall_s": 3.2841379700039397
+        },
+        {
+          "rows": 512,
+          "features": 8,
+          "epochs": 2,
+          "batch_size": 64,
+          "training_s": 1.1118704300024547,
+          "losses": [
+            7.867258548736572,
+            7.726565182209015
+          ],
+          "workload_s": 2.3140508830038016,
+          "peak_rss_mib": 307.21484375,
+          "process_wall_s": 3.276652542001102
+        },
+        {
+          "rows": 512,
+          "features": 8,
+          "epochs": 2,
+          "batch_size": 64,
+          "training_s": 1.1220022289999179,
+          "losses": [
+            7.867258548736572,
+            7.726565182209015
+          ],
+          "workload_s": 2.346003753998957,
+          "peak_rss_mib": 307.13671875,
+          "process_wall_s": 3.3032634729970596
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 3.2841379700039397,
+      "max_wall_s": 3.3032634729970596,
+      "max_peak_rss_mib": 307.21484375,
+      "budget_violations": []
+    }
+  },
+  "status": "passed"
+}

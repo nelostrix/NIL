@@ -1,0 +1,200 @@
+{
+  "schema_version": 2,
+  "profile": "classical",
+  "size": "small",
+  "host_label": "current-host",
+  "budgets": {
+    "core_import": {
+      "max_wall_s": 0.5,
+      "max_peak_rss_mib": 35
+    },
+    "native_cpu": {
+      "max_wall_s": 1.0,
+      "max_peak_rss_mib": 35
+    },
+    "ridge_native": {
+      "max_wall_s": 5.0,
+      "max_peak_rss_mib": 512
+    },
+    "ridge_nil": {
+      "max_wall_s": 5.0,
+      "max_peak_rss_mib": 512
+    }
+  },
+  "timestamp_utc": "2026-11-22T06:31:50Z",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+  "logical_cpus": 8,
+  "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+  "versions": {
+    "nil-sdk": "0.2.1",
+    "numpy": "2.5.5",
+    "scikit-learn": "1.9.1"
+  },
+  "old_pc_acceptance": false,
+  "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+  "cases": {
+    "core_import": {
+      "samples": [
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00014674799604108557,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.07489341699692886
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.00014708800154039636,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.07250858000043081
+        },
+        {
+          "version": "0.2.1",
+          "optional_backends_loaded": false,
+          "workload_s": 0.0002082939972751774,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.07284734999848297
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 0.07284734999848297,
+      "max_wall_s": 0.07489341699692886,
+      "max_peak_rss_mib": 20.54296875,
+      "budget_violations": []
+    },
+    "native_cpu": {
+      "samples": [
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09078339400002733,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.0919324550050078,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.17419157100084703
+        },
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09133095800643787,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.09217084499687189,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.18002748699655058
+        },
+        {
+          "rows": 65,
+          "features": 1,
+          "epochs": 150,
+          "fit_s": 0.09914769900206011,
+          "final_mse": 1.5608189909186995e-14,
+          "optional_backends_loaded": false,
+          "workload_s": 0.09989472000597743,
+          "peak_rss_mib": 20.54296875,
+          "process_wall_s": 0.17785966000519693
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 0.17785966000519693,
+      "max_wall_s": 0.18002748699655058,
+      "max_peak_rss_mib": 20.54296875,
+      "budget_violations": []
+    },
+    "ridge_native": {
+      "samples": [
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.007572098998934962,
+          "predict_s": 0.0002865509959519841,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 0.989498413997353,
+          "peak_rss_mib": 149.01171875,
+          "process_wall_s": 1.3415213350017439
+        },
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.005435640996438451,
+          "predict_s": 0.00021031799406046048,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 0.9939769209959195,
+          "peak_rss_mib": 149.19921875,
+          "process_wall_s": 1.33630285399704
+        },
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.006324051006231457,
+          "predict_s": 0.0004646480010706,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 0.9904806690028636,
+          "peak_rss_mib": 149.12890625,
+          "process_wall_s": 1.3462342780039762
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 1.3415213350017439,
+      "max_wall_s": 1.3462342780039762,
+      "max_peak_rss_mib": 149.19921875,
+      "budget_violations": []
+    },
+    "ridge_nil": {
+      "samples": [
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.007956745001138188,
+          "predict_s": 0.00024382099945796654,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 1.0159961879980983,
+          "peak_rss_mib": 149.48828125,
+          "process_wall_s": 1.3711884709991864
+        },
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.007846226995752659,
+          "predict_s": 0.0002713529975153506,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 1.0497846479993314,
+          "peak_rss_mib": 149.07421875,
+          "process_wall_s": 1.4024982530027046
+        },
+        {
+          "rows": 2048,
+          "features": 8,
+          "fit_s": 0.010368721996201202,
+          "predict_s": 0.0002507839963072911,
+          "training_rmse": 0.0013174511263935893,
+          "workload_s": 0.9933144149981672,
+          "peak_rss_mib": 149.42578125,
+          "process_wall_s": 1.3330587849995936
+        }
+      ],
+      "failures": [],
+      "status": "passed",
+      "median_wall_s": 1.3711884709991864,
+      "max_wall_s": 1.4024982530027046,
+      "max_peak_rss_mib": 149.48828125,
+      "budget_violations": []
+    }
+  },
+  "ridge_wrapper_overhead": {
+    "native_median_fit_s": 0.006324051006231457,
+    "nil_median_fit_s": 0.007956745001138188,
+    "fit_ratio": 1.2581721737060536,
+    "added_fit_seconds": 0.001632693994906731,
+    "scope": "Independent fresh processes; small timings include noise and explicit NIL artifact/run recording"
+  },
+  "status": "passed"
+}

@@ -1,4 +1,4 @@
-"""Opt-in POSIX worker execution. Importing this module starts no process/thread."""
+"""Opt-in owned worker execution. Importing this module starts no process/thread."""
 
 from dataclasses import asdict, dataclass
 import json
@@ -15,7 +15,7 @@ import uuid
 
 from nil.lifecycle import atomic_json, sha256
 
-_TERMINAL = {"completed", "failed", "timed_out", "cancelled", "interrupted"}
+_TERMINAL = {"completed", "failed", "timed_out", "cancelled", "interrupted", "resource_limited"}
 
 
 @dataclass(frozen=True)
@@ -25,16 +25,28 @@ class Limits:
     threads: int = 1
     log_bytes: int = 65536
     payload_mb: int = 256
+    group_rss_mb: int | None = None
+    aggregate_memory_mb: int | None = None
+    cgroup_root: str | None = None
 
     def __post_init__(self):
         if isinstance(self.timeout, bool) or not isinstance(self.timeout, (int, float)) or not math.isfinite(self.timeout) or self.timeout <= 0:
             raise ValueError("timeout must be finite and positive")
-        for name in ("threads", "log_bytes", "payload_mb", "memory_mb"):
+        for name in ("threads", "log_bytes", "payload_mb", "memory_mb", "group_rss_mb", "aggregate_memory_mb"):
             value = getattr(self, name)
-            if name == "memory_mb" and value is None:
+            if name in {"memory_mb", "group_rss_mb", "aggregate_memory_mb"} and value is None:
                 continue
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ValueError(f"{name} must be a positive integer")
+
+        if self.aggregate_memory_mb is not None:
+            if not isinstance(self.cgroup_root,(str,os.PathLike)):
+                raise ValueError('aggregate_memory_mb requires an explicit delegated cgroup_root')
+            root=os.fspath(self.cgroup_root)
+            if not isinstance(root,str): raise ValueError('cgroup_root must resolve to a string path')
+            object.__setattr__(self,'cgroup_root',root)
+        elif self.cgroup_root is not None:
+            raise ValueError('cgroup_root requires aggregate_memory_mb')
 
 
 class ExecutionError(RuntimeError):
@@ -51,13 +63,27 @@ class ExecutionCancelled(ExecutionError):
     pass
 
 
-def capabilities():
+class ExecutionResourceLimit(ExecutionError):
+    pass
+
+
+from nil._execution_resources import ResourceUnavailable
+
+
+def capabilities(*,cgroup_root=None):
+    from nil._execution_resources import cgroup_capabilities
     return {"process_groups": os.name == "posix", "address_space_limit": sys.platform == "linux",
-            "identity_safe_recovery": sys.platform == "linux", "aggregate_rss_limit": False,
-            "gpu_memory_limit": False, "independent_supervisor": os.name == "posix"}
+            "identity_safe_recovery": sys.platform == "linux" or os.name == "nt", "aggregate_rss_limit": False,
+            "gpu_memory_limit": False, "independent_supervisor": os.name in {"posix","nt"},
+            "owned_process_tree": os.name in {"posix","nt"}, "windows_job_objects": os.name=="nt",
+            "sampled_group_rss": sys.platform == "linux" and Path('/proc/self/stat').is_file(),
+            "kernel_aggregate_memory": cgroup_capabilities(cgroup_root)}
 
 
 def _identity(pid):
+    if os.name=='nt':
+        from nil._execution_windows import identity
+        return identity(pid)
     if sys.platform != "linux":
         return None
     try:
@@ -96,10 +122,13 @@ def _finish_runs(path, state, error):
 
 class _Supervisor:
     """Runs only inside the detached supervisor process."""
-    def __init__(self, path, process, limits):
+    def __init__(self, path, process, limits, quota=None, tree=None):
         self.path, self.process, self.limits = path, process, limits
+        self.quota = quota
+        self.tree = tree
 
     def _running(self):
+        if self.tree is not None: return self.process.poll() is None
         # Keep an exited group leader unreaped until its owned descendants have
         # been killed. Its PID cannot be reused while it remains our zombie.
         if hasattr(os, 'waitid') and hasattr(os, 'WNOWAIT'):
@@ -107,6 +136,8 @@ class _Supervisor:
         return self.process.poll() is None
 
     def _stop(self):
+        if self.tree is not None:
+            self.tree.stop(); return
         try:
             os.killpg(self.process.pid, signal.SIGTERM)
         except ProcessLookupError:
@@ -118,11 +149,13 @@ class _Supervisor:
             os.killpg(self.process.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
+        if self.quota is not None: self.quota.kill()
         self.process.wait()
 
     def _watch(self):
         record = json.loads((self.path / "job.json").read_text())
         started = record["started_monotonic"]
+        peak_rss, peak_processes = 0, 0
 
         def drain():
             remaining = self.limits.log_bytes
@@ -145,6 +178,13 @@ class _Supervisor:
                     state, error = "timed_out", "Wall-clock execution limit exceeded"
                     self._stop()
                     break
+                if self.limits.group_rss_mb is not None:
+                    from nil._execution_resources import group_rss
+                    usage=group_rss(self.process.pid)
+                    peak_rss=max(peak_rss,usage['rss_bytes']); peak_processes=max(peak_processes,usage['processes'])
+                    if usage['rss_bytes']>self.limits.group_rss_mb*1024**2:
+                        state,error='resource_limited','Sampled process-group RSS budget exceeded'
+                        self._stop(); break
                 time.sleep(.02)
             else:
                 self._stop()
@@ -168,6 +208,24 @@ class _Supervisor:
             reader.join(timeout=1)
             if not reader.is_alive():
                 self.process.stdout.close()
+            if self.limits.group_rss_mb is not None:
+                record['group_memory']={'backend':'sampled-process-group-rss','limit_bytes':self.limits.group_rss_mb*1024**2,
+                    'sampled_peak_rss_bytes':peak_rss,'sampled_peak_processes':peak_processes,'interval_seconds':.02}
+            if self.quota is not None:
+                try:
+                    record['aggregate_memory']=self.quota.evidence()
+                    if record['aggregate_memory']['memory_events'].get('oom_kill',0):
+                        state,error='resource_limited','Kernel aggregate memory budget exceeded (cgroup OOM)'
+                except (OSError,ValueError) as exc:
+                    state,error='failed',f'Aggregate-memory evidence failed: {exc}'
+                finally:
+                    try: self.quota.close()
+                    except OSError as exc:
+                        state,error='failed',f'Aggregate-memory cleanup failed: {exc}'
+            if self.tree is not None:
+                try:
+                    self.tree.close(); record['containment_cleanup']='closed'
+                except OSError as exc: state,error='failed',f'Windows job cleanup failed: {exc}'
             record.update(status=state, error=error, elapsed=time.monotonic() - started)
             if state != "completed":
                 _finish_runs(self.path, state, error)
@@ -202,6 +260,8 @@ class Job:
             raise ExecutionTimeout(record)
         if record["status"] == "cancelled":
             raise ExecutionCancelled(record)
+        if record["status"] == "resource_limited":
+            raise ExecutionResourceLimit(record)
         if record["status"] != "completed":
             raise ExecutionError(record)
         return _read_result(self.path, record)
@@ -215,8 +275,14 @@ def _read_result(path, record):
         return pickle.load(stream)
 
 
+def _supervisor_options():
+    if os.name=='nt':
+        return {'creationflags':0x00000008|0x00000200,'close_fds':True}  # DETACHED_PROCESS | NEW_PROCESS_GROUP
+    return {'start_new_session':True}
+
+
 def submit(operation, *args, limits=None, job_root="./nil_jobs", **kwargs):
-    """Execute an importable callable or 'module:function' in an owned POSIX worker.
+    """Execute an importable callable or 'module:function' in an owned worker.
 
     Standard pickle is used for trusted local inputs/results. Closures and local
     classes are not supported. Results contain a worker-owned model copy.
@@ -224,10 +290,12 @@ def submit(operation, *args, limits=None, job_root="./nil_jobs", **kwargs):
     limits = limits or Limits()
     if not isinstance(limits, Limits):
         raise TypeError("limits must be nil.execution.Limits")
-    if os.name != "posix":
-        raise NotImplementedError("Owned process-group execution currently requires POSIX")
+    if os.name not in {"posix","nt"}:
+        raise NotImplementedError("Owned execution requires POSIX or Windows")
     if limits.memory_mb is not None and sys.platform != "linux":
         raise NotImplementedError("Address-space limits are currently supported on Linux only")
+    from nil._execution_resources import validate_limits
+    validate_limits(limits)
     if not callable(operation) and not (isinstance(operation, str) and ':' in operation):
         raise TypeError("operation must be importable or a 'module:function' path")
     path = Path(job_root).resolve() / ("job-" + uuid.uuid4().hex)
@@ -245,7 +313,7 @@ def submit(operation, *args, limits=None, job_root="./nil_jobs", **kwargs):
         record.update(started_monotonic=time.monotonic())
         atomic_json(path / "job.json", record)
         process = subprocess.Popen([sys.executable, '-m', 'nil._execution_supervisor', str(path)],
-                                   env=environment, start_new_session=True, stdin=subprocess.DEVNULL,
+                                   env=environment, **_supervisor_options(), stdin=subprocess.DEVNULL,
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         # Only the supervisor writes job.json after launch. This avoids racing a
         # fast completion with the client's initial running-status publication.
@@ -253,7 +321,8 @@ def submit(operation, *args, limits=None, job_root="./nil_jobs", **kwargs):
     except BaseException as exc:
         if process is not None:
             try:
-                os.killpg(process.pid, signal.SIGKILL)
+                if os.name=="nt": process.kill()
+                else: os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
             process.wait()
@@ -282,8 +351,8 @@ def recover(path, *, trusted=False, result=False):
     if record.get("schema_version") != 1 or record.get("id") != path.name:
         raise ValueError("Unsupported job record")
     if record["status"] not in _TERMINAL:
-        if sys.platform != "linux":
-            raise NotImplementedError("Identity-safe active-job recovery requires Linux")
+        if sys.platform != "linux" and os.name != "nt":
+            raise NotImplementedError("Identity-safe active-job recovery requires Linux or Windows")
         supervisor = record.get("supervisor_identity")
         if supervisor is not None and _identity(record.get("supervisor_pid")) == supervisor:
             return record

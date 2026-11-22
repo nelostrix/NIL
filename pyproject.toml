@@ -26,6 +26,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+rl-contrib = ["sb3-contrib>=2.4,<3", "stable-baselines3>=2.4,<3", "gymnasium>=1,<2", "torch>=2.6,<3"]
 lightgbm = ["lightgbm>=4,<5", "scikit-learn>=1.4,<2"]
 catboost = ["catboost>=1.2,<2", "scikit-learn>=1.4,<2"]
 survival = ["lifelines>=0.30,<1", "pandas>=2,<4", "scikit-learn>=1.4,<2"]
@@ -44,7 +45,7 @@ anthropic = ["anthropic>=0.30.0"]
 openai = ["openai>=1.30.0"]
 gemini = ["google-genai>=1.0.0"]
 tracking = ["mlflow>=2.15,<4"]
-all = ["lightgbm>=4,<5", "catboost>=1.2,<2", "lifelines>=0.30,<1", "stable-baselines3>=2.4,<3", "gymnasium>=1,<2", "pandas>=2,<4", "imbalanced-learn>=0.12,<1", "optuna>=4,<6", "torch>=2.6,<3", "numpy>=1.26,<3", "transformers>=4.45,<5", "peft>=0.13,<1", "scikit-learn>=1.4,<2", "xgboost>=2,<4", "onnx>=1.16,<2", "onnxruntime>=1.18,<2", "anthropic>=0.30.0", "openai>=1.30.0", "google-genai>=1.0.0", "mlflow>=2.15,<4"]
+all = ["sb3-contrib>=2.4,<3", "lightgbm>=4,<5", "catboost>=1.2,<2", "lifelines>=0.30,<1", "stable-baselines3>=2.4,<3", "gymnasium>=1,<2", "pandas>=2,<4", "imbalanced-learn>=0.12,<1", "optuna>=4,<6", "torch>=2.6,<3", "numpy>=1.26,<3", "transformers>=4.45,<5", "peft>=0.13,<1", "scikit-learn>=1.4,<2", "xgboost>=2,<4", "onnx>=1.16,<2", "onnxruntime>=1.18,<2", "anthropic>=0.30.0", "openai>=1.30.0", "google-genai>=1.0.0", "mlflow>=2.15,<4"]
 dev = ["pytest>=8.0", "pytest-cov", "ruff", "build", "wheel"]
 
 [project.scripts]
