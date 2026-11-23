@@ -22,7 +22,7 @@ def test_regression_and_neural_imitation_converge_without_numpy(tmp_path):
     path=native.save(model,tmp_path/'native.json',optimizer=optimizer); restored,other=native.load(path)
     assert restored.state_dict()==model.state_dict() and other.state_dict()==optimizer.state_dict()
     code="import nil.native as n,sys; m=n.Linear(1,1); assert n.fit(m,[[0],[1]],[[0],[1]],epochs=2)['steps']==2; assert not any(k in sys.modules for k in ('numpy','torch','sklearn'))"
-    subprocess.run([sys.executable,'-S','-c',code],env={**os.environ,'PYTHONPATH':str(__import__('pathlib').Path(__file__).resolve().parents[1])},check=True)
+    subprocess.run([sys.executable,'-S','-c',code],env={**os.environ,'PYTHONPATH':str(__import__('pathlib').Path(native.__file__).resolve().parent.parent)},check=True)
 
 
 def test_stale_graph_nonfinite_and_unsupported_device_rejected_before_mutation():

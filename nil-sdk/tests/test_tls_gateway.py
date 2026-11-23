@@ -145,3 +145,23 @@ def test_public_client_rejects_invalid_origins_budgets_and_exposes_typed_error()
         with pytest.raises(ValueError):nil.serving.client(url,'client-capability-secret')
     for options in ({'max_attempts':True},{'timeout':float('inf')},{'max_response_bytes':0}):
         with pytest.raises(ValueError):nil.serving.client('https://localhost','client-capability-secret',**options)
+
+
+def test_metrics_require_auth_and_expose_only_aggregate_counters(proxy,capfd):
+    server,backend,state,client,context=proxy
+    def metrics(token):
+        connection=http.client.HTTPSConnection('localhost',server.server_port,context=context(),timeout=2)
+        try:
+            connection.request('GET','/metrics',headers={'Authorization':'Bearer '+token})
+            response=connection.getresponse();return response.status,json.loads(response.read())
+        finally:connection.close()
+    status,body=metrics('wrong-private-capability')
+    assert status==401 and body=={'error':'Unauthorized'}
+    assert client().predict([[12345.6789]])==[[24691.3578]]
+    status,body=metrics('client-capability-secret')
+    assert status==200 and body['auth_rejections']==1 and body['successes']==1
+    assert body['latency_seconds']>0 and body['peak_connections']<=4
+    assert all(type(value) in (int,float) for value in body.values())
+    text=json.dumps(body)+''.join(capfd.readouterr())
+    assert all(secret not in text for secret in ('client-capability-secret','private-backend-capability','12345.6789','24691.3578'))
+    assert state['calls']==1  # Metrics are local; they never reach inference.

@@ -1,5 +1,15 @@
 # NIL 0.2 model-development implementation
 
+Current acceptance update (2026-11-23): managed CPU TLS serving now has protected
+credential reads and explicit periodic/final aggregate metrics. Installed
+minimum/current classical and Torch CPU profiles pass; base Linux/macOS/Windows
+Python3.10–3.12 acceptance passes. The independent float64 CPU engine adds stable
+multiclass loss, softmax and transactional Adam with JSON continuation.
+See [the live phases](PHASES.md), [backend profiles](../BACKEND_COMPATIBILITY.md)
+and [native scope](../NATIVE_ENGINE.md) for current evidence and open gates.
+The dated sections below are historical records, not current completeness claims.
+
+
 Date: 2026-11-14. This change implements a usable PyTorch-native SDK release;
 it does not claim that every capability in the earlier ten-area audit is complete.
 Those audit reports remain the pre-change baseline.

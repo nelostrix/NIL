@@ -36,7 +36,9 @@ result = nil.native.fit(
 print(model(nil.native.Tensor([[3.]])).tolist())  # Approximately [[7.0]]
 ```
 
-`nil.native` is a bounded float64 CPU reference engine. Larger classical,
+`nil.native` also supports stable multiclass loss, softmax and Adam with JSON
+checkpoint continuation. See the [independent engine scope](docs/NATIVE_ENGINE.md).
+It is a bounded float64 CPU reference engine. Larger classical,
 neural and specialized workflows use explicitly installed backends:
 
 | Install | Enables |
@@ -164,6 +166,8 @@ The [ordered phase checklist](docs/project/PHASES.md) and
 [live TODO](docs/project/TODO.md) distinguish implemented code, passing tests,
 unsupported combinations and unrun hardware gates. Detailed historical evidence
 is in the [implementation report](docs/project/SDK_IMPLEMENTATION_REPORT.md).
+The [installed backend profiles](docs/BACKEND_COMPATIBILITY.md) document separate
+minimum/current classical and Torch CPU checks, including runnable examples.
 
 For development, install the explicit dev extra and run the relevant backend tests:
 

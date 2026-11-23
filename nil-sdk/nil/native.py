@@ -81,6 +81,17 @@ class Tensor:
     def sigmoid(self): return self._unary(_sigmoid,lambda x:_sigmoid(x)*(1-_sigmoid(x)))
     def exp(self): return self._unary(math.exp,math.exp)
     def log(self): return self._unary(math.log,lambda x:1/x)
+    def log_softmax(self):
+        values=[]
+        for row in self.data:
+            peak=max(row);shifted=[value-peak for value in row]
+            normalizer=math.log(sum(math.exp(value) for value in shifted))
+            values.append([value-normalizer for value in shifted])
+        probabilities=[[math.exp(value) for value in row] for row in values]
+        def backward(gradient):
+            return [(self,[[value-probabilities[i][j]*sum(row) for j,value in enumerate(row)] for i,row in enumerate(gradient)])]
+        return Tensor._op(values,(self,),backward)
+    def softmax(self): return self.log_softmax().exp()
     def sum(self):
         value=sum(sum(row) for row in self.data)
         return Tensor._op([[value]],(self,),lambda g:[(self,[[g[0][0]]*self.shape[1] for _ in range(self.shape[0])])])
@@ -133,6 +144,18 @@ def binary_cross_entropy(logits,target):
     return Tensor._op([[value]],(logits,),lambda g:[(logits,[[( _sigmoid(v)-y[i][j])*g[0][0]/count for j,v in enumerate(row)] for i,row in enumerate(z)])])
 
 
+def cross_entropy(logits, targets):
+    """Mean row-wise categorical loss; integer class indices, no target broadcasting."""
+    if not isinstance(logits,Tensor):raise TypeError('Logits must be a native Tensor')
+    rows,classes=logits.shape
+    if not isinstance(targets,(list,tuple)) or len(targets)!=rows or any(type(value) is not int or not 0<=value<classes for value in targets):
+        raise ValueError('Provide one integer class index per logit row')
+    log_probabilities=logits.log_softmax()
+    labels=tuple(targets)
+    value=-sum(log_probabilities.data[i][label] for i,label in enumerate(labels))/rows
+    return Tensor._op([[value]],(log_probabilities,),lambda g:[(log_probabilities,[[-g[0][0]/rows if j==label else 0. for j in range(classes)] for label in labels])])
+
+
 class Linear:
     def __init__(self,inputs,outputs,*,seed=0):
         if type(inputs) is not int or type(outputs) is not int or min(inputs,outputs)<1 or inputs*outputs>_MAX_ELEMENTS: raise ValueError('Positive integer dimensions required')
@@ -174,18 +197,79 @@ class SGD:
         self.velocity=[[list(row) for row in v] for v in values]; self.steps=state['steps']
 
 
-def fit(model,features,targets,*,epochs=100,lr=.01,loss='mse'):
-    if type(epochs) is not int or not 1<=epochs<=10000 or loss not in ('mse','bce_logits'): raise ValueError('Choose 1–10000 epochs and mse/bce_logits')
-    x,y=Tensor(features),Tensor(targets); optimizer=SGD(model.parameters(),lr=lr); history=[]
+
+class Adam:
+    """Float64 CPU Adam with coupled L2 decay and transactional parameter updates."""
+    def __init__(self, parameters, *, lr=.001, betas=(.9,.999), eps=1e-8, weight_decay=0):
+        self.parameters=list(parameters)
+        if not self.parameters or len({id(p) for p in self.parameters})!=len(self.parameters) or any(not isinstance(p,Tensor) or not p.requires_grad or p._parents for p in self.parameters):
+            raise ValueError('Optimizer needs unique differentiable leaf tensors')
+        if not isinstance(betas,(list,tuple)) or len(betas)!=2:
+            raise ValueError('Provide two Adam decay coefficients')
+        if not all(type(value) in (int,float) and math.isfinite(value) for value in (lr,eps,weight_decay,*betas)) or lr<=0 or eps<=0 or weight_decay<0 or any(not 0<=beta<1 for beta in betas):
+            raise ValueError('Invalid Adam configuration')
+        self.lr,self.betas,self.eps,self.weight_decay=lr,tuple(betas),eps,weight_decay
+        self.steps=0
+        self.first=[_zeros(p.shape) for p in self.parameters]
+        self.second=[_zeros(p.shape) for p in self.parameters]
+
+    def zero_grad(self):
+        for parameter in self.parameters:parameter.zero_grad()
+
+    def step(self):
+        staged=[];next_step=self.steps+1;b1,b2=self.betas
+        for parameter,first,second in zip(self.parameters,self.first,self.second):
+            if parameter.grad is None:raise ValueError('All optimized parameters need gradients')
+            gradient=_matrix(parameter.grad)
+            if (len(gradient),len(gradient[0]))!=parameter.shape:raise ValueError('Gradient shape differs')
+            moment=_zeros(parameter.shape);variance=_zeros(parameter.shape);values=_zeros(parameter.shape)
+            for i,row in enumerate(parameter.data):
+                for j,value in enumerate(row):
+                    g=gradient[i][j]+self.weight_decay*value
+                    moment[i][j]=b1*first[i][j]+(1-b1)*g
+                    variance[i][j]=b2*second[i][j]+(1-b2)*g*g
+                    values[i][j]=value-self.lr*(moment[i][j]/(1-b1**next_step))/(math.sqrt(variance[i][j]/(1-b2**next_step))+self.eps)
+            # Validate all values and moment buffers before changing any leaf.
+            staged.append((parameter,_matrix(values),_matrix(moment),_matrix(variance)))
+        for index,(parameter,values,first,second) in enumerate(staged):
+            parameter.assign(values);self.first[index]=first;self.second[index]=second
+        self.steps=next_step
+
+    def state_dict(self):
+        def copy(values):return [[list(row) for row in matrix] for matrix in values]
+        return {'format':'nil-native-adam-v1','lr':self.lr,'betas':list(self.betas),'eps':self.eps,
+                'weight_decay':self.weight_decay,'steps':self.steps,'first':copy(self.first),'second':copy(self.second)}
+
+    def load_state_dict(self, state):
+        if not isinstance(state,dict) or state.get('format')!='nil-native-adam-v1' or any(state.get(key)!=getattr(self,key) for key in ('lr','eps','weight_decay')) or state.get('betas')!=list(self.betas) or type(state.get('steps')) is not int or state['steps']<0:
+            raise ValueError('Adam state/config differs')
+        buffers=[]
+        for key in ('first','second'):
+            values=state.get(key)
+            if not isinstance(values,list) or len(values)!=len(self.parameters):raise ValueError('Adam state parameter count differs')
+            matrices=[_matrix(value) for value in values]
+            if any((len(value),len(value[0]))!=parameter.shape for value,parameter in zip(matrices,self.parameters)):
+                raise ValueError('Adam state shape differs')
+            if key=='second' and any(value<0 for matrix in matrices for row in matrix for value in row):raise ValueError('Adam variance must be nonnegative')
+            buffers.append(matrices)
+        self.first,self.second=buffers;self.steps=state['steps']
+
+
+def fit(model,features,targets,*,epochs=100,lr=.01,loss='mse',optimizer='sgd'):
+    if type(epochs) is not int or not 1<=epochs<=10000 or loss not in ('mse','bce_logits','cross_entropy') or optimizer not in ('sgd','adam'): raise ValueError('Choose 1–10000 epochs, mse/bce_logits/cross_entropy and sgd/adam')
+    x=Tensor(features);y=targets if loss=='cross_entropy' else Tensor(targets)
+    optimizer=(SGD if optimizer=='sgd' else Adam)(model.parameters(),lr=lr); history=[]
     for _ in range(epochs):
         optimizer.zero_grad(); prediction=model(x)
-        if prediction.shape!=y.shape: raise ValueError('Target shape differs; broadcasting targets is disabled')
-        value=mse(prediction,y) if loss=='mse' else binary_cross_entropy(prediction,y)
+        if loss!='cross_entropy' and prediction.shape!=y.shape: raise ValueError('Target shape differs; broadcasting targets is disabled')
+        value=cross_entropy(prediction,y) if loss=='cross_entropy' else mse(prediction,y) if loss=='mse' else binary_cross_entropy(prediction,y)
         value.backward(); optimizer.step(); history.append(value.item())
     return {'model':model,'history':history,'steps':epochs}
 
 
 def save(model,path,*,optimizer=None):
+    if optimizer is not None and [id(p) for p in optimizer.parameters]!=[id(p) for p in model.parameters()]:
+        raise ValueError('Optimizer parameters must match the saved model in order')
     payload={'format':'nil-native-v1','model':model.state_dict(),'optimizer':optimizer.state_dict() if optimizer else None}
     text=json.dumps(payload,allow_nan=False)
     if len(text.encode())>16000000: raise ValueError('Native artifact exceeds 16 MB')
@@ -201,7 +285,13 @@ def load(path):
     model=_from_state(state['model'])
     optimizer=None
     if state.get('optimizer') is not None:
-        config=state['optimizer']; optimizer=SGD(model.parameters(),lr=config['lr'],momentum=config['momentum'],weight_decay=config['weight_decay']); optimizer.load_state_dict(config)
+        config=state['optimizer']
+        if config.get('format')=='nil-native-adam-v1':
+            optimizer=Adam(model.parameters(),lr=config['lr'],betas=config['betas'],eps=config['eps'],weight_decay=config['weight_decay'])
+        elif config.get('format')=='nil-native-sgd-v1':
+            optimizer=SGD(model.parameters(),lr=config['lr'],momentum=config['momentum'],weight_decay=config['weight_decay'])
+        else:raise ValueError('Unsupported native optimizer format')
+        optimizer.load_state_dict(config)
     return model,optimizer
 
 

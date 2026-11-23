@@ -35,10 +35,10 @@ def test_service_cli_starts_from_secret_files_and_stops_cleanly(tmp_path,tls_cer
         path=tmp_path/name;path.write_text(name+'-private-capability');path.chmod(0o600)
     config={'factory':'fixture_model:build','certfile':str(cert/'server.crt'),'keyfile':str(cert/'server.key'),'client_ca':str(cert/'ca.crt'),
         'backend_token_file':str(tmp_path/'backend'),'client_token_file':str(tmp_path/'client'),'backend_port':0,'gateway_port':0}
-    path=tmp_path/'service.json';path.write_text(json.dumps(config));ready=tmp_path/'ready.json'
+    path=tmp_path/'service.json';path.write_text(json.dumps(config));ready=tmp_path/'ready.json';metrics=tmp_path/'metrics.json'
     source=Path(nil.__file__).resolve().parent.parent
     environment={**os.environ,'PYTHONPATH':os.pathsep.join([str(tmp_path),str(source)])}
-    process=subprocess.Popen([sys.executable,'-m','nil.serving','--config',str(path),'--ready-file',str(ready)],env=environment,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    process=subprocess.Popen([sys.executable,'-m','nil.serving','--config',str(path),'--ready-file',str(ready),'--metrics-file',str(metrics),'--metrics-interval','.1'],env=environment,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     try:
         deadline=time.monotonic()+20
         while not ready.exists() and process.poll() is None and time.monotonic()<deadline:time.sleep(.02)
@@ -46,8 +46,19 @@ def test_service_cli_starts_from_secret_files_and_stops_cleanly(tmp_path,tls_cer
         record=json.loads(ready.read_text())
         client=nil.serving.client(f"https://localhost:{record['gateway_port']}",'client-private-capability',cafile=cert/'ca.crt',certfile=cert/'client.crt',keyfile=cert/'client.key')
         assert client.predict([[3.]])==[[6.]]
+        deadline=time.monotonic()+3
+        while time.monotonic()<deadline:
+            if metrics.exists() and json.loads(metrics.read_text())['backend']['successes']==1:break
+            time.sleep(.02)
+        snapshot=json.loads(metrics.read_text())
+        assert snapshot['status']=='ready' and snapshot['backend']['successes']==1
+        assert snapshot['gateway']['successes']==1 and snapshot['uptime_seconds']>0
         process.terminate();process.wait(timeout=10)
         assert process.returncode==0 and not ready.exists()
+        snapshot=json.loads(metrics.read_text())
+        assert snapshot['status']=='stopped' and snapshot['gateway']['active_connections']==0
+        assert snapshot['backend']['inflight']==0
+        assert 'private-capability' not in metrics.read_text()
         stdout,stderr=process.communicate();assert b'private-capability' not in stdout+stderr
     finally:
         if process.poll() is None:process.kill();process.wait(timeout=3)

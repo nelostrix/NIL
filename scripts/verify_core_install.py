@@ -64,6 +64,10 @@ for name in ('pipeline', 'fit', 'save', 'load', 'split', 'cross_validate', 'tune
     assert getattr(nil, name) is not None, name
 model = nil.native.Linear(1,1,seed=0)
 result = nil.native.fit(model, [[0.],[1.],[2.]], [[1.],[3.],[5.]], epochs=150, lr=.1)
+classifier = nil.native.Linear(2,3,seed=7)
+classified = nil.native.fit(classifier, [[1,0],[0,1],[-1,-1]], [0,1,2], epochs=100, lr=.05,
+                            loss='cross_entropy', optimizer='adam')
+assert classified['history'][-1] < .1
 assert result['history'][-1] < .001
 assert nil.help('native') and nil.help('distributed')
 try:
