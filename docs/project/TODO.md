@@ -614,3 +614,19 @@ public-ingress deployment/security/workload acceptance, and untested optional
 backend/platform combinations. ND/CPU algebra and the declared RL extensions are
 implemented; zero-sized tensors, universal acceleration, arbitrary MARL/simulator
 continuation and broad unseen-task quality are not implied by these checkmarks.
+
+Additional declared CPU model/data gate: bundled digits MLP held-out accuracy0.9667,
+dynamic INT8 and ONNX parity checks; separate-document local causal training,
+LoRA frozen-base validation and merged local reload. All pass in5.87s on the
+current host with no downloads. Raw source/data hashes, versions and limits:
+../benchmarks/2026-11-23-model-coverage.json and ../NEURAL_RL.md.
+Large downloaded pretrained architectures and realistic large-model/device memory
+remain unrun; these small cases do not close that target gate.
+
+Hosted verification at aa3bfb8: all nine base-platform cells pass (run45143679690),
+all ten expanded backend cells pass (run45143679440), full SDK CI passes
+(run45143679678). Backend scope: minimum/current classical on Linux/macOS/Windows
+Python3.12, plus minimum/current CPU Torch and RL on Linux/Python3.12. This is
+acceptance of declared profiles; other extras/platform/precision combinations
+remain separate gates. Final scalar/vector implicit-operand regression also
+passes66 native engine tests after this hosted snapshot.

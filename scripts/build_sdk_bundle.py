@@ -64,6 +64,7 @@ def main():
         files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
         files['scripts/benchmark_native_kernels.py'] = root / 'scripts/benchmark_native_kernels.py'
         files['scripts/benchmark_rl_coverage.py'] = root / 'scripts/benchmark_rl_coverage.py'
+        files['scripts/benchmark_model_coverage.py'] = root / 'scripts/benchmark_model_coverage.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
         for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py'):
             files['scripts/'+name]=root/'scripts'/name

@@ -16,6 +16,7 @@ def test_shapes_contiguous_strides_scalar_migration_and_copy_safety():
     assert n.Tensor(2).shape==(1,1) and n.Tensor([1,2]).shape==(1,2)
     assert n.Tensor(2,shape=()).shape==()
     vector=n.Tensor([1,2],shape=(2,));assert vector.shape==(2,)
+    assert (vector+[1,2]).shape==(2,) and ([2,4]/vector).tolist()==[2.,2.]
     x=n.Tensor(list(range(24)),shape=(2,3,4),requires_grad=True)
     assert x.strides==(12,4,1) and x.numel()==24 and x.ndim==3
     assert x[1,-1,2].shape==() and x[1,-1,2].item()==22

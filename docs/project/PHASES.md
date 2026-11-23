@@ -89,6 +89,8 @@ Exit: current-host evidence can pass independently; old-PC certification cannot.
   CPU deployment matrix. Authenticated counters, periodic/final snapshots,
   descriptor-validated credentials and sanitized CLI failures pass. Public ingress
   and other service targets remain separate acceptance.
+- [ ] Accept an actual public-facing or multi-tenant deployment, revocation/
+  authorization policy and model-specific reliability targets on its chosen host.
 
 ## Phase 7 — Release compatibility matrix
 
@@ -135,8 +137,10 @@ remains bounded float64 CPU; zero-sized tensors and GPU/device execution are ope
   target, with dataset/OOD-action contracts and real held-out learning evidence.
 - [x] Broaden RL learning benchmarks beyond the tiny bandit to discrete,
   continuous, recurrent/masked and multi-agent tasks with seed-level intervals.
-- [ ] Broaden pretrained-model/LoRA/quantization/export cases and measure realistic
-  datasets/large models on documented supported hardware.
+- [x] Add real bundled-digit classification with INT8/ONNX parity and local
+  held-out-document causal training/LoRA/merged reload checks on the CPU host.
+- [ ] Broaden downloaded pretrained architectures and large-model/quantization
+  coverage on declared hardware; local tiny models do not close this target gate.
 
 Phase9 completed contracts are scoped: offline centralized-value AWR with fixed
 aligned agents/explicit team returns; discrete CQL (not continuous CQL or IQL);

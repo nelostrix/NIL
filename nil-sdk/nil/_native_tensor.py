@@ -153,7 +153,8 @@ class Tensor:
 
     def _binary(self, other, function, derivatives):
         if not isinstance(other, Tensor):
-            other = Tensor(other, shape=() if type(other) in (int, float) else None)
+            shape, values = unpack(other)
+            other = Tensor(values, shape=shape)
         shape = broadcast_shape(self.shape, other.shape)
         left, right = broadcast_map(self.shape, shape), broadcast_map(other.shape, shape)
         values = [function(self._flat[a], other._flat[b]) for a, b in zip(left, right)]
@@ -175,7 +176,9 @@ class Tensor:
     def __mul__(self, other): return self._binary(other, lambda a, b: a*b, lambda a, b: (b, a))
     __rmul__ = __mul__
     def __truediv__(self, other): return self._binary(other, lambda a, b: a/b, lambda a, b: (1/b, -a/(b*b)))
-    def __rtruediv__(self, other): return Tensor(other, shape=() if type(other) in (int,float) else None) / self
+    def __rtruediv__(self, other):
+        shape, values = unpack(other)
+        return Tensor(values, shape=shape) / self
 
     def __pow__(self, power):
         if type(power) not in (int, float) or not math.isfinite(power):

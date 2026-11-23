@@ -193,3 +193,27 @@ partial-observation memory learning. Offline expert replay is explicit, not an
 online-exploration claim. These tests establish declared task learning, not general
 algorithm superiority. Reproduce with scripts/benchmark_rl_coverage.py; its cases
 can be selected independently. No models or datasets are downloaded by the runner.
+
+## Broader small-model CPU/data checks
+
+[The real-data model report](benchmarks/2026-11-23-model-coverage.json) adds a
+stratified80/20 split of bundled scikit-learn handwritten digits: a64→32→10 MLP
+trained for20 epochs achieved held-out accuracy0.9667. CPU dynamic INT8 accuracy
+and ONNX logits are checked against the same held-out examples; the report records
+actual accuracy/error, dataset digest, normalization, backend versions and seed.
+
+A separate local text check trains a small two-layer,width32 GPT2-style model
+from scratch, using a byte BPE tokenizer fit only on training documents. The
+held-out file is separate. Base held-out NLL fell from6.2511 to4.9308; LoRA training
+updates only adapters, then merge/save/local reload reproduces held-out NLL.
+Source-file hashes, context length, training epochs and adapter counts are recorded.
+This is local small-model workflow coverage, not acceptance of a downloaded
+pretrained checkpoint, large-model quality, INT4/GPTQ/AWQ, arbitrary export graphs
+or realistic GPU memory behavior. Those remain explicit target cases.
+
+Reproduce without downloads: in the classical environment run
+`python scripts/benchmark_model_coverage.py --prepare-digits /absolute/digits.npz`;
+then in an explicit generative/ONNX/Torch environment run
+`python scripts/benchmark_model_coverage.py --digits-data /absolute/digits.npz
+--output /absolute/report.json`. The temporary model/checkpoint outputs are removed;
+the prepared data stays only at the explicitly selected path.
