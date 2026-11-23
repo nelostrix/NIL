@@ -1,0 +1,72 @@
+{
+  "scope": "small dense float64 CPU reference engine; current Linux host only, warm filesystem cache possible; no old-PC acceptance or speedup claim",
+  "workload": "multiclass",
+  "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+  "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+  "python": "3.12.16",
+  "samples": [
+    {
+      "import_seconds": 0.00036019799972564215,
+      "fit_seconds": 0.10131747200011887,
+      "final_loss": 0.006963031103533358,
+      "accuracy": 1.0,
+      "rows": 90,
+      "epochs": 100,
+      "parameters": 9,
+      "peak_rss_mib": 19.94140625,
+      "backend_loaded": false,
+      "wall_seconds": 0.14957928200010429
+    },
+    {
+      "import_seconds": 0.00022772400006942917,
+      "fit_seconds": 0.1011306670002341,
+      "final_loss": 0.006963031103533358,
+      "accuracy": 1.0,
+      "rows": 90,
+      "epochs": 100,
+      "parameters": 9,
+      "peak_rss_mib": 17.546875,
+      "backend_loaded": false,
+      "wall_seconds": 0.13961517000007007
+    },
+    {
+      "import_seconds": 0.0002503630003047874,
+      "fit_seconds": 0.10337258700019447,
+      "final_loss": 0.006963031103533358,
+      "accuracy": 1.0,
+      "rows": 90,
+      "epochs": 100,
+      "parameters": 9,
+      "peak_rss_mib": 17.421875,
+      "backend_loaded": false,
+      "wall_seconds": 0.14442426999994495
+    },
+    {
+      "import_seconds": 0.0002609410003060475,
+      "fit_seconds": 0.10039911099966048,
+      "final_loss": 0.006963031103533358,
+      "accuracy": 1.0,
+      "rows": 90,
+      "epochs": 100,
+      "parameters": 9,
+      "peak_rss_mib": 17.65234375,
+      "backend_loaded": false,
+      "wall_seconds": 0.13906428600012077
+    },
+    {
+      "import_seconds": 0.00022495000030176016,
+      "fit_seconds": 0.10004620500012606,
+      "final_loss": 0.006963031103533358,
+      "accuracy": 1.0,
+      "rows": 90,
+      "epochs": 100,
+      "parameters": 9,
+      "peak_rss_mib": 17.68359375,
+      "backend_loaded": false,
+      "wall_seconds": 0.13848197199968126
+    }
+  ],
+  "target": "90x2 three-class linear classifier, 100 full-batch Adam steps; no backend import; final CE <.05 and accuracy 1.0",
+  "median_fit_seconds": 0.1011306670002341,
+  "median_peak_rss_mib": 17.65234375
+}

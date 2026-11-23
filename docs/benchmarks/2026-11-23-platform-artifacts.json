@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "scope": "Verification wheel/bundle artifacts with CI retention; no stable release/tag or package-index publication",
+  "run_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776",
+  "commit": "c03b20fc23c9ce77f32cd039f710c66887a4ecfe",
+  "status": "success",
+  "jobs": [
+    {
+      "name": "base (ubuntu-latest, 3.12)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077462"
+    },
+    {
+      "name": "base (ubuntu-latest, 3.11)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077720"
+    },
+    {
+      "name": "base (macos-latest, 3.10)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077785"
+    },
+    {
+      "name": "base (windows-latest, 3.12)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077790"
+    },
+    {
+      "name": "base (macos-latest, 3.12)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077791"
+    },
+    {
+      "name": "base (windows-latest, 3.11)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077802"
+    },
+    {
+      "name": "base (macos-latest, 3.11)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077838"
+    },
+    {
+      "name": "base (ubuntu-latest, 3.10)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077841"
+    },
+    {
+      "name": "base (windows-latest, 3.10)",
+      "conclusion": "success",
+      "html_url": "https://github.com/nelostrix/NIL/actions/runs/45115748776/job/137498077846"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14792040186,
+      "name": "base-windows-latest-py3.12",
+      "size_in_bytes": 1416002,
+      "digest": "sha256:ff8d1fc3195b3794999d036457c921cdf189a9469bdcbd2967dc30c41b5c0938",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791866289,
+      "name": "base-macos-latest-py3.11",
+      "size_in_bytes": 1405783,
+      "digest": "sha256:722741dd7d6c8fc7516c3cbb7a16b337a0a2d4ddd4d8862ed68391347660701c",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791533188,
+      "name": "base-windows-latest-py3.11",
+      "size_in_bytes": 1416025,
+      "digest": "sha256:55ae569fc1591f79117510023f8b10e5aec4515fb038c587f447b90ee5b66086",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791423309,
+      "name": "base-macos-latest-py3.10",
+      "size_in_bytes": 1405794,
+      "digest": "sha256:11e069ec62ae87f0f12761dd7e4339295351964599ddff13c7b270a63c0db4ec",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791167694,
+      "name": "base-ubuntu-latest-py3.11",
+      "size_in_bytes": 1405796,
+      "digest": "sha256:8e4a98ac304310b39d14b433362e003154b2ecfbfc2eddd9688c2bfcac242260",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791142855,
+      "name": "base-macos-latest-py3.12",
+      "size_in_bytes": 1405793,
+      "digest": "sha256:9e7921aa628b387a094aa145b97ff59f2636dda8708b34c79436bd06cece1f1f",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791077909,
+      "name": "base-ubuntu-latest-py3.12",
+      "size_in_bytes": 1405788,
+      "digest": "sha256:627d9ea47e122ef92e489cf02b8a183d3efdb86db4924e27ba1346f20c008968",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14791004500,
+      "name": "base-windows-latest-py3.10",
+      "size_in_bytes": 1416004,
+      "digest": "sha256:843094ab8cb851090fa0ba2ee4c12a248208d4b06ac4732a3116f1e59610318f",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    },
+    {
+      "id": 14790829977,
+      "name": "base-ubuntu-latest-py3.10",
+      "size_in_bytes": 1405797,
+      "digest": "sha256:96da24b8b8fffa08957400f99b81db4c8da22205bcf81a51db52f0bd1fce24ce",
+      "expired": false,
+      "expires_at": "2027-02-21T05:06:52Z"
+    }
+  ]
+}

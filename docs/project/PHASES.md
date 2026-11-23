@@ -82,30 +82,40 @@ Exit: current-host evidence can pass independently; old-PC certification cannot.
   worker crash/restart, signal shutdown and 30-second load under real 1 GiB,
   zero-swap, one-CPU and 128-task kernel limits. 3,141 requests, zero failures,
   observed p95 about 91 ms. Public Internet ingress and arbitrary-model SLOs remain open.
-- [ ] Validate observability, secret handling and deployment compatibility matrix.
+- [x] Validate managed-reference observability, secret handling and declared Linux
+  CPU deployment matrix. Authenticated counters, periodic/final snapshots,
+  descriptor-validated credentials and sanitized CLI failures pass. Public ingress
+  and other service targets remain separate acceptance.
 
 ## Phase 7 — Release compatibility matrix
 
 - [x] Define isolated Python 3.10–3.12 base-wheel CI checks on Linux/macOS/Windows.
   Fresh base-wheel installation and execution passed in all nine remote cells.
 - [x] Run and publish all nine platform/Python matrix cells.
-- [ ] Add tested minimum/current optional-backend profiles and installed examples.
+- [x] Add tested minimum/current classical and Torch CPU profiles and installed
+  examples on Linux/Python3.12. All four hosted cells pass; other extras remain open.
 - [x] Define manual-only GPU acceptance on explicitly provisioned trusted runners.
   GPU job execution remains pending; no workflow was dispatched by this session.
-- [ ] Publish release artifacts and evidence for each actual passing matrix cell;
-  retain unrun/failed cells and reproducible commands.
+- [x] Publish verification wheel/bundle artifacts and evidence for all nine passing
+  cells; indexed SHA-256 digests and CI retention are recorded. Stable release/tag
+  publication is separate; failed first-run evidence is retained.
 
 ## Phase 8 — Expand the independent numerical engine
 
-- [ ] Define benchmarked stages beyond the existing CPU float64 reference engine:
+- [x] Define benchmarked stages beyond the existing CPU float64 reference engine:
   N-dimensional shape/stride semantics, dtype policy and parameter/state contracts.
-- [ ] Add selected dense operators and optimizers with independent numerical
+- [x] Add selected dense operators and optimizers with independent numerical
   gradients, persistence and reference-backend parity before expanding further.
 - [ ] Add sparse representations/operators and explicit unsupported combinations.
 - [ ] Add compiled/vectorized CPU kernels before claiming large-array performance.
 - [ ] Add device/kernel management and GPU operators only with real-device tests.
-- [ ] Map which workflows can run using NIL alone; do not present adapters as
+- [x] Map which workflows can run using NIL alone; do not present adapters as
   independent engines or force optional dependencies into base installation.
+
+Phase8 scope: row-wise stable softmax/log-softmax, categorical cross entropy and
+Adam with exact model/optimizer continuation. Finite differences and Torch float64
+parity pass. ND shape/stride, sparse, compiled CPU and GPU stages are defined in
+[the engine contract](../NATIVE_ENGINE.md), not implemented by these checkmarks.
 
 ## Phase 9 — Broader RL and model compatibility
 

@@ -26,7 +26,7 @@ PROFILES={
     },
     'torch': {
         'packages':('torch','numpy','pytest'),
-        'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py',
+        'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py','test_native_engine.py','test_native_multiclass.py',
                  'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py'),
         'exclude':'not cuda',
         'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer')),

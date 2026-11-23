@@ -40,3 +40,20 @@ Generative, ONNX, RL, specialized backends, GPU, other optional-backend OS/Pytho
 combinations and public Internet deployment remain separate contracts. The
 existing SDK development workflow exercises additional integrations, but does
 not establish a minimum/current matrix for all of them.
+
+## Recorded hosted acceptance — 2026-11-23
+
+[All four profiles passed](https://github.com/nelostrix/NIL/actions/runs/45115748766)
+at c03b20f. Classical: 67 tests with the minimum-family profile, 69 with current;
+both installed examples passed in each. Torch: 52 CPU/service tests and all three
+architecture examples passed with both 2.6.0+cpu and 2.15.0+cpu. All profiles had
+zero skipped tests. [Raw profile reports](benchmarks/2026-11-23-backend-matrix.json)
+include exact versions. Later native multiclass additions extend these profiles;
+the original run is not evidence for code added after its commit.
+
+[Nine base-platform cells also passed](https://github.com/nelostrix/NIL/actions/runs/45115748776).
+The [artifact index](benchmarks/2026-11-23-platform-artifacts.json) records each
+built wheel/bundle artifact ID, digest, size and expiry alongside its passing job.
+Download using `gh run download 45115748776 --repo nelostrix/NIL` into a scratch
+directory. These are verification artifacts subject to CI retention, not a stable
+release or package-index upload. The first failing run remains visible for audit.

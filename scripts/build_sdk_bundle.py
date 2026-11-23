@@ -58,6 +58,7 @@ def main():
         }
         files['docs/CPU_COMPLETION.md'] = root / 'docs/CPU_COMPLETION.md'
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
+        files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['scripts/benchmark_rl.py'] = root / 'scripts/benchmark_rl.py'
         files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'

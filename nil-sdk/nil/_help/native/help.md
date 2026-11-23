@@ -21,6 +21,26 @@ vector (one row), or rectangular 2D built-in numbers. `Linear(inputs, outputs)`;
 `loss='bce_logits'`. Direct loss/backward and SGD support momentum and
 weight decay. `zero_grad()` before each independent update.
 
+For multiclass learning, `Tensor.softmax()` and `Tensor.log_softmax()` operate
+across each row. `cross_entropy(logits, [class_index, ...])` computes mean loss
+from integer class labels, with stable log-sum-exp for extreme logits. Labels
+are constant; weights, ignored labels and label smoothing are not supported.
+
+```python
+model = nil.native.Linear(2, 3, seed=7)
+result = nil.native.fit(model, [[1, 0], [0, 1], [-1, -1]], [0, 1, 2],
+                        epochs=100, lr=.05, loss='cross_entropy', optimizer='adam')
+probabilities = model(nil.native.Tensor([[1, 0]])).softmax().tolist()
+```
+
+`Adam(parameters, lr=.001, betas=(.9,.999), eps=1e-8, weight_decay=0)`
+uses bias correction and coupled L2 decay, matching standard Adam (not AdamW).
+All parameters must have finite gradients. Steps validate all updates before
+mutating parameters or moments. `state_dict()` returns independent buffers;
+`load_state_dict()` rejects mismatched configuration/shapes transactionally.
+`save(model, path, optimizer=optimizer)` preserves exact supported continuation
+for both SGD and Adam. Optimizer parameters must match the model in order.
+
 ## Output
 
 Tensor values/gradients, fit result dictionary, or immutable JSON model/optimizer
@@ -36,7 +56,8 @@ parity tests, never engine execution.
 Reference subset, bounded at 100,000 elements per Tensor, 16 layers and 10,000
 fit epochs. CPU float64 only; sparse data, other dtypes/devices and ragged/nonfinite
 values are rejected. Supports row/column/scalar broadcasting, matmul, arithmetic,
-ReLU/tanh/sigmoid/exp/log, reductions, MSE and stable BCE logits. No convolution,
+ReLU/tanh/sigmoid/exp/log, reductions, MSE, stable BCE/categorical losses and Adam.
+No convolution,
 GPU, sparse kernel, mixed precision or general-purpose large tensor engine.
 Pure Python prioritizes inspectability and zero backend dependencies; numerical
 backends are faster for large arrays. Stale graphs reject mutation before backward.

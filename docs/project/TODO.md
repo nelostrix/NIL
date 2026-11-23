@@ -485,3 +485,44 @@ regular wheel; 197 Python sources match and 103 help guides are bundled.
 Native Windows acceptance is still unrun; ten real-kernel cases and three Windows
 CI cells require a target host. The Linux --require-windows report fails with
 exit 2, so portable test success is not mistaken for Windows certification.
+
+## Managed observability, installed profiles and native multiclass — 2026-11-23
+
+- [x] Add opt-in atomic service metrics snapshots, final drained status and private
+  runtime directory in the systemd template; no monitoring dependency or new thread.
+- [x] Validate descriptor-based regular/private token files, reject FIFO/final
+  symlink on POSIX, validate bounded printable distinct capabilities before model
+  loading, refuse output/input path collisions and sanitize CLI failures.
+- [x] Authenticated metrics and real signal-lifecycle acceptance: 19 focused tests
+  passed. Counts advance and drained connection/inflight counts are zero; sample
+  bodies, credentials and configuration contents are absent from observable output.
+- [x] Add installed backend verifier and four minimum/current Linux/Python3.12 CI
+  cells. All four passed at c03b20f: classical 67/69 tests plus two examples each;
+  Torch2.6/2.15 CPU 52 tests plus three architecture examples each; zero skips.
+  Report: ../benchmarks/2026-11-23-backend-matrix.json. Workflow45115748766.
+- [x] Index all nine passing base-platform build artifacts, digests and expiry at
+  c03b20f: ../benchmarks/2026-11-23-platform-artifacts.json. Workflow45115748776.
+  Verification artifacts are retained by CI; no stable tag/release was published.
+- [x] Add independent-engine row-wise softmax/log-softmax, stable categorical loss,
+  transactional Adam, typed JSON optimizer dispatch and ownership/order checks.
+  Existing SGD/MSE/BCE defaults remain. Native finite-difference, Torchfloat64,
+  real learning, exact continuation and no-site-package checks: 18 passed.
+- [x] Benchmark five fresh `python -S` native multiclass processes: 90x2, 3 classes,
+  100 Adam steps; final CE0.00696, accuracy1.0, median fit0.101s, median RSS17.65MiB.
+  Current Ryzen3 7320U host only; ../benchmarks/2026-11-23-native-multiclass.json.
+- [x] Full neural/RL development-environment regression after implementation:
+  1026 passed, 30 explicit optional/platform/device skips in102.03s.
+
+Commands: `PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests -q` in the neural
+backend env; focused tests test_service_credentials/test_tls_gateway/test_tls_inference
+and test_native_engine/test_native_multiclass. `python scripts/accept_backends.py
+--profile classical|torch --output PATH` requires a regular installed wheel and
+explicit backends; copies tests/examples, never SDK source, to isolated scratch.
+`PYTHONPATH=nil-sdk python scripts/benchmark_native.py --workload multiclass
+--output report.json` records the independent workload without optional imports.
+
+Remaining: actual GPU quotas/AMP/distributed/sharded target tests, identified old-PC
+acceptance, ND/sparse/compiled/device numerical engine, advanced RL/model learning
+coverage, other optional-backend platform combinations and public-ingress review.
+The managed Linux reference and declared backend profiles passed; this does not
+certify all possible deployments, models or optional dependency combinations.
