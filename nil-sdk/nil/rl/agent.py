@@ -11,7 +11,7 @@ from nil.rl.value import AdvantageEstimator, ValueFunction
 
 @dataclass
 class RLConfig:
-    algorithm: str = "ppo"
+    algorithm: str = "advantage_weights"
     batch_size: int = 64
     learning_rate: float = 0.001
     discount_factor: float = 0.99
@@ -19,6 +19,12 @@ class RLConfig:
     clip_epsilon: float = 0.2
     update_frequency: int = 5
     use_mcts: bool = False
+
+    def __post_init__(self):
+        if self.algorithm not in {"advantage_weights", "bc", "gae"}:
+            raise ValueError("Agent policies use advantage_weights/bc; use nil.rl.create for neural PPO and other control algorithms")
+        if type(self.batch_size) is not int or self.batch_size < 1 or type(self.update_frequency) is not int or self.update_frequency < 1:
+            raise ValueError("batch_size/update_frequency must be positive integers")
 
 
 class RLEnabledAgent:
@@ -71,7 +77,7 @@ class RLEnabledAgent:
             success=state_after.get("is_terminal_success", False),
         )
 
-        if self.replay_buffer.size >= self.online_rl_config.batch_size:
+        if self.replay_buffer.size >= self.online_rl_config.batch_size and self._step_count % self.online_rl_config.update_frequency == 0:
             self._update_policy()
 
     def finish_trajectory(self, trace: dict) -> None:
@@ -82,9 +88,12 @@ class RLEnabledAgent:
 
         if scored.composite > 0.7:
             self.bc.clone([trace], self.policy)
+        self._current_trajectory.clear()
+        self._current_states.clear()
 
     def _update_policy(self) -> None:
-        batch = self.replay_buffer.sample(self.online_rl_config.batch_size)
+        # GAE requires a contiguous ordered rollout, never shuffled transitions.
+        batch = self.replay_buffer.latest(self.online_rl_config.batch_size)
 
         if self.online_rl_config.algorithm == "bc":
             states = [t.state for t in batch]
@@ -92,7 +101,7 @@ class RLEnabledAgent:
             for s, a in zip(states, actions):
                 self.policy.update_weight(a, 0.01)
 
-        elif self.online_rl_config.algorithm in ("ppo", "gae"):
+        elif self.online_rl_config.algorithm in ("advantage_weights", "gae"):
             rewards = [t.reward for t in batch]
             values = [self.value_function.predict(t.state) for t in batch]
 
@@ -100,6 +109,8 @@ class RLEnabledAgent:
                 rewards, values,
                 gamma=self.online_rl_config.discount_factor,
                 lam=self.online_rl_config.gae_lambda,
+                terminated=[t.terminated for t in batch], truncated=[t.truncated for t in batch],
+                next_values=[self.value_function.predict(t.next_state) for t in batch],
             )
 
             for t, adv in zip(batch, advantages):
@@ -108,6 +119,11 @@ class RLEnabledAgent:
 
             returns = self.advantage_estimator.compute_monte_carlo(
                 rewards, gamma=self.online_rl_config.discount_factor,
+                terminated=[t.terminated for t in batch], truncated=[t.truncated for t in batch],
+                next_values=[self.value_function.predict(t.next_state) for t in batch],
+                last_value=self.value_function.predict(batch[-1].next_state) if batch else 0.0,
             )
             states_for_update = [t.state for t in batch]
             self.value_function.update(states_for_update, returns)
+        else:
+            raise ValueError("Agent action-weight updates are not PPO/CQL; use nil.rl.create for neural control")

@@ -1,5 +1,7 @@
 # NIL model development SDK 0.2.1
 
+For the shallow model catalog and explicit optional-backend installation, start with [the public design](SHALLOW_DESIGN.md). `nil.model("linear_regression")` and `nil.model("logistic_regression")` construct native classical models; `nil.fit` handles classical pipelines, `nil.train` remains neural-specific, and `nil.evaluate`/`nil.predict` now dispatch between classical and neural models. See [classical ML](CLASSICAL_ML.md) for pipelines, validation, tuning and persistence. Model listing loads no compute framework.
+
 NIL now includes a real model-development API alongside its existing agent SDK.
 The compute foundation is native PyTorch: use NIL's helpers for common cases,
 and ordinary tensors, modules, optimizers, data loaders and custom training steps
@@ -108,12 +110,18 @@ verifies exact CPU parameter equality after dropout/shuffled resume.
 Resume is at a completed epoch boundary. Custom data loaders, NumPy RNG,
 external augmentation state, model construction and custom callbacks remain
 the developer's responsibility. GPU determinism is not guaranteed. The trainer
-currently implements single-process training, not DDP, AMP, FSDP or DeepSpeed.
+currently implements single-process training with fp32 or autocast bf16/fp16;
+CPU bf16 is validated, while CUDA acceptance needs actual GPU hardware. DDP,
+FSDP and DeepSpeed orchestration remain open in [TODO.md](project/TODO.md).
 
 Checkpoints use state dictionaries and explicit `torch.load(weights_only=True)`.
 Their adjacent `.pt.json` manifest is checked before deserialization. A hash
 detects corruption; it is not an authenticity signature. Only load trusted
-artifacts and preserve both files. PyTorch's [serialization documentation](https://docs.pytorch.org/docs/stable/notes/serialization)
+artifacts and preserve the payload/manifest pair. New checkpoints retain one
+prior immutable generation and a normal .pt alias. Explicit
+`nil.training.checkpoint.recover(path)` repairs an interrupted publication;
+`previous=True` rolls back one generation. Custom class structure must match for
+strict resume. See [DL/RL coverage](NEURAL_RL.md). PyTorch's [serialization documentation](https://docs.pytorch.org/docs/stable/notes/serialization)
 explains the state-dictionary and restricted-loader approach.
 
 ## Language models and LoRA

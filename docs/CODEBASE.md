@@ -1,3 +1,5 @@
+> Agent subsystem reference. Start with [the shallow public design](SHALLOW_DESIGN.md) and [model development](MODEL_DEVELOPMENT.md).
+
 # Intelligence Layer — Codebase Map
 
 ## Overview
@@ -74,18 +76,15 @@
 | `evaluator.py` | **ReplayEvaluator** — tests candidate strategies against historical data before deployment. Scores each trace on success alignment, failure avoidance, cost efficiency, and constraint compliance. Uses paired sign test for statistical significance. Returns promote/reject/inconclusive with confidence intervals and rollback risk assessment |
 | `drift_detector.py` | **DriftDetector** — multi-signal performance monitoring. Detects: success rate regression, new error types, tool degradation, cost inflation, task distribution shift. Severity levels: none → mild → significant → critical. Auto-recovery: rollback on critical, targeted evolution on significant. Generates recovery actions (add error handling, update tool guidance, optimize cost) |
 | `world_model.py` | **WorldModelBuilder** — constructs a structured domain model from traces. Components: tool profiles (success rates, costs, complementary/redundant tools, typical position), task clusters (keyword-based), domain constraints (prerequisites, forbidden transitions, required minimum steps, conditional errors), state transition graph, health metrics. Generates prompt injection blocks for agent self-awareness |
-| `strategy_mutator.py` | **StrategyMutator** — mutation operations for strategy evolution (placeholder — under development) |
 
 ---
 
-## `nil/optimization/` — Cost & Performance (Phase 4 Stubs)
+## `nil/optimization/` — Explicit model optimization
 
 | File | Purpose |
 |---|---|
-| `model_router.py` | **ModelRouter** — routes subtasks to the cheapest adequate model (e.g., simple classification → Haiku, complex reasoning → Opus). Currently a stub |
-| `chain_compressor.py` | **ChainCompressor** — identifies deterministic multi-step chains and collapses them into single cached steps. Currently a stub |
-| `cache_manager.py` | **CacheManager** — in-memory hash-based cache for deterministic tool results. Uses SHA256 keyed on (tool_name, arguments). Max 1000 entries with LRU eviction |
-| `budget_controller.py` | **BudgetController** — enforces cost limits per run ($1 default) and per day ($50 default). Prevents runaway API spend |
+| `quantization.py` | CPU dynamic INT8 conversion, native inference timing, ONNX export |
+| `profiling.py` | CPU clone footprint and latency measurements |
 
 ---
 

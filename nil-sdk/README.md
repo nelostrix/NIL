@@ -1,293 +1,130 @@
-# NIL SDK 0.2
+# NIL AI development SDK
 
-For model-development installation, APIs, runnable examples and limitations, see
-[the model-development guide](../docs/MODEL_DEVELOPMENT.md) and
-[verification report](../SDK_IMPLEMENTATION_REPORT.md) in the repository root.
+NIL provides model-development helpers and optional agent tools. Its public layout stays shallow; compute backends load only when needed.
 
-# NIL SDK
-
-**Self-evolving AI agents that improve across runs.**
-
-NIL is a Python framework for building agents that remember what worked, extract reusable skills, detect when strategies stop working, and optimize their own performance — all autonomously, with SQLite-backed persistence and zero infrastructure.
-
-## Installation
-
-```bash
-pip install nil-sdk
+```text
+NIL
+├── regression         linear/robust/SGD, neighbors, SVM, trees, ensembles
+├── classification     logistic/SGD, neighbors, SVM, Bayes, ensembles
+├── unsupervised       clustering, mixtures, dimensionality reduction
+├── anomaly detection  Isolation Forest, One-Class SVM
+├── feature selection  variance, statistical, model-based
+└── neural networks    MLP and custom PyTorch modules
 ```
 
-Core SDK has **zero external dependencies** (stdlib only). Install provider packages as needed:
+`nil models` prints the exact model names. `nil.list_models()` returns them in Python. Listing models does not import PyTorch, scikit-learn, XGBoost, or agent subsystems. A listed adapter still requires its optional backend; listing is not an installation or hardware-readiness claim.
 
-```bash
-pip install anthropic    # Claude
-pip install openai       # GPT / any OpenAI-compatible API
-pip install google-genai # Gemini
+## Install only what you use
+
+The base wheel installs **only `nil-sdk`**, with zero runtime dependencies and no
+automatic backend downloads. Use the wheel without extras for a NIL-only
+environment. Training through the current external-engine adapters still needs
+those engines. Selecting an extra below explicitly requests additional packages.
+The repository's `docs/INSTALLATION.md` describes the verified installation contract.
+
+From either supported project root:
+
+```sh
+python -m pip install .                   # dependency-free core
+python -m pip install '.[classical]'       # scikit-learn model constructors
+python -m pip install '.[boosting-cpu]'    # optional CPU XGBoost (compatible wheels)
+python -m pip install '.[torch]'           # neural training
+python -m pip install '.[rl]'              # optional native neural control
+python -m nil doctor
+python -m nil models
+python -m nil help linear_regression
+python -m nil help --list
 ```
 
-## Quick Start
+Select a suitable PyTorch wheel for your hardware separately. Transformers/LoRA, ONNX, and provider integrations have their own extras. The requirements files install only the core; they do not install unrelated experiment/tracking packages.
+
+With the classical backend installed, access scikit-learn's public APIs directly
+through NIL, including APIs beyond the curated catalog:
 
 ```python
-from nil import Agent, Domain, tool, PersistentMemory, EvolutionConfig
-
-@tool
-def search_docs(query: str) -> str:
-    """Search the documentation for a query."""
-    return f"Results for: {query}"
-
-@tool
-def run_sql(sql: str) -> str:
-    """Execute a SQL query and return results."""
-    return f"Executed: {sql}"
-
-domain = Domain(
-    name="data-analysis",
-    tools=[search_docs, run_sql],
-    objectives=["Answer questions from the company database"],
-    success_signal=lambda run: run.success,
-)
-
-agent = Agent(
-    domain=domain,
-    evolution=EvolutionConfig(strategy="continuous"),
-    memory=PersistentMemory("./my_store"),
-)
-
-result = agent.run("What were total sales last quarter?")
-print(result.output)
-print(f"Success: {result.success}")
-
-# Agent improves over time
-agent.run("Break down sales by region")
-agent.run("Compare Q1 vs Q2 revenue")
-print(f"Success rate: {agent.success_rate():.0%}")
-print(f"Learned skills: {agent.learned_skills()}")
+from nil.sklearn.linear_model import LogisticRegression
+from nil.sklearn.feature_extraction.text import TfidfVectorizer
+from nil.sklearn.model_selection import GridSearchCV
 ```
 
-## Architecture
+These are native backend objects, preserving their parameters, performance and
+serialization. See `nil help sklearn`. This is an optional API mirror; it does
+not package a separate numerical engine inside NIL.
 
-```
-nil/
-├── agent.py                 # Top-level orchestrator
-├── domain.py                # Problem space definition
-├── config.py                # EvolutionConfig, NilConfig
-│
-├── kernel/                  # Execution engine
-│   ├── runner.py            # Agentic loop (LLM → tools → repeat)
-│   ├── outcome.py           # RunOutcome, StepRecord
-│   ├── tracer.py            # Structured experience capture
-│   ├── tool_manager.py      # Tool registration + dispatch
-│   └── graph/               # DAG-based parallel execution
-│       ├── graph_types.py   # ExecutionGraph, ExecutionNode, SubagentNode
-│       ├── planner.py       # Task → DAG decomposition
-│       ├── scheduler.py     # Dependency-aware scheduling
-│       ├── runner.py        # End-to-end graph execution
-│       ├── critic.py        # Output quality critique
-│       └── templates.py     # Reusable graph templates
-│
-├── memory/                  # Persistent storage (SQLite)
-│   ├── store.py             # PersistentMemory — traces, skills, strategies
-│   ├── hierarchical.py      # 7-tier memory system
-│   ├── episodic.py          # Episodes with retention tiers
-│   ├── semantic.py          # Facts + entity graph
-│   ├── procedural.py        # Procedures with refinement tracking
-│   ├── working.py           # Content blocks with goals
-│   ├── world_state.py       # Snapshots with delta tracking
-│   ├── social_memory.py     # User profiles + corrections
-│   ├── meta_memory.py       # Knowledge gaps + contradictions
-│   ├── consolidation.py     # Cross-tier consolidation pipeline
-│   ├── concept.py           # Concept graphs + abstraction
-│   ├── abstraction.py       # Trace clustering engine
-│   ├── experience.py        # Memory query interface
-│   ├── skill_registry.py    # Skill metadata management
-│   └── strategy_version.py  # Strategy history + rollback
-│
-├── evolution/               # Self-improvement pipeline
-│   ├── pipeline.py          # 7-stage evolution orchestrator
-│   ├── analyzer.py          # Causal analysis of traces
-│   ├── skill_extractor.py   # Pattern → reusable skill extraction
-│   ├── gradient_engine.py   # Textual gradient descent (LLM critique)
-│   ├── evaluator.py         # Replay-test + statistical significance
-│   ├── world_model.py       # Tool profiles, task clusters, transitions
-│   ├── drift_detector.py    # Multi-signal performance degradation
-│   └── strategy_mutator.py  # Strategy edit + rollback
-│
-├── cognition/               # Cognitive loop + RAC + economy
-│   ├── loop.py              # 10-phase cognitive pipeline
-│   ├── modes.py             # explore/exploit/investigate/recover modes
-│   ├── policy.py            # Mode selection + escalation
-│   ├── plugins.py           # Pluggable stage handlers
-│   ├── runner.py            # RACEngine (retrieval-augmented cognition)
-│   ├── retrieval.py         # Hybrid sparse + dense retriever
-│   ├── sources.py           # Multi-source retrieval
-│   ├── scoring.py           # Relevance scoring
-│   ├── assembler.py         # Context assembly with token budgets
-│   ├── index.py             # Retrieval index
-│   ├── query.py             # Retrieval strategy selection
-│   ├── feedback.py          # Outcome-based score adjustment
-│   ├── simulation.py        # Candidate action simulation
-│   ├── supervisor.py        # Online supervision
-│   ├── adapters.py          # Cognition-triggered system modifications
-│   └── economy.py           # Budget-aware execution (EV-based)
-│
-├── rl/                      # Reinforcement learning signals
-│   ├── agent.py             # RLEnabledAgent + RLConfig
-│   ├── rewards.py           # Dense, shaped, inverse RL reward models
-│   ├── trajectory.py        # Trajectory scoring + Elo rating
-│   ├── policy.py            # Behavioral cloning
-│   ├── value.py             # Value functions + GAE advantage estimation
-│   ├── exploration.py       # UCB1, Thompson Sampling, ε-greedy
-│   ├── replay.py            # Experience replay buffer
-│   └── preference.py        # DPO + trajectory ranking
-│
-├── models/                  # POMDP environment models
-│   ├── state_space.py       # StateSpace + StateSpaceLearner
-│   ├── transitions.py       # TransitionModel (Markov dynamics)
-│   ├── observations.py      # ObservationModel
-│   ├── rewards.py           # RewardModel + RewardLearner
-│   ├── belief.py            # BeliefTracker (Bayes filter)
-│   ├── planners.py          # Value iteration, MCTS, heuristic policy
-│   ├── framework.py         # EnvironmentModel + ModelAwareAgent
-│   └── learning.py          # Online model learning from traces
-│
-├── agents/                  # Multi-agent coordination
-│   ├── roles.py             # 9 agent roles (orchestrator → monitor)
-│   ├── orchestrator.py      # Task decomposition + DAG dispatch
-│   ├── blackboard.py        # Shared memory with namespacing
-│   ├── messages.py          # Point-to-point, broadcast, pub/sub
-│   ├── consensus.py         # Vote, debate, confidence-weighted
-│   ├── pool.py              # Persistent/on-demand agent lifecycle
-│   ├── market.py            # Market-based task allocation (bidding)
-│   ├── teams.py             # Hierarchical agent teams
-│   └── framework.py         # MultiAgentNil coordinator
-│
-├── tools/                   # Tool system
-│   ├── base.py              # @tool decorator + JSON Schema generation
-│   ├── registry.py          # Global in-process tool registry
-│   ├── embeddings.py        # Continuous vector representations
-│   ├── affordance.py        # Emergent tool properties + graph
-│   ├── composition.py       # Frequent sequence mining → composites
-│   ├── selection.py         # Latent tool selection + precondition gating
-│   └── evolver.py           # Workflow detection → tool synthesis
-│
-├── compilation/             # Skill compilation
-│   └── pipeline.py          # Parse → IR → optimize → codegen → execute → macros
-│
-├── benchmarks/              # Long-horizon benchmarking
-│   ├── learning.py          # Learning curves, velocity, plateau, transfer
-│   ├── horizon.py           # 10/25/50/100-step task sequences
-│   ├── recovery.py          # Failure, degradation, distribution shift
-│   ├── memory.py            # Forgetting curves, interference, recall
-│   ├── transfer.py          # Zero/few-shot cross-domain transfer
-│   ├── system.py            # Cost, latency, memory growth
-│   └── runner.py            # NilBenchmarkSuite + composite scoring
-│
-├── observability/           # Runtime observability
-│   ├── events.py            # 23 event types across run lifecycle
-│   ├── trace_viewer.py      # Timeline with span grouping
-│   ├── flame_graph.py       # Span-based timing visualization
-│   ├── token_timeline.py    # Per-step token/cost breakdown
-│   ├── reasoning_tree.py    # LLM decision capture + rationale
-│   ├── memory_browser.py    # Inspect skills, strategies, facts
-│   ├── evolution_diff.py    # Before/after strategy comparison
-│   ├── strategy_lineage.py  # Version history tree
-│   └── debugger.py          # Pause/resume/step/breakpoint/snapshot/rollback
-│
-├── training/                # Curriculum learning
-│   └── curriculum.py        # Weakness detection + synthetic practice
-│
-├── optimization/            # Cost/speed tuning
-│   ├── model_router.py      # Route to cheapest adequate model (stub)
-│   ├── chain_compressor.py  # Collapse deterministic chains (stub)
-│   ├── cache_manager.py     # In-memory LRU cache (SHA256, 1000 entries)
-│   └── budget_controller.py # Per-run ($1) + per-day ($50) limits
-│
-└── providers/               # LLM API adapters
-    ├── anthropic.py         # Anthropic Messages API
-    ├── openai.py            # OpenAI / Ollama / vLLM
-    ├── gemini.py            # Google Gemini
-    └── stub.py              # Deterministic fake for testing
-```
+From an extracted distribution bundle, install its wheel instead of the source project, for example `python -m pip install './wheels/nil_sdk-0.2.1-py3-none-any.whl[classical]'`.
 
-## Public API
+## Classical pipeline workflow
 
 ```python
-from nil import (
-    tool,            # Decorator: function → Tool with auto-generated JSON Schema
-    Domain,          # Binds tools, objectives, success signal
-    PersistentMemory, # SQLite-backed persistent storage
-    HierarchicalMemory, # 7-tier hierarchical memory system
-    Agent,           # Primary orchestrator — Kernel + Memory + Evolution + Cognition + RL
-    EvolutionConfig, # Evolution settings (strategy, interval, approval gates)
-)
+import nil
+
+X = [[float(i)] for i in range(30)]
+y = [2 * i + 1 for i in range(30)]
+data = nil.split(X, y, seed=7)
+model = nil.pipeline(nil.model("ridge_regression"), preprocess=nil.preprocessing.numeric())
+result = nil.fit(model, *data.train, validation=data.test)
+print(result.metrics)
+result.save("./models/ridge-v1")
+loaded = nil.load("./models/ridge-v1", trusted=True)
+print(nil.predict(loaded, [[31.0]]))
 ```
 
-## Key Features
+Use `logistic_regression` for classification. Mixed numeric/categorical preprocessing, sample weights, feature selection, stratified/group/time-aware splits, cross-validation, bounded grid/random/Bayesian tuning, nested CV, multioutput evaluation, inspection, calibration and learning curves have explicit APIs. See [the classical workflow guide](../docs/CLASSICAL_ML.md) for contracts, budgets, persistence trust requirements and current verification limits. The catalog has 54 constructors; listing does not establish installed-backend readiness.
 
-| Feature | Description |
+Add a custom model with `nil.register_model("my_model", factory, group="regression", help_path="my_model/help.md")`. Its factory runs only when selected. Every catalog model and public module has a separate [help.md reference](../docs/MODULE_REFERENCE.md): `nil help linear_regression`, `nil help validation`, or `print(nil.help("preprocessing"))` work offline without loading a compute backend.
+
+See [DL/RL workflows and validation](../docs/NEURAL_RL.md) for CPU bf16, loss normalization, recoverable checkpoints, native control algorithms and the remaining distributed/GPU/offline-RL gates.
+
+## Neural training
+
+```python
+import nil
+import torch
+
+nil.runtime.seed(7)
+x = torch.linspace(-1, 1, 32).reshape(-1, 1)
+data = nil.data.tensors(x, 2 * x + 1)
+model = nil.model("mlp", input_dim=1, output_dim=1, hidden=(16,))
+result = nil.train(model, data, epochs=20, device="cpu")
+print(nil.evaluate(result.model, data, device_name="cpu"))
+```
+
+## Public surface
+
+| API | Current responsibility |
 |---|---|
-| **Self-Evolution** | 7-stage pipeline: analyze → extract skills → compute gradients → evaluate → build world model → check drift → evolve tools |
-| **Cognitive Loop** | 10-phase pipeline: observe → retrieve → reason → plan → simulate → act → evaluate → reflect → learn → adapt |
-| **Persistent Memory** | SQLite-backed 7-tier memory: episodic, semantic, procedural, working, world state, social, meta |
-| **Retrieval-Augmented Cognition** | Dynamic context retrieval replacing static skill injection |
-| **Reinforcement Learning** | Dense rewards, trajectory scoring, DPO, behavioral cloning, value functions, bandit exploration |
-| **Multi-Agent** | 9 roles, blackboard shared memory, consensus mechanisms, market-based allocation, hierarchical teams |
-| **POMDP Models** | Formal state tracking, belief updates, MCTS planning, online model learning |
-| **Tool Evolution** | Workflow detection → composite tool synthesis |
-| **Skill Compilation** | Parse → IR → optimize → codegen → hybrid execution → macros |
-| **Long-Horizon Benchmarks** | Learning curves, forgetting, transfer, recovery, system benchmarks |
-| **Observability** | Flame graphs, token timelines, reasoning trees, memory browser, live debugger |
-| **Curriculum Learning** | Weakness detection → synthetic practice tasks |
+| `nil.model`, `nil.list_models`, `nil.catalog` | A small model registry, six groups, direct backend constructors |
+| `nil.sklearn` | Public scikit-learn APIs, including nested modules, through an optional backend |
+| `nil.data` | Records, immutable JSONL snapshots, validation, splits and tensor datasets/loaders |
+| `nil.fit`, `nil.pipeline`, `nil.preprocessing` | Classical fitting/results, learned preprocessing and selection |
+| `nil.train`, `nil.Trainer`, `nil.training` | Neural/custom-step training, checkpoints, callbacks, bounded search |
+| `nil.split`, `nil.cross_validate`, `nil.tune`, `nil.validation` | Fold-isolated classical validation and bounded selection |
+| `nil.inspection` | Importances, calibration, learning curves, PDP/ICE and model comparisons |
+| `nil.execution` | Opt-in POSIX workers, cancellation and Linux address-space caps |
+| `nil.rl` | Optional neural PPO/A2C/DQN/SAC/TD3/DDPG/HER control and separate agent helpers |
+| `nil.streaming` | Incremental supervised training, frozen preprocessing and checkpoints |
+| `nil.uncertainty` | Split-conformal intervals/sets and held-out coverage |
+| `nil.imbalance`, `nil.selection` | Fold-local resampling, threshold selection and resumable Bayesian search |
+| `nil.save`, `nil.load`, `nil.persistence` | Complete trusted classical pipeline artifacts |
+| `nil.classical` | Classical fit results, run records, warnings and held-out metrics |
+| `nil.evaluate`, `nil.predict`, `nil.transform` | Evaluation/prediction dispatch and native feature transformation |
+| `nil.lifecycle`, `nil.Registry` | Local run records and versioned checkpoint artifacts |
+| `nil.optimization`, `nil.inference`, `nil.serving` | CPU optimization/ONNX, inference, local development serving |
+| `nil.generative` | Optional local language models, LoRA and perplexity |
+| `nil.Agent`, agent and robotics modules | Optional existing applications; loaded when requested |
 
-## Examples
+Classical and neural engines remain optional. Classical pipeline/result operations are shared through NIL; gradient training still uses `nil.train`, and neural checkpoints retain their own format. The SDK remains alpha. Classical workflows and the API mirror have passed real-backend acceptance with scikit-learn 1.4.2 and 1.9.1. CPU XGBoost pipeline/metric/save-reload checks also pass; GPU execution is unverified. Distributed training, production serving and universal workflow coverage are not claimed. Native computation still depends on model, data and hardware.
 
-```bash
-# Basic agent
-python examples/basic_agent.py
+See [model development](../docs/MODEL_DEVELOPMENT.md), [shallow design and cleanup](../docs/SHALLOW_DESIGN.md), and the [agent reference](../docs/USERGUIDE.md). `nil.models` retains its legacy POMDP/environment-model meaning; use `nil.model()` to construct trainable models.
 
-# Robotics assembly cell (full domain-specific application)
-python examples/robotics_assembly.py
+The repository `docs/CLASSICAL_GAPS.md` coverage ledger distinguishes implemented workflows from specialized engines, broader resource isolation, SHAP and native-engine work still to do. Each new module has a bundled help.md. The base install remains NIL only; tabular, imbalance and search extras are explicit opt-ins.
+
+## Verification
+
+```sh
+PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests -q
 ```
 
-## Scripts
+Run this from the repository root with your chosen optional dependencies. Optional backend tests may skip when dependencies are absent. The dependency-free catalog and import-isolation tests run without them.
 
-```bash
-python scripts/verify_system.py    # System health check
-python scripts/run_benchmarks.py   # Run benchmark suite
-python scripts/run_evolution.py    # Manual evolution cycle
-python scripts/run_real.py         # Run with real LLM provider
-```
-
-## Configuration
-
-```python
-from nil import EvolutionConfig
-
-# Conservative: evolve every 10 runs
-config = EvolutionConfig(strategy="periodic", evolve_interval=10)
-
-# Aggressive: evolve after every run
-config = EvolutionConfig(strategy="continuous")
-
-# Manual: only when you call agent.evolve()
-config = EvolutionConfig(strategy="manual")
-
-# With approval gates
-config = EvolutionConfig(human_approval=True, max_strategy_versions=20)
-```
-
-## Testing
-
-```bash
-pytest tests/ -v
-```
-
-## Requirements
-
-- Python >= 3.10
-- Zero infrastructure: all storage local (SQLite)
-- Model-agnostic: Anthropic, OpenAI, Gemini, or any OpenAI-compatible endpoint
-- See [requirements.md](requirements.md) for full specification
-
-## License
-
-Apache 2.0 — Built by **Nelo Robotics Pvt Ltd**
+Classical and specialized workflows now include forecasting, ranking, sparse recommendation, survival, optional LightGBM/CatBoost, bounded Shapley explanations, typed transactional datasets, distributed random search and additional conformal contracts. See [supported scope and acceptance](../docs/CLASSICAL_SPECIALIZED.md).

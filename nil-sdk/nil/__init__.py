@@ -3,6 +3,17 @@ from importlib import import_module
 
 __version__ = "0.2.1"
 _EXPORTS = {
+    "model": ("nil.catalog", "create"),
+    "list_models": ("nil.catalog", "list_models"),
+    "register_model": ("nil.catalog", "register"),
+    "help": ("nil.documentation", "read_help"),
+    "pipeline": ("nil.preprocessing", "pipeline"),
+    "fit": ("nil.classical", "fit"),
+    "save": ("nil.persistence", "save"),
+    "load": ("nil.persistence", "load"),
+    "split": ("nil.validation", "split"),
+    "cross_validate": ("nil.validation", "cross_validate"),
+    "tune": ("nil.validation", "tune"),
     "tool": ("nil.tools.base", "tool"),
     "Domain": ("nil.domain", "Domain"),
     "PersistentMemory": ("nil.memory.store", "PersistentMemory"),
@@ -14,6 +25,7 @@ _EXPORTS = {
     "train": ("nil.training.trainer", "train"),
     "evaluate": ("nil.evaluation", "evaluate"),
     "predict": ("nil.inference", "predict"),
+    "transform": ("nil.inference", "transform"),
     "Run": ("nil.lifecycle", "Run"),
     "Registry": ("nil.lifecycle", "Registry"),
 }
@@ -24,7 +36,7 @@ for _name in (
     "AutonomousManipulationDomain",
 ):
     _EXPORTS[_name] = ("nil.robotics", _name)
-_MODULES = {"data", "nn", "training", "evaluation", "inference", "optimization",
+_MODULES = {"native", "distributed", "boosting", "forecasting", "ranking", "recommendation", "survival", "datasets", "rl", "execution", "selection", "imbalance", "uncertainty", "streaming", "sklearn", "catalog", "preprocessing", "persistence", "validation", "inspection", "data", "nn", "training", "evaluation", "inference", "optimization",
             "generative", "lifecycle", "runtime", "models", "robotics", "classical", "serving"}
 __all__ = list(_EXPORTS) + sorted(_MODULES)
 

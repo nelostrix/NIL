@@ -6,13 +6,21 @@ import math
 from types import SimpleNamespace
 
 import pytest
-import torch
+torch = pytest.importorskip("torch")
 
 import nil
 from nil.training import EarlyStopping, grid_search
 from nil.training.checkpoint import load
 
 torch.set_num_threads(1)
+
+
+def test_neural_evaluate_positional_arguments_remain_compatible():
+    data = nil.data.tensors(torch.ones(16, 1), torch.zeros(16, 1))
+    model = nil.nn.mlp(1, 1, hidden=())
+    named = nil.evaluate(model, data, task="regression", batch_size=8, device_name="cpu")
+    positional = nil.evaluate(model, data, "regression", 8, "cpu")
+    assert positional["mse"] == pytest.approx(named["mse"])
 
 
 def test_early_stop_saves_best_weights_and_completes(tmp_path):

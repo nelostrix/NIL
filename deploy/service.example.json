@@ -1,0 +1,17 @@
+{
+  "factory": "my_model:build",
+  "backend_port": 9001,
+  "gateway_port": 8443,
+  "host": "127.0.0.1",
+  "allowed_hosts": ["localhost", "127.0.0.1"],
+  "certfile": "/etc/nil/tls/server.crt",
+  "keyfile": "/etc/nil/tls/server.key",
+  "client_ca": "/etc/nil/tls/client-ca.crt",
+  "backend_token_file": "/etc/nil/credentials/backend-token",
+  "client_token_file": "/etc/nil/credentials/client-token",
+  "request_slots": 8,
+  "inference_timeout": 5,
+  "startup_timeout": 15,
+  "socket_timeout": 2,
+  "upstream_timeout": 12
+}

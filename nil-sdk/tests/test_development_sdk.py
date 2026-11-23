@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 import pytest
-import torch
+torch = pytest.importorskip("torch")
 
 import nil
 
