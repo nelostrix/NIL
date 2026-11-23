@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.12.16",
+  "capabilities": {
+    "process_groups": true,
+    "address_space_limit": true,
+    "identity_safe_recovery": true,
+    "aggregate_rss_limit": false,
+    "gpu_memory_limit": false,
+    "independent_supervisor": true,
+    "owned_process_tree": true,
+    "windows_job_objects": false,
+    "sampled_group_rss": true,
+    "kernel_aggregate_memory": {
+      "configured": true,
+      "available": true,
+      "reason": "Preflight passed; child creation/attachment is checked at job startup"
+    }
+  },
+  "required": {
+    "sampled_group_rss": true,
+    "cgroup_root": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/nil-cgroup-accept-20261122.service",
+    "windows_job_objects": false
+  },
+  "checks": [
+    {
+      "name": "success",
+      "status": "passed",
+      "seconds": 0.14267094399838243,
+      "evidence": {
+        "job_status": "completed"
+      }
+    },
+    {
+      "name": "timeout",
+      "status": "passed",
+      "seconds": 0.5416587090003304,
+      "evidence": {
+        "job_status": "timed_out"
+      }
+    },
+    {
+      "name": "cancellation",
+      "status": "passed",
+      "seconds": 0.06783741400431609,
+      "evidence": {
+        "job_status": "cancelled"
+      }
+    },
+    {
+      "name": "descendant_cleanup",
+      "status": "passed",
+      "seconds": 2.043018024000048,
+      "evidence": {
+        "job_status": "timed_out",
+        "child_alive": false
+      }
+    },
+    {
+      "name": "successful_descendant_cleanup",
+      "status": "passed",
+      "seconds": 0.16245317399443593,
+      "evidence": {
+        "job_status": "completed",
+        "child_alive": false
+      }
+    },
+    {
+      "name": "sampled_group_rss",
+      "status": "passed",
+      "seconds": 0.1660367749936995,
+      "evidence": {
+        "backend": "sampled-process-group-rss",
+        "limit_bytes": 67108864,
+        "sampled_peak_rss_bytes": 112758784,
+        "sampled_peak_processes": 2,
+        "interval_seconds": 0.02
+      }
+    },
+    {
+      "name": "kernel_aggregate_memory",
+      "status": "passed",
+      "seconds": 0.17124356500426074,
+      "evidence": {
+        "backend": "cgroup-v2",
+        "memory_limit_bytes": 134217728,
+        "swap_limit_bytes": 0,
+        "memory_peak_bytes": 134217728,
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 38,
+          "oom": 1,
+          "oom_kill": 3,
+          "oom_group_kill": 1,
+          "sock_throttled": 0
+        }
+      }
+    }
+  ],
+  "status": "passed"
+}

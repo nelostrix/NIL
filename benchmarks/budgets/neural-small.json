@@ -1,0 +1,5 @@
+{
+  "core_import": {"max_wall_s": 0.5, "max_peak_rss_mib": 35},
+  "native_cpu": {"max_wall_s": 1.0, "max_peak_rss_mib": 35},
+  "torch_cpu": {"max_wall_s": 20.0, "max_peak_rss_mib": 1024}
+}

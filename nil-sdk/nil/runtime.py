@@ -16,7 +16,8 @@ def require(module: str, extra: str):
         if exc.name == module or module.startswith(f"{exc.name}."):
             raise MissingDependencyError(
                 f"{module} is required for this operation. Install nil-sdk[{extra}] "
-                "in your selected Python environment."
+                "in your selected Python environment if you want this backend. "
+                "NIL does not install or download dependencies automatically."
             ) from exc
         raise
 
@@ -29,6 +30,17 @@ def capabilities() -> dict:
         "transformers": "transformers",
         "peft": "peft",
         "sklearn": "scikit-learn",
+        "scipy": "scipy",
+        "joblib": "joblib",
+        "pandas": "pandas",
+        "imblearn": "imbalanced-learn",
+        "optuna": "optuna",
+        "stable_baselines3": "stable-baselines3",
+        "gymnasium": "gymnasium",
+        "xgboost": "xgboost",
+        "lightgbm": "lightgbm",
+        "catboost": "catboost",
+        "lifelines": "lifelines",
         "tensorflow": "tensorflow",
         "onnx": "onnx",
         "onnxruntime": "onnxruntime",
@@ -40,6 +52,11 @@ def capabilities() -> dict:
             version = metadata.version(distribution)
         except metadata.PackageNotFoundError:
             version = None
+            if module == "xgboost":
+                try:
+                    version = metadata.version("xgboost-cpu")
+                except metadata.PackageNotFoundError:
+                    pass
         result[module] = {"installed": util.find_spec(module) is not None, "version": version}
     return {
         "python": platform.python_version(),

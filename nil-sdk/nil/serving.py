@@ -84,3 +84,42 @@ def create_server(model, port=0, token=None, max_body_bytes=1024 * 1024):
             return connection, address
 
     return Server(("127.0.0.1", port), Handler)
+
+
+def create_isolated_server(model,*,port=0,token,request_slots=8,inference_timeout=10,
+                           startup_timeout=30,max_body_bytes=1048576,max_input_elements=262144,
+                           max_output_elements=262144,max_model_bytes=134217728):
+    """Opt-in bounded loopback serving with a restartable CPU worker process.
+
+    Model construction is trusted; request bodies contain data only. Public
+    ingress/TLS/tenant authentication belong to a separately configured gateway.
+    """
+    from nil._serving import isolated_server
+    return isolated_server(model,port=port,token=token,request_slots=request_slots,
+        inference_timeout=inference_timeout,startup_timeout=startup_timeout,
+        max_body_bytes=max_body_bytes,max_input_elements=max_input_elements,
+        max_output_elements=max_output_elements,max_model_bytes=max_model_bytes)
+
+
+def create_gateway(**options):
+    """Explicit bounded TLS/mTLS gateway; requires no numerical backend."""
+    from nil._gateway import gateway
+    return gateway(**options)
+
+
+def client(url,token,**options):
+    """HTTPS inference client with certificate verification and bounded retries."""
+    from nil._gateway import Client
+    return Client(url,token,**options)
+
+
+def __getattr__(name):
+    if name=='ServingError':
+        from nil._gateway import ServingError
+        return ServingError
+    raise AttributeError(name)
+
+
+if __name__=='__main__':
+    from nil._service import main
+    raise SystemExit(main())

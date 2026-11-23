@@ -14,6 +14,25 @@ class Supervised:
         }
         self.loss = choices[loss]() if isinstance(loss, str) else loss
 
+    @property
+    def reduction(self):
+        return getattr(self.loss, "reduction", "mean")
+
+    def normalization_count(self, batch):
+        """Use the native mean-loss denominator across uneven microbatches."""
+        torch = require("torch", "torch")
+        targets = batch[1]
+        if self.reduction == "sum":
+            return 1.0
+        if isinstance(self.loss, torch.nn.CrossEntropyLoss):
+            if targets.is_floating_point():
+                return targets.numel() / targets.shape[1]
+            valid = targets != self.loss.ignore_index
+            if self.loss.weight is not None:
+                return float(self.loss.weight[targets[valid]].sum().item())
+            return float(valid.sum().item())
+        return float(targets.numel())
+
     def __call__(self, model, batch):
         if not isinstance(batch, (list, tuple)) or len(batch) != 2:
             raise ValueError(
@@ -51,16 +70,21 @@ class CausalLM:
             raise ValueError("Causal model did not return a loss")
         return loss
 
+    def normalization_count(self, batch):
+        return float((batch["labels"][..., 1:] != -100).sum().item())
+
 
 def resolve(task):
     if task in ("regression", "imitation_learning"):
         return Supervised("mse")
     if task == "classification":
         return Supervised("cross_entropy")
+    if task in ("binary_classification", "multilabel_classification"):
+        return Supervised("bce_logits")
     if task == "causal_lm":
         return CausalLM()
     if callable(task):
         return task
     raise ValueError(
-        "Choose regression, classification, imitation_learning, causal_lm or a callable"
+        "Choose regression, classification, binary_classification, multilabel_classification, imitation_learning, causal_lm or a callable"
     )
