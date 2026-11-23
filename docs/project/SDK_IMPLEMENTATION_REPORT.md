@@ -132,7 +132,7 @@ are now rejected rather than silently filtering unknown fields.
 
 ## How to use the result
 
-See [the model-development guide](docs/MODEL_DEVELOPMENT.md). Build the ZIP with
+See [the model-development guide](../MODEL_DEVELOPMENT.md). Build the ZIP with
 `python scripts/build_sdk_bundle.py`. The package is an alpha development SDK;
 its public modules expose real operations with explicit optional dependencies,
 not claims of an installed or running backend based on UI labels.

@@ -132,7 +132,7 @@ Initial resource/runners/help acceptance: 24 passed/three explicit skips (two
 real-kernel tests without delegation, one unrelated missing Torch test). Later
 full-suite and installed-wheel validation is recorded in TODO.md. Raw local
 execution and small/medium classical/neural reports plus commands are in
-[docs/benchmarks/2026-11-22-phases-1-2.md](docs/benchmarks/2026-11-22-phases-1-2.md).
+[docs/benchmarks/2026-11-22-phases-1-2.md](../benchmarks/2026-11-22-phases-1-2.md).
 
 Phase 3 is the next ordered development target. This host cannot run its actual
 CUDA acceptance; the existing verifier must reject --cuda here. No phase is
@@ -155,7 +155,7 @@ FSDP serial parity/exact resume, rank and publication faults, hash/data/world
 preflight, DDP hung-worker deadline and caller immutability. New GPU cases are
 executable target tests, not GPU passes. The current-host GPU report must fail
 with exit 2. CI definitions are unexecuted configurations, not matrix acceptance.
-Limits and commands: [docs/benchmarks/2026-11-22-sharding-gates.md](docs/benchmarks/2026-11-22-sharding-gates.md).
+Limits and commands: [docs/benchmarks/2026-11-22-sharding-gates.md](../benchmarks/2026-11-22-sharding-gates.md).
 
 
 Full classical source acceptance: **1046 passed, 19 optional/target skips**.

@@ -120,6 +120,22 @@ def _finish_runs(path, state, error):
             continue
 
 
+def _signal_group(pid,number):
+    try:os.killpg(pid,number)
+    except ProcessLookupError:pass
+    except PermissionError:
+        if sys.platform!='darwin':raise
+        # Darwin may refuse another signal once only zombie members remain.
+        # Verify that no live member exists; never treat a live EPERM as cleanup.
+        probe=subprocess.run(['ps','-A','-o','pgid=,stat='],capture_output=True,text=True,timeout=2)
+        if probe.returncode:raise
+        try:
+            rows=[line.split() for line in probe.stdout.splitlines() if line.strip()]
+            if any(len(row)!=2 for row in rows):raise ValueError('Invalid process accounting')
+            if any(int(group)==pid and not state.startswith('Z') for group,state in rows):raise
+        except ValueError:raise PermissionError('Cannot verify Darwin process-group cleanup') from None
+
+
 class _Supervisor:
     """Runs only inside the detached supervisor process."""
     def __init__(self, path, process, limits, quota=None, tree=None):
@@ -138,17 +154,11 @@ class _Supervisor:
     def _stop(self):
         if self.tree is not None:
             self.tree.stop(); return
-        try:
-            os.killpg(self.process.pid, signal.SIGTERM)
-        except ProcessLookupError:
-            pass
+        _signal_group(self.process.pid,signal.SIGTERM)
         deadline = time.monotonic() + .3
         while self._running() and time.monotonic() < deadline:
             time.sleep(.01)
-        try:
-            os.killpg(self.process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
+        _signal_group(self.process.pid,signal.SIGKILL)
         if self.quota is not None: self.quota.kill()
         self.process.wait()
 
@@ -199,6 +209,8 @@ class _Supervisor:
                     error = f"Worker exited with code {self.process.returncode} without an outcome"
         except BaseException as exc:
             state, error = "failed", f"Worker monitor failed: {type(exc).__name__}: {exc}"
+            import traceback
+            record["monitor_traceback"]=traceback.format_exc(limit=8)[-8000:]
             try:
                 if self.process.returncode is None:
                     self._stop()

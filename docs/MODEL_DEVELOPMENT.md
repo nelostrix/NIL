@@ -112,7 +112,7 @@ external augmentation state, model construction and custom callbacks remain
 the developer's responsibility. GPU determinism is not guaranteed. The trainer
 currently implements single-process training with fp32 or autocast bf16/fp16;
 CPU bf16 is validated, while CUDA acceptance needs actual GPU hardware. DDP,
-FSDP and DeepSpeed orchestration remain open in [TODO.md](../TODO.md).
+FSDP and DeepSpeed orchestration remain open in [TODO.md](project/TODO.md).
 
 Checkpoints use state dictionaries and explicit `torch.load(weights_only=True)`.
 Their adjacent `.pt.json` manifest is checked before deserialization. A hash
