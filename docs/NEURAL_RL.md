@@ -217,3 +217,14 @@ then in an explicit generative/ONNX/Torch environment run
 `python scripts/benchmark_model_coverage.py --digits-data /absolute/digits.npz
 --output /absolute/report.json`. The temporary model/checkpoint outputs are removed;
 the prepared data stays only at the explicitly selected path.
+
+## External pretrained CPU target
+
+A pinned134.5M SmolLM2/Llama safetensors checkpoint now passes actual CPU inference,
+LoRA frozen-base/update/adapter-only reload and INT8 weight-storage checks under
+one-CPU/2GiB/no-swap controls. Dynamic-activation INT8 did not meet the unchanged
+fidelity threshold; per-channel weight storage with FP32 compute did. Details,
+failed configurations, source hashes and reproducible preparation/acceptance:
+[pretrained CPU target](PRETRAINED_CPU.md). This does not imply GPU, billion-scale,
+long-context or all-architecture acceptance. NIL still downloads no model during
+installation/import and default model loading remains local-only.

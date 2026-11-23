@@ -139,6 +139,10 @@ remains bounded float64 CPU; zero-sized tensors and GPU/device execution are ope
   continuous, recurrent/masked and multi-agent tasks with seed-level intervals.
 - [x] Add real bundled-digit classification with INT8/ONNX parity and local
   held-out-document causal training/LoRA/merged reload checks on the CPU host.
+- [x] Accept a pinned external134.5M SmolLM2/Llama checkpoint for CPU inference,
+  LoRA/adapter-only reload and INT8 weight storage under actual2GiB/no-swap/
+  one-CPU limits. Dynamic activation INT8 fails this target's unchanged fidelity
+  threshold; weight-only storage passes and is distinguished from INT8 compute.
 - [ ] Broaden downloaded pretrained architectures and large-model/quantization
   coverage on declared hardware; local tiny models do not close this target gate.
 
@@ -266,3 +270,16 @@ also passed all nine target cells with dependency-free multiclass training in th
 fresh-wheel verifier. Local full neural/RL source regression: 1026 passed/30
 explicit skips. Local final regular-wheel checks: 70 Torch and 67 minimum-classical
 tests plus installed examples, all with zero skips. No base dependency was added.
+
+## Final phase8–9 verification — 2026-11-23
+
+At commit761ca07, [all nine base cells](https://github.com/nelostrix/NIL/actions/runs/45145136514),
+[all ten backend cells](https://github.com/nelostrix/NIL/actions/runs/45145136494)
+and [full SDK CI](https://github.com/nelostrix/NIL/actions/runs/45145136525) pass.
+The final ordinary wheel matches203 Python sources, includes the optional kernel's
+C source, contains no compiled binary and installs only nil-sdk in a fresh offline
+environment. Explicit existing dev environments use the rebuilt regular wheel.
+The ND engine's core/native workload also passed again under actual CPUQuota100%,
+MemoryMax1GiB, no-swap and TasksMax64 limits; unit peak32.6MiB, zero swap/OOM kills.
+Actual GPU/device quotas, a physical old PC, external large pretrained targets and
+public/multi-tenant deployment acceptance remain open as listed above.

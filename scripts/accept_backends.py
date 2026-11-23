@@ -35,7 +35,8 @@ PROFILES={
         'packages':('torch','numpy','pytest'),
         'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py','test_native_engine.py','test_native_multiclass.py',
                  'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py',
-                 'test_native_nd.py','test_native_sparse.py','test_native_cpu.py'),
+                 'test_native_nd.py','test_native_sparse.py','test_native_cpu.py',
+                 'test_quantization_ownership.py','test_pretrained_loading_contract.py','test_pretrained_runner.py'),
         'exclude':'not cuda',
         'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer')),
     },
@@ -65,6 +66,7 @@ def run(profile,output,*,timeout=300):
             shutil.copytree(root/'nil-sdk/examples',work/'nil-sdk/examples')
             (work/'scripts').mkdir()
             shutil.copy2(root/'scripts/_tls_acceptance.py',work/'scripts/_tls_acceptance.py')
+            shutil.copy2(root/'scripts/accept_pretrained.py',work/'scripts/accept_pretrained.py')
             def execute(name,arguments):
                 log=output.with_name(output.stem+'-'+name+'.log')
                 with log.open('wb') as stream:

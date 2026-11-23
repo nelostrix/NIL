@@ -630,3 +630,52 @@ Python3.12, plus minimum/current CPU Torch and RL on Linux/Python3.12. This is
 acceptance of declared profiles; other extras/platform/precision combinations
 remain separate gates. Final scalar/vector implicit-operand regression also
 passes66 native engine tests after this hosted snapshot.
+
+Final hosted snapshot761ca07 passes base45145136514 (9cells),
+backend45145136494 (10cells) and full SDK45145136525. Final offline bundle build
+verifies NIL-only dependency resolution; all203 Python sources match its wheel,
+C source is bundled without native binaries, and ZIP hashes verify. Language
+corpus SHA256s still match the benchmark's exact train/held-out files. The current
+ND core/native profile passes a fresh actual one-CPU/1GiB/no-swap/64-task unit
+again, peak32.6MiB. Runtime code was published only to the approved verification
+branch; no main-branch merge or permanent service/release deployment occurred.
+
+## Pinned external pretrained CPU follow-on — 2026-11-23
+
+- [x] Resolve and explicitly prepare SmolLM2-135M safetensors at immutable revision
+  93efa2f097d58c2a74874c7e644dbc9b0cee75a2; verify271,971,074 downloaded bytes and
+  file SHA256s outside the repository/distribution. No new backend package installed.
+- [x] Fix model/tokenizer revision/cache/auth forwarding and strictly boolean
+  download opt-in. Default remains offline with remote model code disabled.
+- [x] Remove redundant second model clone from dynamic quantization; preserve
+  caller mode/state/ownership and add explicit subtree exclusions/per-channel Linear.
+- [x] Record dynamic-activation INT8 fidelity failure without relaxing +0.5 NLL.
+- [x] Implement explicit CPU Linear INT8 per-channel weight storage with FP32
+  per-operation dequantization; no persistent FP32 cache or speedup/QAT claim.
+- [x] Real134,515,008-parameter inference, deterministic generation,230,400-parameter
+  LoRA/eight updates, unchanged frozen weights and adapter-only reload pass.
+- [x] Weight-only INT8 passes: NLL+0.147897, state220,317,635 bytes versus538,060,032
+  FP32 parameter bytes. Dynamic activation per-channel variant remains failed.
+- [x] All three stages pass in actual CPUQuota100%/MemoryMax2GiB/no-swap/TasksMax128
+  unit: peak1,719,111,680 bytes, zero OOM kills and zero swap, wall41.47s.
+- [x] Add bounded explicit checkpoint preparation, digest verification, parent-owned
+  scratch cleanup and fail-closed numerical/policy reports; no install/import downloads.
+
+Contract and previous neural compatibility tests:14 passed in4.24s. Full source,
+installed-wheel and hosted validation are recorded below when complete. Raw report
+(including failed dynamic variant), exact data limits and primary source attribution:
+../PRETRAINED_CPU.md and ../benchmarks/2026-11-23-pretrained-135m.json.
+Eight short evaluation windows are functional/numerical checks, not a general
+language benchmark. Billion/GPU/other architecture/public deployment/physical old-PC
+acceptance remains target-dependent and unchecked. Weight artifacts remain only
+under workspace artifacts/nil/models; the SDK bundles code/help/reports, not models.
+
+Pretrained follow-on installed acceptance: same three stages pass from regular
+site-packages NIL under actual2GiB/no-swap/one-CPU limits, kernel peak
+1,705,091,072 bytes, zero OOM kills, wall44.61s. The current raw report records
+that installed run and retains the failed dynamic configuration. Installed
+Torch/native/service/preparation profile:131 passed, zero skips, three examples.
+Full neural/RL source suite:1110 passed/30 explicit skips in119.76s; final
+preparation/loading/quantization guards:13 passed. The full run predates the three
+new preparation regressions and final complex-dtype rejection; focused checks
+and hosted tests cover the final guard paths. No mandatory dependency changed.

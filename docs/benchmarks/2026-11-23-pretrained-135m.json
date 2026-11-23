@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "scope": "Pinned >=100M pretrained CPU workflows; no GPU or arbitrary model certification",
+  "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.12.16",
+  "stages": {
+    "inference": {
+      "status": "passed",
+      "stage": "inference",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "transformers": "4.57.6",
+        "peft": "0.22.0"
+      },
+      "architecture": "LlamaForCausalLM",
+      "parameters": 134515008,
+      "model_bytes": 538060032,
+      "nil_path": "/home/us/.local/share/nelo-dev/robotics-venv/lib/python3.12/site-packages/nil/__init__.py",
+      "baseline": {
+        "nll": 4.41675094411343,
+        "perplexity": 82.82673900594867,
+        "tokens": 79
+      },
+      "generation": "The purpose of a test is to determine if the patient is in a",
+      "seconds": 7.062336294002307,
+      "peak_rss_mib": 1138.65625,
+      "exit_code": 0,
+      "log": "pretrained-135m-installed-inference.log"
+    },
+    "lora": {
+      "status": "passed",
+      "stage": "lora",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "transformers": "4.57.6",
+        "peft": "0.22.0"
+      },
+      "architecture": "LlamaForCausalLM",
+      "parameters": 134515008,
+      "model_bytes": 538060032,
+      "nil_path": "/home/us/.local/share/nelo-dev/robotics-venv/lib/python3.12/site-packages/nil/__init__.py",
+      "baseline": {
+        "nll": 4.41675094411343,
+        "perplexity": 82.82673900594867,
+        "tokens": 79
+      },
+      "adapter_parameters": {
+        "total": 134745408,
+        "trainable": 230400
+      },
+      "adapter_artifact_bytes": 5738044,
+      "adapted": {
+        "nll": 4.1330526569221595,
+        "perplexity": 62.36802080578174,
+        "tokens": 79
+      },
+      "adapter_reloaded": {
+        "nll": 4.1330526569221595,
+        "perplexity": 62.36802080578174,
+        "tokens": 79
+      },
+      "frozen_base_unchanged": true,
+      "scope": "Eight short text windows, eight Adam updates; functional adaptation/reload, not held-out model-quality improvement",
+      "seconds": 18.514592816001823,
+      "peak_rss_mib": 1392.58203125,
+      "exit_code": 0,
+      "log": "pretrained-135m-installed-lora.log"
+    },
+    "int8": {
+      "status": "passed",
+      "stage": "int8",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "transformers": "4.57.6",
+        "peft": "0.22.0"
+      },
+      "architecture": "LlamaForCausalLM",
+      "parameters": 134515008,
+      "model_bytes": 538060032,
+      "nil_path": "/home/us/.local/share/nelo-dev/robotics-venv/lib/python3.12/site-packages/nil/__init__.py",
+      "baseline": {
+        "nll": 4.41675094411343,
+        "perplexity": 82.82673900594867,
+        "tokens": 79
+      },
+      "quantized": {
+        "nll": 4.564647481411318,
+        "perplexity": 96.02873613457777,
+        "tokens": 79
+      },
+      "nll_delta": 0.1478965372978882,
+      "excluded_layers": [
+        "lm_head"
+      ],
+      "linear_weight_scheme": "per_channel",
+      "method": "weight_only_int8",
+      "serialized_int8_state_bytes": 220317635,
+      "tolerance_nll_delta": 0.5,
+      "scope": "CPU per-channel INT8 weight storage, FP32 dequantized Linear computation; embeddings/output head remain floating-point; no INT8 activation/speed claim",
+      "seconds": 11.660637363002024,
+      "peak_rss_mib": 1438.42578125,
+      "exit_code": 0,
+      "log": "pretrained-135m-installed-int8.log"
+    }
+  },
+  "started_utc": "2026-11-23T09:51:57Z",
+  "source": {
+    "repo_id": "HuggingFaceTB/SmolLM2-135M",
+    "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+    "download_bytes": 271971074,
+    "files_sha256": {
+      "config.json": "1d556eab73b69c7f11f64c557a2f9c6f440bd4c6b89bb2584a6b498c92603843",
+      "generation_config.json": "2056c988e990b0d13670f63f2f3b87b3b6d07edaf7a3416998ba27dab2d8a059",
+      "model.safetensors": "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1",
+      "special_tokens_map.json": "e786b595b9a23148bf1630df78d9037a048ea671e48bfd3549a1e3c233742bb3",
+      "tokenizer.json": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+      "tokenizer_config.json": "4bb9af56a342753d39374f4016a16574cab299fe088e896f425ce3c433f61424",
+      "vocab.json": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79"
+    },
+    "source_url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/tree/93efa2f097d58c2a74874c7e644dbc9b0cee75a2"
+  },
+  "kernel_policy": {
+    "memory.max": "2147483648",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "128"
+  },
+  "kernel_usage": {
+    "memory_peak_bytes": 1705091072,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    }
+  },
+  "finished_utc": "2026-11-23T09:52:41Z",
+  "failed_configurations": [
+    {
+      "method": "dynamic_int8",
+      "linear_weight_scheme": "per_channel",
+      "excluded_layers": [
+        "lm_head"
+      ],
+      "report": {
+        "schema_version": 1,
+        "status": "failed",
+        "scope": "Pinned >=100M pretrained CPU workflows; no GPU or arbitrary model certification",
+        "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+        "python": "3.12.16",
+        "stages": {
+          "int8": {
+            "status": "failed",
+            "stage": "int8",
+            "versions": {
+              "nil-sdk": "0.2.1",
+              "torch": "2.15.0+cpu",
+              "transformers": "4.57.6",
+              "peft": "0.22.0"
+            },
+            "architecture": "LlamaForCausalLM",
+            "parameters": 134515008,
+            "model_bytes": 538060032,
+            "nil_path": "/home/us/.nelo/NIL/nil-sdk/nil/__init__.py",
+            "baseline": {
+              "nll": 4.41675094411343,
+              "perplexity": 82.82673900594867,
+              "tokens": 79
+            },
+            "quantized": {
+              "nll": 6.8106724702859225,
+              "perplexity": 907.4808557152601,
+              "tokens": 79
+            },
+            "nll_delta": 2.393921526172493,
+            "excluded_layers": [
+              "lm_head"
+            ],
+            "linear_weight_scheme": "per_channel",
+            "error": "ValueError: INT8 NLL exceeds declared +0.5 tolerance",
+            "seconds": 8.931911946998298,
+            "peak_rss_mib": 1610.328125,
+            "exit_code": 1,
+            "log": "pretrained-135m-per-channel-int8.log"
+          }
+        },
+        "started_utc": "2026-11-23T09:40:48Z",
+        "source": {
+          "repo_id": "HuggingFaceTB/SmolLM2-135M",
+          "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+          "download_bytes": 271971074,
+          "files_sha256": {
+            "config.json": "1d556eab73b69c7f11f64c557a2f9c6f440bd4c6b89bb2584a6b498c92603843",
+            "generation_config.json": "2056c988e990b0d13670f63f2f3b87b3b6d07edaf7a3416998ba27dab2d8a059",
+            "model.safetensors": "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1",
+            "special_tokens_map.json": "e786b595b9a23148bf1630df78d9037a048ea671e48bfd3549a1e3c233742bb3",
+            "tokenizer.json": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+            "tokenizer_config.json": "4bb9af56a342753d39374f4016a16574cab299fe088e896f425ce3c433f61424",
+            "vocab.json": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79"
+          },
+          "source_url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/tree/93efa2f097d58c2a74874c7e644dbc9b0cee75a2"
+        },
+        "kernel_policy": {
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "cpu.max": "100000 100000",
+          "pids.max": "128"
+        },
+        "kernel_usage": {
+          "memory_peak_bytes": 1668935680,
+          "memory_events": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        "finished_utc": "2026-11-23T09:40:59Z"
+      },
+      "acceptance": "failed at the unchanged +0.5 NLL fidelity limit; not certified for this model"
+    }
+  ]
+}

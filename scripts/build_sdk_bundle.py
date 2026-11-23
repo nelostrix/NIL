@@ -60,13 +60,14 @@ def main():
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['docs/HARDWARE_ACCEPTANCE.md'] = root / 'docs/HARDWARE_ACCEPTANCE.md'
+        files['docs/PRETRAINED_CPU.md'] = root / 'docs/PRETRAINED_CPU.md'
         files['scripts/benchmark_rl.py'] = root / 'scripts/benchmark_rl.py'
         files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
         files['scripts/benchmark_native_kernels.py'] = root / 'scripts/benchmark_native_kernels.py'
         files['scripts/benchmark_rl_coverage.py'] = root / 'scripts/benchmark_rl_coverage.py'
         files['scripts/benchmark_model_coverage.py'] = root / 'scripts/benchmark_model_coverage.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
-        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py'):
+        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py','accept_pretrained.py'):
             files['scripts/'+name]=root/'scripts'/name
         files['scripts/accept_gpu.py'] = root / 'scripts/accept_gpu.py'
         files['scripts/accept_execution.py'] = root / 'scripts/accept_execution.py'

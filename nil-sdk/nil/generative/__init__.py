@@ -53,17 +53,26 @@ def causal_lm(vocab_size, context_length=256, width=128, layers=2, heads=4):
     return transformers.AutoModelForCausalLM.from_config(config)
 
 
-def load_causal_lm(path, *, allow_download=False, **model_kwargs):
+def load_causal_lm(path, *, allow_download=False, revision=None, cache_dir=None, **model_kwargs):
+    """Load model/tokenizer from the same revision/cache; local-only by default."""
+    if type(allow_download) is not bool:
+        raise TypeError('allow_download must be boolean')
     transformers = require("transformers", "generative")
     if model_kwargs.pop("trust_remote_code", False):
         raise ValueError("Automatic execution of remote model code is not supported")
     if "local_files_only" in model_kwargs:
         raise ValueError("Use allow_download to control network access")
+    shared = {'local_files_only':not allow_download, 'trust_remote_code':False}
+    if revision is not None:
+        if not isinstance(revision,str) or not revision:raise ValueError('revision must be a nonempty string')
+        shared['revision']=revision
+    if cache_dir is not None:shared['cache_dir']=str(cache_dir)
+    if 'token' in model_kwargs:shared['token']=model_kwargs.pop('token')
     model = transformers.AutoModelForCausalLM.from_pretrained(
-        str(path), local_files_only=not allow_download, trust_remote_code=False, **model_kwargs
+        str(path), **shared, **model_kwargs
     )
     tokenizer = transformers.AutoTokenizer.from_pretrained(
-        str(path), local_files_only=not allow_download, trust_remote_code=False
+        str(path), **shared
     )
     if tokenizer.pad_token_id is None:
         if tokenizer.eos_token_id is None:
