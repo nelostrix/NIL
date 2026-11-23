@@ -38,12 +38,12 @@ def main():
             check=True,
         )
         files = {
-            "PHASES.md": root / "PHASES.md",
+            "docs/project/PHASES.md": root / "docs/project/PHASES.md",
             "docs/WINDOWS_EXECUTION.md": root / "docs/WINDOWS_EXECUTION.md",
             "docs/DEPLOYMENT.md": root / "docs/DEPLOYMENT.md",
             f"wheels/{wheel.name}": wheel,
             "README.md": root / "README.md",
-            "TODO.md": root / "TODO.md",
+            "docs/project/TODO.md": root / "docs/project/TODO.md",
             "docs/MODEL_DEVELOPMENT.md": root / "docs/MODEL_DEVELOPMENT.md",
             "docs/NEURAL_RL.md": root / "docs/NEURAL_RL.md",
             "docs/SHALLOW_DESIGN.md": root / "docs/SHALLOW_DESIGN.md",
@@ -72,8 +72,8 @@ def main():
             files[f"examples/{path.name}"] = path
         for path in sorted((root / "nil-sdk/nil/_help").glob("*/help.md")):
             files[path.relative_to(root).as_posix()] = path
-        if (root / "SDK_IMPLEMENTATION_REPORT.md").is_file():
-            files["SDK_IMPLEMENTATION_REPORT.md"] = root / "SDK_IMPLEMENTATION_REPORT.md"
+        if (root / "docs/project/SDK_IMPLEMENTATION_REPORT.md").is_file():
+            files["docs/project/SDK_IMPLEMENTATION_REPORT.md"] = root / "docs/project/SDK_IMPLEMENTATION_REPORT.md"
         for path in sorted((root / "nil-sdk/tests").glob("*.py")):
             files[path.relative_to(root).as_posix()] = path
         for path in sorted((root / "benchmarks/budgets").glob("*.json")):

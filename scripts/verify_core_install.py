@@ -118,8 +118,13 @@ def verify(path):
         work.mkdir()
 
         def run(*args):
-            return subprocess.run([str(python), '-I', *args], cwd=work,
-                                  text=True, capture_output=True, check=True, timeout=60)
+            try:
+                return subprocess.run([str(python), '-I', *args], cwd=work,
+                                      text=True, encoding='utf-8', errors='replace', capture_output=True, check=True, timeout=60)
+            except subprocess.CalledProcessError as error:
+                print(error.stdout or '',end='')
+                print(error.stderr or '',end='')
+                raise
 
         before = json.loads(run('-c', _INVENTORY).stdout)
         # Do not use --no-deps: a bad mandatory dependency must fail resolution.

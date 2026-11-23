@@ -7,6 +7,12 @@ from nil.runtime import capabilities
 
 
 def main():
+    # Redirected Windows streams can default to a legacy code page; the catalog
+    # and bundled help use Unicode regardless of terminal/pipe configuration.
+    import sys
+    for stream in (sys.stdout,sys.stderr):
+        reconfigure=getattr(stream,'reconfigure',None)
+        if reconfigure is not None:reconfigure(encoding='utf-8',errors='replace')
     parser = argparse.ArgumentParser(prog="nil", description="NIL AI development SDK")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor", help="Report packages; does not load models or contact services")

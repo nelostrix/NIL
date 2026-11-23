@@ -30,7 +30,10 @@ def run(*,require_rss=False,cgroup_root=None,require_windows=False):
     def check(name,function):
         started=time.monotonic()
         try: evidence=function()
-        except Exception as error: report['checks'].append({'name':name,'status':'failed','error':f'{type(error).__name__}: {error}'}); return False
+        except Exception as error:
+            failure={'name':name,'status':'failed','error':f'{type(error).__name__}: {error}'}
+            if hasattr(error,'record'):failure['job']=error.record
+            report['checks'].append(failure);return False
         report['checks'].append({'name':name,'status':'passed','seconds':time.monotonic()-started,'evidence':evidence}); return True
     with tempfile.TemporaryDirectory(prefix='nil-execution-accept-') as directory:
         root=Path(directory)

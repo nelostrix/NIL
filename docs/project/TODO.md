@@ -324,7 +324,7 @@ verifier and installed example. The installed --neural --ddp example passes
 independent training/persistence, neural imitation/root inference and actual
 two-rank CPU training. Backend versions, compatibility cells, exact
 commands, serving deployment contract and remaining limitations are documented in
-[docs/CPU_COMPLETION.md](docs/CPU_COMPLETION.md). Base dependencies remain empty;
+[docs/CPU_COMPLETION.md](../CPU_COMPLETION.md). Base dependencies remain empty;
 optional rl-contrib/generative/export backends were installed only explicitly
 into the existing neural development environment.
 
@@ -377,7 +377,7 @@ Focused initial execution/resource/runner/help acceptance: 24 passed/three skips
 Full classical source suite after registered-Run resource-limit acceptance:
 **1045 passed, 17 optional/target skips**. Neural and installed acceptance follows
 below. Evidence and reproduction commands:
-[docs/benchmarks/2026-11-22-phases-1-2.md](docs/benchmarks/2026-11-22-phases-1-2.md).
+[docs/benchmarks/2026-11-22-phases-1-2.md](../benchmarks/2026-11-22-phases-1-2.md).
 
 Full CPU neural/RL source suite: **979 passed, 15 optional/target skips**. Both
 full environments pass with actual resource-limit/Run tests; skips include the

@@ -1,6 +1,6 @@
 # Deep learning and reinforcement learning
 
-The live [TODO checklist](../TODO.md) defines completion and records validation
+The live [TODO checklist](project/TODO.md) defines completion and records validation
 for each item. This guide describes the implemented subset. A single NIL API
 surface does not mean independent numerical engines: torch and SB3 remain
 explicit optional backends. Installing the base wheel still installs NIL only.

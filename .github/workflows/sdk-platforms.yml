@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m pip install build wheel setuptools pytest
+      - run: python -m pip install --upgrade build wheel 'setuptools>=68' pytest
       - run: python scripts/build_sdk_bundle.py --output dist
       - name: Install only the built NIL wheel for explicit platform checks
         shell: python
