@@ -82,6 +82,15 @@ using a trusted module:factory, protected secret files and optional mTLS. The
 reference systemd unit adds restart/whole-unit cleanup and OS resource policies.
 No service is installed, enabled or started by importing/installing NIL.
 
+Pass `--metrics-file /run/nil/metrics.json --metrics-interval 5` to atomically
+publish aggregate gateway/backend counts and uptime while running, plus a final
+`stopped` snapshot after draining. No extra thread, monitoring backend or package
+is required. Snapshots contain no bodies, tokens or credential paths. Use an
+operator-protected directory. Readiness, metrics, configuration and credential
+paths must be distinct. The systemd template provisions a private `/run/nil`.
+POSIX credentials must be regular, private files; symlinks and FIFOs are refused.
+Client and backend tokens must differ. Rotate them by controlled service restart.
+
 This is a managed single-tenant reference, built on Python http.server; it is not
 an audited Internet ingress. Public deployment/edge review and broader workloads
 remain acceptance gates. See docs/DEPLOYMENT.md for limits, measured local tests

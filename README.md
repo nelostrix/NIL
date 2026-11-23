@@ -119,7 +119,8 @@ See [DL/RL workflows](docs/NEURAL_RL.md) and [CPU acceptance](docs/CPU_COMPLETIO
 - `nil.execution`: explicit workers, cancellation, deadlines, bounded logs,
   read-only recovery and Linux memory controls. Real delegated-cgroup tests pass.
 - Windows Job Object ownership is implemented with creation-time assignment and
-  cleanup. Full Windows/macOS acceptance is being verified in platform CI.
+  cleanup. Base-wheel and owned-execution checks passed on Linux, Windows and
+  macOS with Python 3.10–3.12 in [platform CI](https://github.com/nelostrix/NIL/actions/runs/45113943448).
 - `nil.serving`: isolated CPU inference, TLS/mTLS gateway, verified HTTPS client
   with bounded retries, and an explicit service lifecycle. Gateway/client code
   uses the standard library; Torch inference is an optional backend.

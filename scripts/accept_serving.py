@@ -83,6 +83,9 @@ def run(requests=64,concurrency=4,p95_budget_ms=250,require_unit_policy=False,du
             else:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:results=list(pool.map(request,range(requests)))
             report['wall_seconds']=time.monotonic()-started;report['samples']=results;report['completed_requests']=len(results)
+            if not results:
+                report['error']='Load interval completed before any measured request; increase --duration'
+                return report,1
             values=sorted(row['seconds'] for row in results);p95=values[max(0,math.ceil(.95*len(values))-1)]
             report.update(median_ms=statistics.median(values)*1000,p95_ms=p95*1000,max_ms=max(values)*1000,
                 failures=sum(row['status']!='passed' for row in results),gateway_metrics=gateway.metrics(),backend_metrics=backend.metrics())

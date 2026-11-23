@@ -1,8 +1,9 @@
 # Windows owned execution — implementation and acceptance
 
-The Windows backend is now implemented. Native Windows acceptance is pending:
-this development host is Linux, has no Windows runtime and has not dispatched CI.
-Portable launcher tests and Linux regressions cannot certify Windows behavior.
+Native Windows acceptance passed on hosted Windows runners with Python
+3.10, 3.11 and 3.12 in [platform CI](https://github.com/nelostrix/NIL/actions/runs/45113943448).
+Each cell tested the installed wheel, actual owned-worker execution and native
+Job Object contracts. The development host remains Linux.
 
 ## Public use
 
@@ -66,7 +67,8 @@ children and grandchildren in new process groups, normal-exit/timeout/cancel
 cleanup, client and supervisor death, suspended assignment refusal, native struct
 layout/handle policy, read-only PID recovery and actual reader-sharing publication.
 Portable tests separately verify launch order, resource cleanup on injected startup
-failures and bounded Windows sharing-error retry. No native pass is recorded yet.
+failures and bounded Windows sharing-error retry. Native acceptance passed in
+the linked hosted run.
 
 ## Limits
 
@@ -80,7 +82,8 @@ Python finally/atexit callbacks; recover from committed checkpoints.
 Journal writes retry Windows sharing/lock errors for at most 0.5 seconds while
 preserving the previous atomic record. Other errors propagate. No Windows
 aggregate RAM/CPU or GPU quota is implemented by this change. Those remain
-separate checklist tasks, as do macOS acceptance and the wider release matrix.
+separate checklist tasks. Base macOS execution also passed; the wider optional
+backend release matrix remains open.
 
 
 Final creation-time launch contracts/help/runner checks: **20 passed**. Installed
@@ -89,6 +92,5 @@ Linux execution/resource/portable-Windows contracts outside the source tree:
 including successful/timeout child cleanup and the RSS guard. Fresh offline
 installation adds only nil-sdk. Both development environments use the rebuilt
 regular wheel; 197 Python sources match and 103 help guides are bundled.
-Native Windows acceptance is still unrun; ten real-kernel cases and three Windows
-CI cells require a target host. The Linux --require-windows report fails with
-exit 2, so portable test success is not mistaken for Windows certification.
+The subsequent hosted run passed all three native Windows cells. Linux
+--require-windows still fails with exit 2, preserving target-only acceptance.

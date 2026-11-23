@@ -114,3 +114,39 @@ Reports: `docs/benchmarks/2026-11-22-cgroup-kernel*.json` and
 `2026-11-22-tls-serving*.json`. These replace the earlier untested-delegation
 status for this supported user-unit setup. Interactive sessions without delegation
 still fail explicitly; GPU memory quotas remain unimplemented.
+
+## Observability and credential acceptance
+
+The lifecycle accepts optional `--metrics-file PATH --metrics-interval 5`.
+It atomically writes a schema-versioned JSON snapshot containing uptime, PID,
+status and aggregate gateway/backend counters, then writes `stopped` after
+shutdown drains handlers and closes the worker. With no metrics file there is no
+periodic work; enabling snapshots adds no monitoring package or background thread.
+The systemd example uses RuntimeDirectory=nil, mode0700 and `/run/nil/metrics.json`.
+Do not place snapshots in a web-served directory. Snapshot errors fail the service
+rather than silently publishing stale healthy status; process supervision should
+monitor service exit as well as snapshot age. Readiness and metrics paths must
+be distinct from each other and configuration/credential/certificate inputs.
+
+POSIX credential reads validate the opened descriptor: regular file, no
+permissions for group/other users, no final symlink and no FIFO blocking. Tokens
+are bounded, printable and validated before model loading; client and backend
+capabilities must differ. The operator owns credential directories and ACLs on
+Windows. Rotation/revocation requires controlled restart with replacement secrets;
+there is no automatic reload or per-user identity audit.
+
+Metrics routes require the same client authentication as inference. Tests verify
+that unauthorized metrics requests fail, counters reflect real requests, secrets
+and sample values are absent from metrics/stdout/stderr, invalid configuration
+errors are sanitized, periodic snapshots advance and final active counts are zero.
+
+| Deployment target | Acceptance scope |
+| --- | --- |
+| Linux, Python3.12, installed CPU Torch | Signal lifecycle, worker failure/restart, mTLS, protected credentials, snapshots, bounded ingress |
+| Linux transient systemd unit | Actual resource-policy/load evidence above; not a permanent service installation |
+| Windows/macOS | Base owned execution passed; managed service template and signal lifecycle are not certified |
+| Public Internet or multi-tenant ingress | Requires deployment-specific review and workload acceptance |
+
+The minimum/current Linux CPU backend workflow reruns the service tests against
+the installed wheel. See [backend compatibility](BACKEND_COMPATIBILITY.md) for
+exact profiles and their evidence; no skipped case counts as acceptance.

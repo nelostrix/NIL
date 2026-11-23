@@ -12,19 +12,19 @@ help. Existing optional integrations remain available while native work expands.
   failure, durable peak/limit evidence and owned descendant cleanup.
 - [x] Add explicit cgroup-v2 request configuration and fail-closed preflight;
   invalid-root and actual missing-delegation refusal checks pass. Worker
-  attachment/kernel containment code is implemented but its real-host acceptance
-  remains unchecked below.
+  attachment and kernel containment passed the delegated-unit acceptance below.
 - [x] Test normal completion, limit breach, cancellation, descendant cleanup,
   missing permissions and supervisor survival after client exit.
 - [x] Publish a dependency-free platform acceptance runner with required-capability
   preflight; unsupported targets must fail acceptance rather than silently skip.
-- [ ] Validate worker attachment, kernel memory/swap/group-OOM limits and
-  escaped-session descendant cleanup on a real delegated cgroup host.
+- [x] Validate worker attachment, kernel memory/swap/group-OOM limits and
+  escaped-session descendant cleanup in an owned delegated transient user unit.
+  All eight real kernel tests pass; recorded peak reaches the 128 MiB job cap.
 - [x] Implement Windows Job Object process-tree ownership, creation-time assignment,
   handle cleanup and portable launch/failure contracts.
-- [ ] Run actual Windows kernel acceptance on the three configured Python cells;
-  portable contracts do not establish Windows verification.
-- [ ] Run actual macOS timeout/cancel/process-tree acceptance.
+- [x] Run actual Windows kernel acceptance on Python 3.10, 3.11 and 3.12;
+  installed-wheel acceptance and native Job Object tests passed in hosted CI.
+- [x] Run actual macOS timeout/cancel/process-tree acceptance on Python 3.10–3.12.
 - [ ] Specify and validate device-specific aggregate GPU memory containment;
   allocator preferences alone must not be advertised as hard GPU quotas.
 
@@ -74,18 +74,21 @@ Exit: current-host evidence can pass independently; old-PC certification cannot.
 
 ## Phase 6 — Production service acceptance
 
-- [ ] Define deployment target, concurrent request/SLO and failure budgets.
-- [ ] Add deployment supervisor/gateway examples, TLS/identity integration and
-  bounded client retries; keep service internals out of application workflows.
-- [ ] Exercise sustained load, slow clients, disconnects, payload framing, worker
-  restart, shutdown and aggregate memory/CPU containment on the deployment target.
+- [x] Define a managed single-tenant Linux/CPU target and warm inference budgets
+  (four clients, zero failures, observed p95 <=250 ms for the declared affine model).
+- [x] Add explicit service lifecycle/systemd examples, TLS/mTLS gateway, protected
+  credentials and bounded HTTPS client retries. No additional base dependency.
+- [x] Test the managed reference: stalled TLS/body deadlines, framing, native
+  worker crash/restart, signal shutdown and 30-second load under real 1 GiB,
+  zero-swap, one-CPU and 128-task kernel limits. 3,141 requests, zero failures,
+  observed p95 about 91 ms. Public Internet ingress and arbitrary-model SLOs remain open.
 - [ ] Validate observability, secret handling and deployment compatibility matrix.
 
 ## Phase 7 — Release compatibility matrix
 
 - [x] Define isolated Python 3.10–3.12 base-wheel CI checks on Linux/macOS/Windows.
-  Local Linux base-wheel checks pass; nine remote cells have not been executed.
-- [ ] Run and publish all nine platform/Python matrix cells.
+  Fresh base-wheel installation and execution passed in all nine remote cells.
+- [x] Run and publish all nine platform/Python matrix cells.
 - [ ] Add tested minimum/current optional-backend profiles and installed examples.
 - [x] Define manual-only GPU acceptance on explicitly provisioned trusted runners.
   GPU job execution remains pending; no workflow was dispatched by this session.
@@ -200,3 +203,28 @@ regular wheel; 197 Python sources match and 103 help guides are bundled.
 Native Windows acceptance is still unrun; ten real-kernel cases and three Windows
 CI cells require a target host. The Linux --require-windows report fails with
 exit 2, so portable test success is not mistaken for Windows certification.
+
+
+## Approved CI and workspace cleanup — 2026-11-23
+
+Published verification branch codex/verify-nil-platforms-20261122 with user approval.
+Initial Linux base cells and Torch2.6 CPU development workflow passed. Windows
+legacy-code-page CLI output, outdated preinstalled build tooling and macOS
+zombie-group signalling exposed failures; targeted fixes are under a second CI run.
+No Windows/macOS acceptance is checked before its required tests actually pass.
+
+Workspace validation logs/scratch exports now live under ../artifacts from the
+workspace root; audit reports are under docs/audits and planning/checklists under
+docs/project. The project root retains README, source/packaging entry points and
+standard community files. Old generated outputs were moved with a recovery map,
+not deleted. README examples execute successfully in their declared backend envs.
+
+## Hosted platform acceptance — 2026-11-23
+
+[Platform run 45113943448](https://github.com/nelostrix/NIL/actions/runs/45113943448)
+passed all nine Linux/macOS/Windows × Python 3.10–3.12 cells at commit c663114.
+Each cell builds a fresh NIL-only wheel and runs actual owned-worker acceptance;
+Windows also runs native Job Object and launcher tests against the installed wheel.
+[CPU SDK run 45113943452](https://github.com/nelostrix/NIL/actions/runs/45113943452)
+also passed. These results cover the base SDK and declared CPU workflows, not GPU
+acceptance or every optional backend/platform combination.

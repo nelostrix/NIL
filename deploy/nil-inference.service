@@ -11,7 +11,9 @@ Environment=PATH=/opt/nil/venv/bin:/usr/bin
 Environment=OMP_NUM_THREADS=1
 Environment=OPENBLAS_NUM_THREADS=1
 Environment=MKL_NUM_THREADS=1
-ExecStart=/opt/nil/venv/bin/python -m nil.serving --config /etc/nil/service.json
+RuntimeDirectory=nil
+RuntimeDirectoryMode=0700
+ExecStart=/opt/nil/venv/bin/python -m nil.serving --config /etc/nil/service.json --ready-file /run/nil/ready.json --metrics-file /run/nil/metrics.json
 Restart=on-failure
 RestartSec=2
 TimeoutStopSec=30

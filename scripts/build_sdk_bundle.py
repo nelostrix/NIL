@@ -57,10 +57,11 @@ def main():
             "scripts/verify_core_install.py": root / "scripts/verify_core_install.py",
         }
         files['docs/CPU_COMPLETION.md'] = root / 'docs/CPU_COMPLETION.md'
+        files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['scripts/benchmark_rl.py'] = root / 'scripts/benchmark_rl.py'
         files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
-        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py'):
+        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py'):
             files['scripts/'+name]=root/'scripts'/name
         files['scripts/accept_gpu.py'] = root / 'scripts/accept_gpu.py'
         files['scripts/accept_execution.py'] = root / 'scripts/accept_execution.py'
