@@ -1,0 +1,66 @@
+{
+  "scope": "small dense float64 CPU reference engine; current Linux host only, warm filesystem cache possible; no old-PC acceptance or speedup claim",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+  "python": "3.12.16",
+  "samples": [
+    {
+      "import_seconds": 0.0003158429972245358,
+      "fit_seconds": 0.09333401500043692,
+      "final_mse": 1.5608189909186995e-14,
+      "rows": 65,
+      "epochs": 150,
+      "parameters": 2,
+      "peak_rss_mib": 15.42578125,
+      "backend_loaded": false,
+      "wall_seconds": 0.14335533099801978
+    },
+    {
+      "import_seconds": 0.000344948006386403,
+      "fit_seconds": 0.09560531000170158,
+      "final_mse": 1.5608189909186995e-14,
+      "rows": 65,
+      "epochs": 150,
+      "parameters": 2,
+      "peak_rss_mib": 15.1328125,
+      "backend_loaded": false,
+      "wall_seconds": 0.14313114999822574
+    },
+    {
+      "import_seconds": 0.0002646369975991547,
+      "fit_seconds": 0.09599903900380014,
+      "final_mse": 1.5608189909186995e-14,
+      "rows": 65,
+      "epochs": 150,
+      "parameters": 2,
+      "peak_rss_mib": 15.43359375,
+      "backend_loaded": false,
+      "wall_seconds": 0.14372625700343633
+    },
+    {
+      "import_seconds": 0.00039267700049094856,
+      "fit_seconds": 0.09580334099882748,
+      "final_mse": 1.5608189909186995e-14,
+      "rows": 65,
+      "epochs": 150,
+      "parameters": 2,
+      "peak_rss_mib": 15.40625,
+      "backend_loaded": false,
+      "wall_seconds": 0.14283606599929044
+    },
+    {
+      "import_seconds": 0.0002607299975352362,
+      "fit_seconds": 0.1001531489964691,
+      "final_mse": 1.5608189909186995e-14,
+      "rows": 65,
+      "epochs": 150,
+      "parameters": 2,
+      "peak_rss_mib": 15.44140625,
+      "backend_loaded": false,
+      "wall_seconds": 0.14579083400167292
+    }
+  ],
+  "target": "65x1 linear least squares, 150 full-batch SGD steps; no numerical backend import; final MSE <1e-6",
+  "median_fit_seconds": 0.09580334099882748,
+  "median_peak_rss_mib": 15.42578125
+}

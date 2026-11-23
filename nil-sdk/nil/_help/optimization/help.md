@@ -28,3 +28,11 @@ torch; ONNX export additionally needs the onnx extra.
 ## Limitations
 
 CPU dynamic INT8 is limited to supported native layers. No general INT4/QLoRA quantizer or automatic speedup guarantee.
+
+## Activation checkpointing
+
+`nil.optimization.activation_checkpoint(sequential, segments=2)` wraps a nonempty
+native `torch.nn.Sequential`, using nonreentrant activation recomputation during
+training and direct evaluation otherwise. RNG state is preserved. Modules with
+buffers are rejected. Actual saved-activation byte reduction, gradient parity and
+training/checkpoint reload are tested on CPU. It does not implement FSDP sharding.

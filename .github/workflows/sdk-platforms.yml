@@ -1,0 +1,49 @@
+name: NIL base platform acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: ["codex/verify-*"]
+  pull_request:
+    paths: ['nil-sdk/**', 'scripts/**', 'pyproject.toml', '.github/workflows/sdk-platforms.yml']
+permissions:
+  contents: read
+jobs:
+  base:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.10', '3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install build wheel setuptools pytest
+      - run: python scripts/build_sdk_bundle.py --output dist
+      - name: Install only the built NIL wheel for explicit platform checks
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess, sys, zipfile
+          bundle=next(Path('dist').glob('*-bundle.zip'))
+          with zipfile.ZipFile(bundle) as archive:
+              wheel=next(name for name in archive.namelist() if name.startswith('wheels/'))
+              archive.extract(wheel,'dist')
+          subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps','dist/'+wheel],check=True)
+      - name: Actual owned-worker platform acceptance
+        shell: python
+        run: |
+          import subprocess, sys
+          command=[sys.executable,'scripts/accept_execution.py','--output','dist/execution.json']
+          if sys.platform=='win32': command.append('--require-windows')
+          subprocess.run(command,check=True)
+      - name: Windows Job Object kernel acceptance (installed wheel)
+        if: runner.os == 'Windows'
+        run: python -m pytest nil-sdk/tests/test_windows_execution.py nil-sdk/tests/test_windows_launcher_contract.py -q
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: base-${{ matrix.os }}-py${{ matrix.python }}
+          path: dist/

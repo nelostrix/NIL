@@ -1,0 +1,64 @@
+{
+  "task": "one-step two-action deterministic bandit, reward=1(action==1)",
+  "scope": "CPU PPO integration learning sanity on this task only; seeds, not episodes, are the CI sampling units",
+  "training_steps_per_seed": 512,
+  "evaluation_episodes_per_seed": 100,
+  "records": [
+    {
+      "seed": 0,
+      "policy_mean_return": 1.0,
+      "random_mean_return": 0.52
+    },
+    {
+      "seed": 1,
+      "policy_mean_return": 1.0,
+      "random_mean_return": 0.57
+    },
+    {
+      "seed": 2,
+      "policy_mean_return": 1.0,
+      "random_mean_return": 0.51
+    },
+    {
+      "seed": 3,
+      "policy_mean_return": 1.0,
+      "random_mean_return": 0.5
+    },
+    {
+      "seed": 4,
+      "policy_mean_return": 1.0,
+      "random_mean_return": 0.56
+    }
+  ],
+  "trained": {
+    "mean": 1.0,
+    "bootstrap_95_percent_ci": [
+      1.0,
+      1.0
+    ]
+  },
+  "random_baseline": {
+    "mean": 0.5319999999999999,
+    "bootstrap_95_percent_ci": [
+      0.508,
+      0.5559999999999999
+    ]
+  },
+  "paired_improvement": {
+    "mean": 0.46799999999999997,
+    "bootstrap_95_percent_ci": [
+      0.44399999999999995,
+      0.492
+    ]
+  },
+  "seconds": 3.091478017006011,
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "processor": "",
+  "python": "3.12.16",
+  "versions": {
+    "torch": "2.15.0+cpu",
+    "stable-baselines3": "2.9.2",
+    "gymnasium": "1.4.0",
+    "numpy": "2.5.4"
+  }
+}

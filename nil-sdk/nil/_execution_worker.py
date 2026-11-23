@@ -18,6 +18,9 @@ def main():
     limits = record["limits"]
     started = time.monotonic()
     try:
+        if record.get('cgroup_path'):
+            from nil._execution_resources import attach
+            attach(record['cgroup_path'])
         if limits["memory_mb"] is not None:
             import resource
             cap = limits["memory_mb"] * 1024 ** 2

@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.12.16",
+  "target": "single Linux/CPU operator; loopback mTLS; 1x1 FP32 affine model",
+  "scope": "Warm functional/load gate only; no public-ingress, OS-quota, multi-tenant or arbitrary-model SLO certification",
+  "requests": 64,
+  "concurrency": 4,
+  "p95_budget_ms": 250,
+  "resource_policy": {
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "128"
+  },
+  "torch": "2.15.0+cpu",
+  "worker_startup_seconds": 1.2021966780012008,
+  "wall_seconds": 0.5833695090041147,
+  "samples": [
+    {
+      "index": 0,
+      "seconds": 0.013608584995381534,
+      "status": "passed"
+    },
+    {
+      "index": 1,
+      "seconds": 0.032029741996666417,
+      "status": "passed"
+    },
+    {
+      "index": 2,
+      "seconds": 0.012469235000025947,
+      "status": "passed"
+    },
+    {
+      "index": 3,
+      "seconds": 0.028325293998932466,
+      "status": "passed"
+    },
+    {
+      "index": 4,
+      "seconds": 0.05324497899709968,
+      "status": "passed"
+    },
+    {
+      "index": 5,
+      "seconds": 0.0065056219973484986,
+      "status": "passed"
+    },
+    {
+      "index": 6,
+      "seconds": 0.155310672998894,
+      "status": "passed"
+    },
+    {
+      "index": 7,
+      "seconds": 0.04025391200411832,
+      "status": "passed"
+    },
+    {
+      "index": 8,
+      "seconds": 0.04193440000381088,
+      "status": "passed"
+    },
+    {
+      "index": 9,
+      "seconds": 0.01434933099517366,
+      "status": "passed"
+    },
+    {
+      "index": 10,
+      "seconds": 0.10219436999614118,
+      "status": "passed"
+    },
+    {
+      "index": 11,
+      "seconds": 0.008844664000207558,
+      "status": "passed"
+    },
+    {
+      "index": 12,
+      "seconds": 0.007163105001382064,
+      "status": "passed"
+    },
+    {
+      "index": 13,
+      "seconds": 0.008446410000033211,
+      "status": "passed"
+    },
+    {
+      "index": 14,
+      "seconds": 0.012801297001715284,
+      "status": "passed"
+    },
+    {
+      "index": 15,
+      "seconds": 0.010231529995508026,
+      "status": "passed"
+    },
+    {
+      "index": 16,
+      "seconds": 0.06808903199998895,
+      "status": "passed"
+    },
+    {
+      "index": 17,
+      "seconds": 0.06210944000486052,
+      "status": "passed"
+    },
+    {
+      "index": 18,
+      "seconds": 0.01524534299824154,
+      "status": "passed"
+    },
+    {
+      "index": 19,
+      "seconds": 0.014774595001654234,
+      "status": "passed"
+    },
+    {
+      "index": 20,
+      "seconds": 0.014123413995548617,
+      "status": "passed"
+    },
+    {
+      "index": 21,
+      "seconds": 0.017304196997429244,
+      "status": "passed"
+    },
+    {
+      "index": 22,
+      "seconds": 0.014899013993272092,
+      "status": "passed"
+    },
+    {
+      "index": 23,
+      "seconds": 0.015065370003867429,
+      "status": "passed"
+    },
+    {
+      "index": 24,
+      "seconds": 0.014375650003785267,
+      "status": "passed"
+    },
+    {
+      "index": 25,
+      "seconds": 0.09170981499482878,
+      "status": "passed"
+    },
+    {
+      "index": 26,
+      "seconds": 0.06973095000284957,
+      "status": "passed"
+    },
+    {
+      "index": 27,
+      "seconds": 0.09293186700233491,
+      "status": "passed"
+    },
+    {
+      "index": 28,
+      "seconds": 0.06960011800401844,
+      "status": "passed"
+    },
+    {
+      "index": 29,
+      "seconds": 0.014219632001186255,
+      "status": "passed"
+    },
+    {
+      "index": 30,
+      "seconds": 0.011807866001618095,
+      "status": "passed"
+    },
+    {
+      "index": 31,
+      "seconds": 0.09028124999895226,
+      "status": "passed"
+    },
+    {
+      "index": 32,
+      "seconds": 0.013220639993960503,
+      "status": "passed"
+    },
+    {
+      "index": 33,
+      "seconds": 0.011995262000709772,
+      "status": "passed"
+    },
+    {
+      "index": 34,
+      "seconds": 0.009220867999829352,
+      "status": "passed"
+    },
+    {
+      "index": 35,
+      "seconds": 0.06582794499990996,
+      "status": "passed"
+    },
+    {
+      "index": 36,
+      "seconds": 0.07023847500386182,
+      "status": "passed"
+    },
+    {
+      "index": 37,
+      "seconds": 0.07385016199987149,
+      "status": "passed"
+    },
+    {
+      "index": 38,
+      "seconds": 0.015166848002991173,
+      "status": "passed"
+    },
+    {
+      "index": 39,
+      "seconds": 0.014067381001950707,
+      "status": "passed"
+    },
+    {
+      "index": 40,
+      "seconds": 0.01582142499682959,
+      "status": "passed"
+    },
+    {
+      "index": 41,
+      "seconds": 0.014430180002818815,
+      "status": "passed"
+    },
+    {
+      "index": 42,
+      "seconds": 0.014718241000082344,
+      "status": "passed"
+    },
+    {
+      "index": 43,
+      "seconds": 0.014660303997516166,
+      "status": "passed"
+    },
+    {
+      "index": 44,
+      "seconds": 0.013484807997883763,
+      "status": "passed"
+    },
+    {
+      "index": 45,
+      "seconds": 0.01216879199637333,
+      "status": "passed"
+    },
+    {
+      "index": 46,
+      "seconds": 0.06988773900229717,
+      "status": "passed"
+    },
+    {
+      "index": 47,
+      "seconds": 0.07156458900135476,
+      "status": "passed"
+    },
+    {
+      "index": 48,
+      "seconds": 0.07398365800327156,
+      "status": "passed"
+    },
+    {
+      "index": 49,
+      "seconds": 0.07222787199862069,
+      "status": "passed"
+    },
+    {
+      "index": 50,
+      "seconds": 0.0142240999994101,
+      "status": "passed"
+    },
+    {
+      "index": 51,
+      "seconds": 0.012066593000781722,
+      "status": "passed"
+    },
+    {
+      "index": 52,
+      "seconds": 0.013653939000505488,
+      "status": "passed"
+    },
+    {
+      "index": 53,
+      "seconds": 0.011755400002584793,
+      "status": "passed"
+    },
+    {
+      "index": 54,
+      "seconds": 0.08779245299956528,
+      "status": "passed"
+    },
+    {
+      "index": 55,
+      "seconds": 0.011686812998959795,
+      "status": "passed"
+    },
+    {
+      "index": 56,
+      "seconds": 0.08558987299329601,
+      "status": "passed"
+    },
+    {
+      "index": 57,
+      "seconds": 0.012358771004073787,
+      "status": "passed"
+    },
+    {
+      "index": 58,
+      "seconds": 0.07301135600573616,
+      "status": "passed"
+    },
+    {
+      "index": 59,
+      "seconds": 0.07157331499911379,
+      "status": "passed"
+    },
+    {
+      "index": 60,
+      "seconds": 0.016939465000177734,
+      "status": "passed"
+    },
+    {
+      "index": 61,
+      "seconds": 0.016885605997231323,
+      "status": "passed"
+    },
+    {
+      "index": 62,
+      "seconds": 0.012229804000526201,
+      "status": "passed"
+    },
+    {
+      "index": 63,
+      "seconds": 0.011748726996302139,
+      "status": "passed"
+    }
+  ],
+  "median_ms": 14.98219199856976,
+  "p95_ms": 91.70981499482878,
+  "max_ms": 155.310672998894,
+  "failures": 0,
+  "gateway_metrics": {
+    "connections": 78,
+    "admission_rejections": 0,
+    "tls_failures": 0,
+    "requests": 78,
+    "auth_rejections": 0,
+    "invalid_requests": 0,
+    "successes": 65,
+    "upstream_errors": 13,
+    "upstream_timeouts": 0,
+    "disconnects": 0,
+    "connection_timeouts": 0,
+    "active_connections": 0,
+    "peak_connections": 4,
+    "latency_seconds": 0.5384877749820589
+  },
+  "backend_metrics": {
+    "requests": 78,
+    "rejected": 13,
+    "successes": 65,
+    "model_errors": 0,
+    "timeouts": 0,
+    "worker_failures": 0,
+    "latency_seconds": 0.1508279820336611,
+    "worker_starts": 1,
+    "worker_restarts": 0,
+    "inflight": 0
+  },
+  "resource_usage": {
+    "memory_peak_bytes": 322420736,
+    "cpu_stat": {
+      "usage_usec": "3055715",
+      "user_usec": "2510078",
+      "system_usec": "545636",
+      "nice_usec": "0",
+      "core_sched.force_idle_usec": "0",
+      "nr_periods": "31",
+      "nr_throttled": "8",
+      "throttled_usec": "868941",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    }
+  }
+}

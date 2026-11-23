@@ -99,3 +99,19 @@ nil.survival (right-censored Cox/KM), and nil.datasets (typed schemas and atomic
 local ingestion). Inspection, selection and uncertainty expose the additional
 bounded Shapley, distributed random-search and calibrated regression contracts.
 Each has offline help; see CLASSICAL_SPECIALIZED.md for their exact scope.
+
+
+## Explicit CPU completion modules
+
+- `nil.native`: dependency-free small dense float64 CPU Tensor/autodiff, Linear
+  and small Sequential models, SGD and plain JSON persistence.
+- `nil.distributed`: explicit single-host fp32 supervised DDP; two-rank CPU
+  acceptance, epoch checkpoints and rank-zero observers.
+- `nil.rl`: optional neural offline BC/fitted-Q, structured rollout collection,
+  recurrent/masked backend policies and supported CPU DQN simulator snapshots.
+- `nil.optimization.activation_checkpoint`: Sequential activation recomputation.
+- `nil.serving.create_isolated_server`: bounded authenticated loopback service,
+  restartable trusted CPU worker, hard deadline and metrics.
+
+Each has offline help. Scope, measured tests and unaccepted hardware/deployment
+combinations: [CPU_COMPLETION.md](CPU_COMPLETION.md).

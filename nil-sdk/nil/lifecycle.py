@@ -13,6 +13,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def _replace_atomic(source,target,*,windows=False):
+    # Windows readers may temporarily withhold FILE_SHARE_DELETE. Never publish
+    # partial JSON or replace the previous committed record with an empty file.
+    if not windows:
+        os.replace(source,target);return
+    import time
+    deadline=time.monotonic()+.5
+    while True:
+        try:os.replace(source,target);return
+        except PermissionError as error:
+            if getattr(error,'winerror',None) not in (5,32,33) or time.monotonic()>=deadline:raise
+            time.sleep(.01)
+
+
 def atomic_json(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -22,7 +36,7 @@ def atomic_json(path, value):
             json.dump(value, stream, indent=2, allow_nan=False)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temp, path)
+        _replace_atomic(temp,path,windows=os.name=="nt")
     finally:
         if os.path.exists(temp):
             os.unlink(temp)

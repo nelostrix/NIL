@@ -92,7 +92,7 @@ Primary implementation references:
 
 ## Recorded source acceptance — 2026-11-21
 
-Full classical development environment: **1021 passed, eight optional skips**.
+Full classical development environment: **1026 passed, eight optional skips**.
 Python 3.12.16, sklearn 1.9.1, NumPy 2.5.5, SciPy 1.18.1, pandas 3.1.1,
 LightGBM 4.7.0, CatBoost 1.2.10 and lifelines 0.30.0. The complete --full example
 passes all optional pipeline roundtrips, query fitting and censored held-out
@@ -106,7 +106,17 @@ parent. Each worker opens its own SQLite connection. Other platforms use spawn. 
 acceptance. Eight optional skips in the full
 classical environment are not counted as completed DL/RL/hardware capabilities.
 
-Minimum classical matrix (sklearn 1.4.2 / NumPy 1.26.4): **63 passed, 11 explicit
+Minimum classical matrix (sklearn 1.4.2 / NumPy 1.26.4): **67 passed, 12 explicit
 optional skips** for specialized/catalog checks. LightGBM/CatBoost/lifelines are
 not installed in that environment; their native acceptance comes from the full
 current environment above, not from skipped tests.
+
+
+Final installed acceptance: **30 specialized tests passed, zero skips** outside
+the source tree with PYTHONPATH removed, and the full extracted example passes
+all included workflows. The offline normal resolver installs only nil-sdk.
+All 186 Python source files match the wheel, all manifest hashes verify, and
+101 offline help guides ship. Both existing development environments now use
+the rebuilt regular wheel; the secondary environment received NIL alone and
+passes catalog/schema/help/import isolation checks. No universal classical,
+GPU, other-host or old-PC completion claim is implied by these scoped checks.

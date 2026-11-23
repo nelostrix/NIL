@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "platform": "Linux-7.3.4-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.12.16",
+  "target": "single Linux/CPU operator; loopback mTLS; 1x1 FP32 affine model",
+  "scope": "Warm functional/load gate only; no public-ingress, OS-quota, multi-tenant or arbitrary-model SLO certification",
+  "requests": 64,
+  "concurrency": 4,
+  "p95_budget_ms": 250,
+  "resource_policy": {
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "128"
+  },
+  "torch": "2.15.0+cpu",
+  "worker_startup_seconds": 1.2618139599944698,
+  "wall_seconds": 0.6103403609959059,
+  "samples": [
+    {
+      "index": 0,
+      "seconds": 0.01285541099787224,
+      "status": "passed"
+    },
+    {
+      "index": 1,
+      "seconds": 0.029664262998267077,
+      "status": "passed"
+    },
+    {
+      "index": 2,
+      "seconds": 0.010950226998829748,
+      "status": "passed"
+    },
+    {
+      "index": 3,
+      "seconds": 0.03202903000055812,
+      "status": "passed"
+    },
+    {
+      "index": 4,
+      "seconds": 0.010776807001093403,
+      "status": "passed"
+    },
+    {
+      "index": 5,
+      "seconds": 0.009891216999676544,
+      "status": "passed"
+    },
+    {
+      "index": 6,
+      "seconds": 0.056326070000068285,
+      "status": "passed"
+    },
+    {
+      "index": 7,
+      "seconds": 0.013677130002179183,
+      "status": "passed"
+    },
+    {
+      "index": 8,
+      "seconds": 0.05571277599665336,
+      "status": "passed"
+    },
+    {
+      "index": 9,
+      "seconds": 0.058371210005134344,
+      "status": "passed"
+    },
+    {
+      "index": 10,
+      "seconds": 0.0562109610036714,
+      "status": "passed"
+    },
+    {
+      "index": 11,
+      "seconds": 0.1134669449966168,
+      "status": "passed"
+    },
+    {
+      "index": 12,
+      "seconds": 0.013887619999877643,
+      "status": "passed"
+    },
+    {
+      "index": 13,
+      "seconds": 0.013889892994484399,
+      "status": "passed"
+    },
+    {
+      "index": 14,
+      "seconds": 0.014025962002051529,
+      "status": "passed"
+    },
+    {
+      "index": 15,
+      "seconds": 0.011826788999314886,
+      "status": "passed"
+    },
+    {
+      "index": 16,
+      "seconds": 0.011272176998318173,
+      "status": "passed"
+    },
+    {
+      "index": 17,
+      "seconds": 0.07340077600383665,
+      "status": "passed"
+    },
+    {
+      "index": 18,
+      "seconds": 0.06982273700123187,
+      "status": "passed"
+    },
+    {
+      "index": 19,
+      "seconds": 0.07274029299878748,
+      "status": "passed"
+    },
+    {
+      "index": 20,
+      "seconds": 0.016102362002129667,
+      "status": "passed"
+    },
+    {
+      "index": 21,
+      "seconds": 0.014777258002141025,
+      "status": "passed"
+    },
+    {
+      "index": 22,
+      "seconds": 0.014018708003277425,
+      "status": "passed"
+    },
+    {
+      "index": 23,
+      "seconds": 0.013521474997105543,
+      "status": "passed"
+    },
+    {
+      "index": 24,
+      "seconds": 0.013212247999035753,
+      "status": "passed"
+    },
+    {
+      "index": 25,
+      "seconds": 0.0907634870018228,
+      "status": "passed"
+    },
+    {
+      "index": 26,
+      "seconds": 0.010641942004440352,
+      "status": "passed"
+    },
+    {
+      "index": 27,
+      "seconds": 0.07076534700172488,
+      "status": "passed"
+    },
+    {
+      "index": 28,
+      "seconds": 0.06984966900199652,
+      "status": "passed"
+    },
+    {
+      "index": 29,
+      "seconds": 0.07149399600166362,
+      "status": "passed"
+    },
+    {
+      "index": 30,
+      "seconds": 0.01605521800229326,
+      "status": "passed"
+    },
+    {
+      "index": 31,
+      "seconds": 0.018391559999145102,
+      "status": "passed"
+    },
+    {
+      "index": 32,
+      "seconds": 0.013291325005411636,
+      "status": "passed"
+    },
+    {
+      "index": 33,
+      "seconds": 0.1144859109990648,
+      "status": "passed"
+    },
+    {
+      "index": 34,
+      "seconds": 0.014839982999546919,
+      "status": "passed"
+    },
+    {
+      "index": 35,
+      "seconds": 0.012943746005475987,
+      "status": "passed"
+    },
+    {
+      "index": 36,
+      "seconds": 0.08860259699577,
+      "status": "passed"
+    },
+    {
+      "index": 37,
+      "seconds": 0.01224591200298164,
+      "status": "passed"
+    },
+    {
+      "index": 38,
+      "seconds": 0.06915997299802257,
+      "status": "passed"
+    },
+    {
+      "index": 39,
+      "seconds": 0.06950047900318168,
+      "status": "passed"
+    },
+    {
+      "index": 40,
+      "seconds": 0.011848508002003655,
+      "status": "passed"
+    },
+    {
+      "index": 41,
+      "seconds": 0.010177857999224216,
+      "status": "passed"
+    },
+    {
+      "index": 42,
+      "seconds": 0.015265891001035925,
+      "status": "passed"
+    },
+    {
+      "index": 43,
+      "seconds": 0.014196222000464331,
+      "status": "passed"
+    },
+    {
+      "index": 44,
+      "seconds": 0.015427026999532245,
+      "status": "passed"
+    },
+    {
+      "index": 45,
+      "seconds": 0.01551309900241904,
+      "status": "passed"
+    },
+    {
+      "index": 46,
+      "seconds": 0.013769923003565054,
+      "status": "passed"
+    },
+    {
+      "index": 47,
+      "seconds": 0.07252350400085561,
+      "status": "passed"
+    },
+    {
+      "index": 48,
+      "seconds": 0.07374205599626293,
+      "status": "passed"
+    },
+    {
+      "index": 49,
+      "seconds": 0.07225980400107801,
+      "status": "passed"
+    },
+    {
+      "index": 50,
+      "seconds": 0.07048932500038063,
+      "status": "passed"
+    },
+    {
+      "index": 51,
+      "seconds": 0.01937086900579743,
+      "status": "passed"
+    },
+    {
+      "index": 52,
+      "seconds": 0.014465403000940569,
+      "status": "passed"
+    },
+    {
+      "index": 53,
+      "seconds": 0.013385653001023456,
+      "status": "passed"
+    },
+    {
+      "index": 54,
+      "seconds": 0.01621235600032378,
+      "status": "passed"
+    },
+    {
+      "index": 55,
+      "seconds": 0.01562816800287692,
+      "status": "passed"
+    },
+    {
+      "index": 56,
+      "seconds": 0.10816131200408563,
+      "status": "passed"
+    },
+    {
+      "index": 57,
+      "seconds": 0.013774401006230619,
+      "status": "passed"
+    },
+    {
+      "index": 58,
+      "seconds": 0.014573155996913556,
+      "status": "passed"
+    },
+    {
+      "index": 59,
+      "seconds": 0.06772026199905667,
+      "status": "passed"
+    },
+    {
+      "index": 60,
+      "seconds": 0.07520646399643738,
+      "status": "passed"
+    },
+    {
+      "index": 61,
+      "seconds": 0.07246631599991815,
+      "status": "passed"
+    },
+    {
+      "index": 62,
+      "seconds": 0.014163138999720104,
+      "status": "passed"
+    },
+    {
+      "index": 63,
+      "seconds": 0.007918762996268924,
+      "status": "passed"
+    }
+  ],
+  "median_ms": 15.57063350264798,
+  "p95_ms": 90.7634870018228,
+  "max_ms": 114.4859109990648,
+  "failures": 0,
+  "gateway_metrics": {
+    "connections": 75,
+    "admission_rejections": 0,
+    "tls_failures": 0,
+    "requests": 75,
+    "auth_rejections": 0,
+    "invalid_requests": 0,
+    "successes": 65,
+    "upstream_errors": 10,
+    "upstream_timeouts": 0,
+    "disconnects": 0,
+    "connection_timeouts": 0,
+    "active_connections": 0,
+    "peak_connections": 4,
+    "latency_seconds": 0.5998407099978067
+  },
+  "backend_metrics": {
+    "requests": 75,
+    "rejected": 10,
+    "successes": 65,
+    "model_errors": 0,
+    "timeouts": 0,
+    "worker_failures": 0,
+    "latency_seconds": 0.15953370504576014,
+    "worker_starts": 1,
+    "worker_restarts": 0,
+    "inflight": 0
+  }
+}

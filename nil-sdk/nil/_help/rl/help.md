@@ -85,3 +85,57 @@ masks; truncation bootstraps require next_values from final observations.
 ReplayBuffer uses bounded ring storage, a local seedable RNG, chronological
 latest(), and state_dict/load_state_dict for contents/cursor/RNG continuation.
 These helpers are not physical robot safety controllers.
+
+## Offline neural learning
+
+```python
+import nil
+result = nil.rl.offline_fit(
+    {'observations': [[-1.], [1.]], 'actions': [0, 1]},
+    action_count=2, steps=300, seed=0, output_dir='./offline-run')
+print(result.model.predict([[1.]], deterministic=True)[0])
+```
+
+`algorithm='behavior_cloning'` uses a neural categorical policy or continuous MSE
+policy; 2D continuous action rows distinguish continuous targets. `offline_dqn`
+is an explicit fitted-Q baseline, not CQL/IQL. Its dataset also needs
+`next_observations`, `rewards`, `terminated`, `truncated`. Optional `action_masks`
+and `next_action_masks` are validated. Bootstrap at truncation, never terminal.
+Flat finite observations, CPU, bounded dataset (default 64 MB)/network sizes.
+`resume=result.checkpoint` restores optimizer, target and local RNG with identical
+data/config; `steps` is the final update count. `offline_save`/`offline_load`
+provide immutable trusted bundles, also supported by root RL save/load.
+
+## Structured environment contracts
+
+`algorithms(include_contrib=True)` additionally lists `recurrent_ppo` and
+`maskable_ppo`; these require the explicit rl-contrib extra. Create/train/save/load
+as for PPO. Evaluation carries recurrent state with episode-start resets and
+validates masks. `collect_vector(policy, dummy_vec_env, steps=...)` uses separate
+CPU evaluation environments, records actual terminal observations through auto
+reset, carries recurrent state, and preserves caller RNG/mode. Masked truncated
+transitions require `terminal_action_masks` in info.
+
+`collect_multiagent(env, {'agent_id': policy}, steps=...)` accepts a parallel dict
+environment returning observation/reward/terminated/truncated/info dictionaries.
+`multiagent_fit(datasets, per_agent_options=...)` trains independent neural
+policies; this is not centralized-critic MARL. Masked multi-agent collection is
+explicitly unsupported, rather than silently dropping terminal masks.
+
+## Exact supported simulator continuation
+
+`save(model, new_path, environment_state=True)` and
+`load(path, env=raw_env, trusted=True, restore_rng=True, restore_environment=True)`
+restore CPU DQN with ordinary replay, one DummyVecEnv and the standard file-free
+Monitor. The raw unwrapped environment must implement `state_dict()`, nonmutating
+`validate_state_dict(state)`, and `load_state_dict(state)`. State includes actual
+simulator, env/space RNG, vector buffers, monitor counters and last observation.
+NIL validates environment identity and exact backend versions. No arbitrary
+Gymnasium wrapper/simulator or VecNormalize continuation guarantee is implied.
+
+Cooperative cancellation completes the current collection chunk and its native
+update before stopping at the next rollout boundary. A pre-set event stops before
+collection. Snapshots require a completed NIL train/cancel boundary; early False
+callbacks and failures cannot claim exact continuation. Compare identical learn
+chunk schedules: backend schedules may differ from one monolithic learn call.
+Measured five-seed learning results and limitations ship in docs/benchmarks.

@@ -10,6 +10,7 @@ def unwrap(model):
 
 def is_rl(model):
     model = unwrap(model)
+    if getattr(model,'_nil_rl_policy',False): return True
     return callable(getattr(model, 'learn', None)) and callable(getattr(model, 'predict', None)) and any(
         cls.__module__.startswith('stable_baselines3.') for cls in type(model).__mro__)
 
