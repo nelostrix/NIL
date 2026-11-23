@@ -23,7 +23,7 @@ _EXPORTS = {
 }
 for _name in ('algorithms', 'create', 'train', 'evaluate', 'save', 'load', 'make_env', 'her_replay_buffer', 'submit', 'RLTrainingResult'):
     _EXPORTS[_name] = ('nil.rl._control', _name)
-for _name in ('offline_fit','offline_load','offline_save','collect_vector','collect_multiagent','multiagent_fit'):
+for _name in ('offline_fit','offline_load','offline_save','collect_vector','collect_multiagent','multiagent_fit','centralized_fit','centralized_load'):
     _EXPORTS[_name]=('nil.rl._advanced',_name)
 __all__ = list(_EXPORTS)
 

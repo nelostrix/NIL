@@ -60,7 +60,7 @@ Repository = "https://github.com/nelostrix/NIL"
 include = ["nil*"]
 
 [tool.setuptools.package-data]
-nil = ["_help/*/help.md"]
+nil = ["_help/*/help.md", "_kernels/*.c"]
 #where = ["nil-sdk"]
 
 [tool.pytest.ini_options]

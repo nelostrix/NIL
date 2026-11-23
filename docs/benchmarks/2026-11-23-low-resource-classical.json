@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "profile": "classical",
+  "old_pc_acceptance": false,
+  "scope": "Current host under actual kernel limits: <=1 CPU, <=1 GiB RAM, zero swap, <=64 tasks. Not old CPU/ISA/storage emulation.",
+  "started_utc": "2026-11-23T07:05:29Z",
+  "kernel_policy": {
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "64"
+  },
+  "benchmark_started": true,
+  "benchmark_exit_code": 0,
+  "workloads": {
+    "schema_version": 2,
+    "profile": "classical",
+    "size": "small",
+    "host_label": "current-host-1cpu-1GiB-no-swap",
+    "budgets": {
+      "core_import": {
+        "max_wall_s": 0.5,
+        "max_peak_rss_mib": 35
+      },
+      "native_cpu": {
+        "max_wall_s": 1.0,
+        "max_peak_rss_mib": 35
+      },
+      "ridge_native": {
+        "max_wall_s": 5.0,
+        "max_peak_rss_mib": 512
+      },
+      "ridge_nil": {
+        "max_wall_s": 5.0,
+        "max_peak_rss_mib": 512
+      }
+    },
+    "timestamp_utc": "2026-11-23T07:05:29Z",
+    "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+    "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+    "logical_cpus": 8,
+    "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+    "versions": {
+      "nil-sdk": "0.2.1",
+      "numpy": "2.5.5",
+      "scikit-learn": "1.9.1"
+    },
+    "old_pc_acceptance": false,
+    "installed_workers": true,
+    "physical_memory_bytes": 7513694208,
+    "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+    "cases": {
+      "core_import": {
+        "samples": [
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00017600499995751306,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.09090869600004226
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00021799599926453084,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.09937545299908379
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00025750999884621706,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.08653524699911941
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.09090869600004226,
+        "max_wall_s": 0.09937545299908379,
+        "max_peak_rss_mib": 22.234375,
+        "budget_violations": []
+      },
+      "native_cpu": {
+        "samples": [
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.09040834400002495,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.09132192400102213,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.17193370899985894
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08885863199975574,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.08963093299826141,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.16206961200077785
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.09220941400053562,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.0932176550013537,
+            "peak_rss_mib": 22.234375,
+            "process_wall_s": 0.16403093699955207
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.16403093699955207,
+        "max_wall_s": 0.17193370899985894,
+        "max_peak_rss_mib": 22.234375,
+        "budget_violations": []
+      },
+      "ridge_native": {
+        "samples": [
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.004750699001306202,
+            "predict_s": 0.0002156709997507278,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.876026603000355,
+            "peak_rss_mib": 150.74609375,
+            "process_wall_s": 1.174963948000368
+          },
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.004674193000028026,
+            "predict_s": 0.00024346300051547587,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.8811346349993983,
+            "peak_rss_mib": 150.6328125,
+            "process_wall_s": 1.1738764210003865
+          },
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.004712335001386236,
+            "predict_s": 0.0002523710008972557,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.8884214680001605,
+            "peak_rss_mib": 150.51171875,
+            "process_wall_s": 1.1794576150005014
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 1.174963948000368,
+        "max_wall_s": 1.1794576150005014,
+        "max_peak_rss_mib": 150.74609375,
+        "budget_violations": []
+      },
+      "ridge_nil": {
+        "samples": [
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.0077766220001649344,
+            "predict_s": 0.0002765770004771184,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.8798435529988637,
+            "peak_rss_mib": 150.82421875,
+            "process_wall_s": 1.1688578310004232
+          },
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.0076705789997504326,
+            "predict_s": 0.00026236000121571124,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.881201393000083,
+            "peak_rss_mib": 151.03125,
+            "process_wall_s": 1.1765127750004467
+          },
+          {
+            "rows": 2048,
+            "features": 8,
+            "fit_s": 0.007588833999761846,
+            "predict_s": 0.000229847999435151,
+            "training_rmse": 0.0013174511263935893,
+            "workload_s": 0.8827760040003341,
+            "peak_rss_mib": 150.7734375,
+            "process_wall_s": 1.1716722490000393
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 1.1716722490000393,
+        "max_wall_s": 1.1765127750004467,
+        "max_peak_rss_mib": 151.03125,
+        "budget_violations": []
+      }
+    },
+    "ridge_wrapper_overhead": {
+      "native_median_fit_s": 0.004712335001386236,
+      "nil_median_fit_s": 0.0076705789997504326,
+      "fit_ratio": 1.6277660644869187,
+      "added_fit_seconds": 0.002958243998364196,
+      "scope": "Independent fresh processes; small timings include noise and explicit NIL artifact/run recording"
+    },
+    "status": "passed"
+  },
+  "kernel_usage": {
+    "memory_peak_bytes": 127004672,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    },
+    "cpu_stat": {
+      "usage_usec": 7867436,
+      "user_usec": 6813791,
+      "system_usec": 1053644,
+      "nice_usec": 0,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 79,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    }
+  },
+  "oom_kill_delta": 0,
+  "finished_utc": "2026-11-23T07:05:37Z"
+}

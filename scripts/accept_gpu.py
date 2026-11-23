@@ -28,11 +28,25 @@ def run(mode='all',precision='all'):
     os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG',':4096:8')
     os.environ.setdefault('OMP_NUM_THREADS','1');os.environ.setdefault('OPENBLAS_NUM_THREADS','1')
     report={'schema_version':1,'mode':mode,'precision':precision,'platform':platform.platform(),
-        'python':platform.python_version(),'status':'failed','tests':{},'devices':[]}
+        'python':platform.python_version(),'status':'failed','tests':{},'devices':[],
+        'scope':'Actual CUDA training acceptance; CPU results and non-CUDA display adapters cannot pass',
+        'display_adapters':[]}
+    if sys.platform=='linux':
+        for card in sorted(Path('/sys/class/drm').glob('card[0-9]*')):
+            device=card/'device'
+            try:
+                report['display_adapters'].append({'vendor_id':(device/'vendor').read_text().strip(),
+                    'device_id':(device/'device').read_text().strip(),
+                    'driver':(device/'driver').resolve(strict=True).name})
+            except OSError:pass
     try:
         import torch
-        report.update(torch=str(torch.__version__),cuda_runtime=torch.version.cuda,cuda_available=torch.cuda.is_available())
-        if not torch.cuda.is_available():report['error']='Actual CUDA device required';return report,2
+        report.update(torch=str(torch.__version__),cuda_runtime=torch.version.cuda,
+                      hip_runtime=getattr(torch.version,'hip',None),cuda_available=torch.cuda.is_available())
+        if not torch.cuda.is_available() or torch.version.cuda is None:
+            report['error']='Actual CUDA device and explicit CUDA-enabled Torch required'
+            report['next_step']='Use a provisioned CUDA machine; this runner does not install drivers/backends or certify AMD/Intel adapters'
+            return report,2
         count=torch.cuda.device_count()
         for index in range(count):
             properties=torch.cuda.get_device_properties(index)

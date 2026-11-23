@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "run_url": "https://github.com/nelostrix/NIL/actions/runs/45115748766",
-  "commit": "c03b20fc23c9ce77f32cd039f710c66887a4ecfe",
-  "scope": "Installed classical and CPU Torch profiles; service observability/credentials. Native multiclass additions are later changes.",
+  "run_url": "https://github.com/nelostrix/NIL/actions/runs/45116372373",
+  "commit": "7fc1943",
+  "scope": "Installed classical and CPU Torch profiles including native multiclass/Adam and managed TLS service observability/credentials.",
   "profiles": {
     "backend-torch-current": {
       "schema_version": 1,
@@ -45,10 +45,10 @@
       ],
       "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
       "tests": {
-        "collected": 52,
+        "collected": 70,
         "skipped": 0
       },
-      "seconds": 40.19717090400002
+      "seconds": 41.13782084100001
     },
     "backend-classical-minimum": {
       "schema_version": 1,
@@ -91,7 +91,7 @@
         "collected": 67,
         "skipped": 0
       },
-      "seconds": 3.954784496000002
+      "seconds": 2.544321729
     },
     "backend-torch-minimum": {
       "schema_version": 1,
@@ -134,17 +134,17 @@
       ],
       "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
       "tests": {
-        "collected": 52,
+        "collected": 70,
         "skipped": 0
       },
-      "seconds": 36.13446999199999
+      "seconds": 39.745270833000006
     },
     "backend-classical-current": {
       "schema_version": 1,
       "profile": "classical",
       "status": "passed",
       "python": "3.12.16",
-      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43",
       "versions": {
         "nil-sdk": "0.2.1",
         "scikit-learn": "1.9.1",
@@ -180,7 +180,7 @@
         "collected": 69,
         "skipped": 0
       },
-      "seconds": 5.803469360000008
+      "seconds": 4.090415207000007
     }
   }
 }

@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "profile": "core",
+  "old_pc_acceptance": false,
+  "scope": "Current host under actual kernel limits: <=1 CPU, <=1 GiB RAM, zero swap, <=64 tasks. Not old CPU/ISA/storage emulation.",
+  "started_utc": "2026-11-23T07:05:28Z",
+  "kernel_policy": {
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "64"
+  },
+  "benchmark_started": true,
+  "benchmark_exit_code": 0,
+  "workloads": {
+    "schema_version": 2,
+    "profile": "core",
+    "size": "small",
+    "host_label": "current-host-1cpu-1GiB-no-swap",
+    "budgets": {
+      "core_import": {
+        "max_wall_s": 0.5,
+        "max_peak_rss_mib": 35
+      },
+      "native_cpu": {
+        "max_wall_s": 1.0,
+        "max_peak_rss_mib": 35
+      }
+    },
+    "timestamp_utc": "2026-11-23T07:05:28Z",
+    "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+    "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+    "logical_cpus": 8,
+    "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+    "versions": {
+      "nil-sdk": "0.2.1",
+      "numpy": "2.5.5",
+      "scikit-learn": "1.9.1"
+    },
+    "old_pc_acceptance": false,
+    "installed_workers": true,
+    "physical_memory_bytes": 7513694208,
+    "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+    "cases": {
+      "core_import": {
+        "samples": [
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00016669800061208662,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.08811823199903301
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00017873999968287535,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.08950155700040341
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00017207800010510255,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.09082763199876354
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.08950155700040341,
+        "max_wall_s": 0.09082763199876354,
+        "max_peak_rss_mib": 22.27734375,
+        "budget_violations": []
+      },
+      "native_cpu": {
+        "samples": [
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08900792599888518,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.08984597300150199,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.17766483400009747
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08850332600013644,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.08936632900076802,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.1784333380001044
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08938465400024143,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.09049983799923211,
+            "peak_rss_mib": 22.27734375,
+            "process_wall_s": 0.19765872500101977
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.1784333380001044,
+        "max_wall_s": 0.19765872500101977,
+        "max_peak_rss_mib": 22.27734375,
+        "budget_violations": []
+      }
+    },
+    "status": "passed"
+  },
+  "kernel_usage": {
+    "memory_peak_bytes": 31633408,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    },
+    "cpu_stat": {
+      "usage_usec": 997292,
+      "user_usec": 852133,
+      "system_usec": 145159,
+      "nice_usec": 0,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 10,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    }
+  },
+  "oom_kill_delta": 0,
+  "finished_utc": "2026-11-23T07:05:29Z"
+}

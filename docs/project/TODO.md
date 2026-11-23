@@ -526,3 +526,91 @@ acceptance, ND/sparse/compiled/device numerical engine, advanced RL/model learni
 coverage, other optional-backend platform combinations and public-ingress review.
 The managed Linux reference and declared backend profiles passed; this does not
 certify all possible deployments, models or optional dependency combinations.
+
+Final native installed acceptance at 7fc1943: hosted backend run45116372373 passes
+all four cells; both Torch2.6/2.15 profiles now pass70 tests and all three installed
+examples, zero skips. Base run45116372289 passes all nine OS/Python cells including
+NIL-only multiclass training. Local final wheel passes70 Torch/native/service and
+67 minimum-classical tests plus examples outside the checkout. All199 packaged
+Python sources match the workspace; ZIP manifest hashes verify. Base offline
+resolver installs nil-sdk alone. The local verifier additionally rejects editable
+metadata and checks that the imported package belongs to the installed distribution.
+
+## Requested low-resource hardware checks — 2026-11-23
+
+User confirmed separate GPU and older-PC targets are unavailable and requested
+low-resource checks here. Actual inventory: Ryzen3 7320U/7GiB, Radeon610M,
+CPU-only Torch2.15, no CUDA/HIP runtime, no configured GPU runners.
+
+- [x] Add a kernel-verified low-resource gate using installed isolated workers;
+  fail before workloads if memory/swap/CPU/task policy is missing or too loose.
+- [x] Check numerical outcomes as well as time/RSS: native MSE<1e-6, Ridge RMSE<.05,
+  and two finite decreasing neural losses. Fast incorrect results cannot pass.
+- [x] Run core, classical and neural small profiles, three fresh samples per case,
+  each in a new real CPUQuota100%/MemoryMax1GiB/no-swap/TasksMax64 user unit.
+  All pass; final kernel peaks30.17/121.12/239.35MiB; zero OOM kills, zero swap use.
+- [x] Portable policy/functional/refusal regressions:21 passed in1.25s in the
+  classical environment. Full raw samples and exact reproduction are in
+  ../HARDWARE_ACCEPTANCE.md and ../benchmarks/2026-11-23-low-resource-*.json.
+- [x] Record actual GPU preflight failure with adapter/runtime diagnostics; no
+  unrun CUDA tests or CPU checks are reported as GPU acceptance.
+- [ ] Actual older-PC and CUDA/two-GPU acceptance: hardware remains unavailable;
+  current-host throttling does not certify old ISA/cache/storage or GPU behavior.
+
+Commands used systemd-run --user --wait --pipe --collect with the above limits,
+explicit existing backend interpreters and scripts/accept_low_resource.py.
+No permanent service, global controller change, driver or backend installation.
+The selected fallback is completed; actual target gates remain open in PHASES.md.
+
+Final harness retains one self-contained report per profile and removes temporary
+child outputs. Repeated actual-unit acceptance passes all three profiles again;
+final portable checks:21 passed in3.64s in the Torch environment. Raw reports
+contain kernel policy/counters and all benchmark samples without duplicate log
+files in the repository. Earlier diagnostics remain under workspace artifacts.
+
+## Phase8 CPU engine and Phase9 RL extensions — 2026-11-23
+
+- [x] Preserve the original rank2 API and model archives while adding explicit
+  nonempty rank0–8 shapes/strides, owned reshape/permutation/slicing, trailing
+  broadcasting, axis reductions, batched/vector matmul and shape-preserving grads.
+- [x] Extend stable losses and transactional SGD/Adam to scalar/vector/ND leaves;
+  add bounded plain-JSON tensor persistence and exact optimizer-state continuation.
+- [x] Implement explicit COO/CSR, duplicate/coalescing gradients, sparse×dense,
+  bounded densification, empty sparse matrices, storage/coordinate guards and JSON.
+- [x] Build NIL-owned C matmul/VJP only on explicit request, with local compiler/
+  header preflight, active ABI/binary digest checks, exclusive publication and no
+  numerical library dependency. Core install/import never builds/loads a binary.
+- [x] Measure five fresh processes/backend:96x64 @64x48 forward+backward, numerical
+  parity and RSS; observed7.29x for this workload only. Raw report:
+  ../benchmarks/2026-11-23-native-cpu-kernels.json. Not universal/old-PC performance.
+- [x] Add masked parallel collection, per-agent spaces/terminal masks, authoritative
+  terminal observations, recurrent lifecycle and RNG/mode restoration on failures.
+- [x] Add discrete CQL-style log-sum-exp conservative Q updates, recorded-action/
+  OOD contracts, masks and exact same-data/config checkpoint continuation.
+- [x] Add separately scoped offline centralized-value AWR with joint critic/local
+  discrete actors, explicit aligned rows/team returns, bounds and exact update resume.
+- [x] Extend supported exact protocol-environment continuation to CPU PPO/A2C
+  completed rollout/update boundaries. No recurrent/continuous/wrapper guarantee.
+- [x] Run three-seed real learning gates for discrete FrozenLake CQL, two-CartPole
+  offline centralized AWR, continuous MountainCar imitation, contextual masked PPO
+  and recurrent CartPole PPO. All paired bootstrap lower bounds exceed zero.
+  Source/replay/scaling/algorithm limits: ../NEURAL_RL.md and raw
+  ../benchmarks/2026-11-23-rl-coverage.json. No remote data/model download.
+
+Validation: full neural/RL development suite **1098 passed,30 explicit skips** in
+106.66s. Final focused engine/RL checks after ABI/terminal guards:
+**86 passed** in4.86s, including actual C compilation and independent numerical/
+Torch parity. Earlier full run predates the final two added guard regressions;
+the final focused run covers them. No skipped case counts as target acceptance.
+Commands use PYTHONPATH=nil-sdk and the explicit neural backend interpreter:
+`python -m pytest nil-sdk/tests -q`; focused native_* plus RL contract tests;
+`python scripts/benchmark_rl_coverage.py --output report.json` (cases selectable).
+Use `nil.native.build_cpu_kernel(new_directory)` then
+`python scripts/benchmark_native_kernels.py --kernel PATH --output report.json`.
+
+Remaining target work: actual GPU kernels/quotas/AMP/distributed/sharding, physical
+older-PC behavior, larger pretrained/LoRA/quantization/export workload coverage,
+public-ingress deployment/security/workload acceptance, and untested optional
+backend/platform combinations. ND/CPU algebra and the declared RL extensions are
+implemented; zero-sized tensors, universal acceleration, arbitrary MARL/simulator
+continuation and broad unseen-task quality are not implied by these checkmarks.

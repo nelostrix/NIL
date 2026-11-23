@@ -38,6 +38,8 @@ print(model(nil.native.Tensor([[3.]])).tolist())  # Approximately [[7.0]]
 
 `nil.native` also supports stable multiclass loss, softmax and Adam with JSON
 checkpoint continuation. See the [independent engine scope](docs/NATIVE_ENGINE.md).
+It now includes nonempty multidimensional tensors, explicit COO/CSR sparse
+algebra and an optional locally compiled NIL-owned CPU matrix kernel.
 It is a bounded float64 CPU reference engine. Larger classical,
 neural and specialized workflows use explicitly installed backends:
 
@@ -114,6 +116,8 @@ sharding with model/optimizer/RNG checkpoints and explicit trusted shard resume.
 `nil.rl` provides optional environment-training integrations, neural behavior
 cloning/fitted-Q baselines, recurrent/masked policies and independent multi-agent
 workflows. Exact simulator continuation supports a declared CPU DQN contract.
+Additional scoped CPU workflows include discrete CQL, offline centralized-value
+AWR, masked parallel collection and exact PPO/A2C protocol-environment continuation.
 See [DL/RL workflows](docs/NEURAL_RL.md) and [CPU acceptance](docs/CPU_COMPLETION.md).
 
 ## Owned execution and serving
@@ -161,6 +165,10 @@ NIL is alpha software. Its independent engine is a small dense CPU subset;
 optional integrations do not make it an independent replacement for every AI
 library. GPU, older-PC, full platform/backend and public-production acceptance
 must be demonstrated on their actual targets.
+
+Small core, classical and neural workloads passed under actual one-CPU quota,
+1 GiB memory and zero-swap limits on the current host. See the
+[hardware evidence and reproduction steps](docs/HARDWARE_ACCEPTANCE.md).
 
 The [ordered phase checklist](docs/project/PHASES.md) and
 [live TODO](docs/project/TODO.md) distinguish implemented code, passing tests,

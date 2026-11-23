@@ -9,13 +9,19 @@ permissions:
   contents: read
 jobs:
   installed:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        profile: [classical, torch]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        profile: [classical, torch, rl]
         versions: [minimum, current]
+        exclude:
+          - {os: macos-latest, profile: torch}
+          - {os: windows-latest, profile: torch}
+          - {os: macos-latest, profile: rl}
+          - {os: windows-latest, profile: rl}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -29,23 +35,33 @@ jobs:
         if: matrix.profile == 'classical' && matrix.versions == 'current'
         run: python -m pip install '.[classical,tabular]'
       - name: Install minimum CPU Torch profile
-        if: matrix.profile == 'torch' && matrix.versions == 'minimum'
+        if: matrix.profile != 'classical' && matrix.versions == 'minimum'
         run: |
           python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
           python -m pip install numpy==1.26.4
       - name: Install current CPU Torch profile
-        if: matrix.profile == 'torch' && matrix.versions == 'current'
+        if: matrix.profile != 'classical' && matrix.versions == 'current'
         run: |
           python -m pip install 'torch>=2.6,<3' --index-url https://download.pytorch.org/whl/cpu
           python -m pip install 'numpy>=1.26,<3'
+      - name: Install explicit minimum RL profile
+        if: matrix.profile == 'rl' && matrix.versions == 'minimum'
+        run: python -m pip install stable-baselines3==2.4.0 sb3-contrib==2.4.0 gymnasium==1.0.0
+      - name: Install current RL profile
+        if: matrix.profile == 'rl' && matrix.versions == 'current'
+        run: python -m pip install '.[rl-contrib]'
       - name: Build and install regular NIL wheel
+        shell: python
         run: |
-          python -m build --wheel --no-isolation --outdir dist
-          python -m pip install --force-reinstall --no-deps dist/*.whl
+          from pathlib import Path
+          import subprocess,sys
+          subprocess.run([sys.executable,'-m','build','--wheel','--no-isolation','--outdir','dist'],check=True)
+          wheel=next(Path('dist').glob('*.whl'))
+          subprocess.run([sys.executable,'-m','pip','install','--force-reinstall','--no-deps',str(wheel)],check=True)
       - name: Verify installed workflows and runnable examples
         run: python scripts/accept_backends.py --profile ${{ matrix.profile }} --output dist/backend-acceptance.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: backend-${{ matrix.profile }}-${{ matrix.versions }}
+          name: backend-${{ matrix.os }}-${{ matrix.profile }}-${{ matrix.versions }}
           path: dist/

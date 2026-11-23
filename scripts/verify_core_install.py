@@ -68,6 +68,12 @@ classifier = nil.native.Linear(2,3,seed=7)
 classified = nil.native.fit(classifier, [[1,0],[0,1],[-1,-1]], [0,1,2], epochs=100, lr=.05,
                             loss='cross_entropy', optimizer='adam')
 assert classified['history'][-1] < .1
+nd = nil.native.Tensor(list(range(24)), shape=(2,3,4), requires_grad=True)
+nd.mean(axis=(0,2)).sum().backward()
+assert nd.strides == (12,4,1) and nd.grad is not None
+sparse = nil.native.SparseCOO([(0,1),(0,1)], [2.,3.], (2,2)).to_csr()
+assert sparse.to_dense().tolist() == [[0.,5.],[0.,0.]]
+assert '_nil_cpu_kernels' not in sys.modules, 'Core must never compile/load kernels automatically'
 assert result['history'][-1] < .001
 assert nil.help('native') and nil.help('distributed')
 try:

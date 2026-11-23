@@ -29,14 +29,16 @@ def _evaluation_context(policies,seed):
             yield
     finally:
         random.setstate(previous[0]); np.random.set_state(previous[1])
-        for policy,mode in modes: policy.set_training_mode(mode)
+        for policy,mode in modes:
+            if hasattr(policy,'set_training_mode'):policy.set_training_mode(mode)
+            else:policy.train(mode)
         for generator,state in rngs: generator.set_state(state)
 
 
 def _predict(policy,observation,state,episode_start,deterministic,mask=None):
     np=require('numpy','rl'); options={'deterministic':deterministic}
-    if type(policy).__name__=='RecurrentPPO': options.update(state=state,episode_start=np.asarray(episode_start))
-    if type(policy).__name__=='MaskablePPO': options['action_masks']=mask
+    if type(policy).__name__=='RecurrentPPO' or getattr(policy,'nil_recurrent',False): options.update(state=state,episode_start=np.asarray(episode_start))
+    if mask is not None: options['action_masks']=mask
     return policy.predict(observation,**options)
 
 
@@ -74,36 +76,75 @@ def collect_vector(policy,env,*,steps=100,seed=0,deterministic=False,max_transit
     return result
 
 
-def collect_multiagent(env,policies,*,steps=100,seed=0,deterministic=True,max_transitions=10000):
-    np=require('numpy','rl'); positive_int(steps,'steps'); positive_int(max_transitions,'max_transitions')
-    if not isinstance(policies,dict) or not policies or len(policies)>128: raise ValueError('Provide 1–128 explicit agent policies')
-    if any(type(policy).__name__=='MaskablePPO' for policy in policies.values()): raise NotImplementedError('Masked multi-agent collection needs terminal mask metadata; use the vector masked contract or explicit per-agent datasets')
-    rows={agent:[] for agent in policies}; states={}; episode=0
+def collect_multiagent(env,policies,*,steps=100,seed=0,deterministic=True,max_transitions=10000,masked_agents=()):
+    np=require('numpy','rl');positive_int(steps,'steps');positive_int(max_transitions,'max_transitions')
+    if not isinstance(policies,dict) or not policies or len(policies)>128:raise ValueError('Provide 1–128 explicit agent policies')
+    if not isinstance(masked_agents,(list,tuple,set)) or not set(masked_agents)<=set(policies):raise ValueError('Unknown masked agent')
+    masked=set(masked_agents)|{agent for agent,policy in policies.items() if type(policy).__name__=='MaskablePPO'}
+    if any(type(policies[agent]).__name__=='RecurrentPPO' for agent in masked):raise ValueError('RecurrentPPO does not implement masked prediction; provide a declared compatible policy')
+    def observation(value):
+        raw=value.get('observation') if isinstance(value,dict) else value
+        array=np.asarray(raw)
+        if not array.size or not np.issubdtype(array.dtype,np.number) or not np.isfinite(array).all():raise ValueError('Expected finite per-agent numeric observations')
+        return np.array(array,copy=True)
+    def mask_for(agent,raw,info,*,terminal=False,terminated=False,expected_count=None):
+        space=getattr(env,'action_space',lambda _:None)(agent)
+        if space is None:space=getattr(policies[agent],'action_space',None)
+        count=getattr(space,'n',None) if space is not None else expected_count
+        supplied=info.get('terminal_action_masks') if terminal else None
+        if supplied is None and isinstance(raw,dict):supplied=raw.get('action_mask')
+        if supplied is None and not terminal:supplied=info.get('action_mask')
+        if supplied is None and not terminal and callable(getattr(env,'action_masks',None)):supplied=env.action_masks(agent)
+        if supplied is None and terminated and count is not None:supplied=np.zeros(count,dtype=bool)
+        values=np.asarray(supplied)
+        if values.ndim!=1 or not 1<=len(values)<=4096 or (count is not None and values.shape!=(count,)) or not np.isin(values,[0,1]).all() or (not terminated and not values.any()):
+            raise ValueError('Masked transitions require valid current/terminal action masks, including truncations')
+        return values.astype(bool,copy=True)
+    rows={agent:[] for agent in policies};states={};episode=0;transitions=0
     with _evaluation_context(list(policies.values()),seed):
-        observations,_=env.reset(seed=seed)
+        observations,current_infos=env.reset(seed=seed)
         for _ in range(steps):
             if not observations:
-                episode+=1; observations,_=env.reset(seed=seed+episode); states={}
-            if not isinstance(observations,dict) or not observations or not set(observations)<=set(policies): raise ValueError('Unknown agents or invalid parallel observations')
-            if sum(len(values) for values in rows.values())+len(observations)>max_transitions: raise ValueError('Multi-agent transition budget exceeded')
+                episode+=1;observations,current_infos=env.reset(seed=seed+episode);states={}
+            if not isinstance(observations,dict) or not observations or not set(observations)<=set(policies):raise ValueError('Unknown agents or invalid parallel observations')
+            if not isinstance(current_infos,dict):raise ValueError('Parallel reset/step info must be agent-keyed')
+            if transitions+len(observations)>max_transitions:raise ValueError('Multi-agent transition budget exceeded')
+            arrays={agent:observation(value) for agent,value in observations.items()}
+            masks={agent:mask_for(agent,observations[agent],current_infos.get(agent,{})) for agent in observations if agent in masked}
             actions={}
-            for agent,observation in observations.items():
-                mask=env.action_masks(agent) if type(policies[agent]).__name__=='MaskablePPO' else None
-                actions[agent],states[agent]=_predict(policies[agent],observation,states.get(agent),[agent not in states],deterministic,mask)
+            for agent,value in arrays.items():
+                space=getattr(env,'observation_space',lambda _:None)(agent)
+                if space is not None and not space.contains(value):raise ValueError('Observation does not match declared agent space')
+                actions[agent],states[agent]=_predict(policies[agent],value,states.get(agent),[agent not in states],deterministic,masks.get(agent))
+                action_space=getattr(env,'action_space',lambda _:None)(agent)
+                if action_space is not None and not action_space.contains(actions[agent]):raise ValueError('Policy action does not match declared agent space')
+                if agent in masks:
+                    action=np.asarray(actions[agent])
+                    if action.ndim or not np.issubdtype(action.dtype,np.integer) or not 0<=int(action)<len(masks[agent]) or not masks[agent][int(action)]:raise ValueError('Policy selected a masked-out action')
             future,rewards,terminated,truncated,infos=env.step(actions)
-            if not all(isinstance(mapping,dict) for mapping in (future,rewards,terminated,truncated,infos)) or not all(set(observations)<=set(mapping) for mapping in (rewards,terminated,truncated,infos)): raise ValueError('Parallel step dictionaries must describe every acting agent')
-            for agent,observation in observations.items():
+            if not all(isinstance(mapping,dict) for mapping in (future,rewards,terminated,truncated,infos)) or not all(set(observations)<=set(mapping) for mapping in (rewards,terminated,truncated,infos)) or not set(future)<=set(policies):raise ValueError('Parallel dictionaries must describe every acting agent and no unknown future agents')
+            for agent,value in arrays.items():
                 end,cut=terminated[agent],truncated[agent]
-                if type(end) not in (bool,np.bool_) or type(cut) not in (bool,np.bool_): raise ValueError('Agent termination flags must be boolean')
-                next_observation=future.get(agent,infos[agent].get('terminal_observation'))
-                if next_observation is None:
-                    if not end: raise ValueError('Truncated/nonterminal agents need a next observation')
-                    next_observation=np.zeros_like(observation)
-                row={'observations':np.array(observation,copy=True),'actions':np.array(actions[agent],copy=True),'next_observations':np.array(next_observation,copy=True),'rewards':float(rewards[agent]),'terminated':bool(end),'truncated':bool(cut)}
-                if not all(np.isfinite(value).all() for value in row.values()): raise ValueError('Nonfinite multi-agent transition')
-                rows[agent].append(row)
-                if end or cut: states.pop(agent,None)
+                if type(end) not in (bool,np.bool_) or type(cut) not in (bool,np.bool_):raise ValueError('Agent termination flags must be boolean')
+                info=infos[agent]
+                if not isinstance(info,dict):raise ValueError('Agent info must be a dictionary')
+                if cut and info.get('terminal_observation') is None:raise ValueError('Truncated parallel agents require terminal_observation')
+                raw=info.get('terminal_observation',future.get(agent)) if end or cut else future.get(agent)
+                if raw is None:
+                    if not end:raise ValueError('Truncated/nonterminal agents need a next observation')
+                    next_observation=np.zeros_like(value)
+                else:next_observation=observation(raw)
+                if next_observation.shape!=value.shape:raise ValueError('Per-agent observation shape changed')
+                row={'observations':value,'actions':np.array(actions[agent],copy=True),'next_observations':next_observation,
+                     'rewards':float(rewards[agent]),'terminated':bool(end),'truncated':bool(cut)}
+                if agent in masks:
+                    row['action_masks']=masks[agent]
+                    row['next_action_masks']=mask_for(agent,raw,info,terminal=bool(end or cut),terminated=bool(end),expected_count=len(masks[agent]))
+                if not all(np.isfinite(item).all() for item in row.values()):raise ValueError('Nonfinite multi-agent transition')
+                rows[agent].append(row);transitions+=1
+                if end or cut:states.pop(agent,None)
             observations={agent:value for agent,value in future.items() if not terminated.get(agent,False) and not truncated.get(agent,False)}
+            current_infos=infos
     return {agent:{key:np.asarray([row[key] for row in values]) for key in values[0]} for agent,values in rows.items() if values}
 
 

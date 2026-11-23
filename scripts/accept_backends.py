@@ -18,6 +18,13 @@ import xml.etree.ElementTree as ET
 
 
 PROFILES={
+    'rl': {
+        'packages':('torch','numpy','gymnasium','stable-baselines3','sb3-contrib','pytest'),
+        'tests':('test_rl_correctness.py','test_rl_control.py','test_rl_snapshot.py','test_offline_neural_rl.py',
+                 'test_rl_cql.py','test_rl_centralized.py','test_rl_parallel_masks.py','test_rl_structured.py'),
+        'exclude':'',
+        'examples':(('rl_workflow.py','--algorithm','ppo'),('rl_workflow.py','--algorithm','sac')),
+    },
     'classical': {
         'packages':('scikit-learn','numpy','scipy','pandas','pytest'),
         'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py'),
@@ -27,7 +34,8 @@ PROFILES={
     'torch': {
         'packages':('torch','numpy','pytest'),
         'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py','test_native_engine.py','test_native_multiclass.py',
-                 'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py'),
+                 'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py',
+                 'test_native_nd.py','test_native_sparse.py','test_native_cpu.py'),
         'exclude':'not cuda',
         'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer')),
     },
@@ -67,7 +75,12 @@ def run(profile,output,*,timeout=300):
                 report['steps'].append({'name':name,'returncode':returncode,'log':log.name})
                 if returncode:raise RuntimeError('Acceptance step failed: '+name)
             # A regular wheel must be imported. An editable source install is not acceptance.
-            probe="import json,nil,pathlib; p=pathlib.Path(nil.__file__).resolve(); print(json.dumps({'nil_path':str(p)})); assert not p.is_relative_to(pathlib.Path("+repr(str(root))+")), 'Install the regular wheel before verification'"
+            probe=("import json,nil,pathlib; from importlib.metadata import distribution; "
+                   "p=pathlib.Path(nil.__file__).resolve(); d=distribution('nil-sdk'); "
+                   "editable=json.loads(d.read_text('direct_url.json') or '{}').get('dir_info',{}).get('editable',False); "
+                   "print(json.dumps({'nil_path':str(p),'editable':editable})); "
+                   "assert not editable and p==d.locate_file('nil/__init__.py').resolve() and "
+                   "not p.is_relative_to(pathlib.Path("+repr(str(root))+")), 'Install the regular wheel before verification'")
             execute('installed-import',['-c',probe])
             junit=work/'tests.xml'
             arguments=['-m','pytest','--import-mode=prepend','-o','addopts=','-q','--junitxml='+str(junit)]

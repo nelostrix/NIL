@@ -16,7 +16,7 @@ print(model(nil.native.Tensor([[3.]])).tolist())
 ## Parameters
 
 `Tensor(data, requires_grad=False, dtype='float64', device='cpu')` accepts scalar,
-vector (one row), or rectangular 2D built-in numbers. `Linear(inputs, outputs)`;
+vector (one row), or rectangular built-in arrays; explicit ND shapes are described below. `Linear(inputs, outputs)`;
 `Sequential(Linear(...), Tanh(), Linear(...))`; `fit(..., loss='mse')` or
 `loss='bce_logits'`. Direct loss/backward and SGD support momentum and
 weight decay. `zero_grad()` before each independent update.
@@ -54,10 +54,39 @@ parity tests, never engine execution.
 ## Limitations
 
 Reference subset, bounded at 100,000 elements per Tensor, 16 layers and 10,000
-fit epochs. CPU float64 only; sparse data, other dtypes/devices and ragged/nonfinite
-values are rejected. Supports row/column/scalar broadcasting, matmul, arithmetic,
+fit epochs. CPU float64 only; implicit sparse conversion, other dtypes/devices and ragged/nonfinite
+values are rejected. Explicit COO/CSR is supported below. Supports row/column/scalar broadcasting, matmul, arithmetic,
 ReLU/tanh/sigmoid/exp/log, reductions, MSE, stable BCE/categorical losses and Adam.
-No convolution,
-GPU, sparse kernel, mixed precision or general-purpose large tensor engine.
+No convolution, GPU, mixed precision or unbounded large tensor engine.
 Pure Python prioritizes inspectability and zero backend dependencies; numerical
 backends are faster for large arrays. Stale graphs reject mutation before backward.
+
+## Multidimensional and sparse CPU tensors
+
+The dense engine supports nonempty rank0–8 tensors. Preserve legacy scalar/vector
+normalization by default; pass shape=() or shape=(N,) for explicit scalar/vector
+semantics. `Tensor(flat_data, shape=(B,T,F))`, strides, reshape(*shape),
+permute(*axes), transpose(a,b), integer/slice/ellipsis indexing, sum/mean(axis=...,
+keepdims=...), last-axis softmax/log_softmax and broadcast batched/vector matmul
+are available. Reshape/permutation/slices own their storage and retain gradients.
+Empty dimensions, fancy indexing, mutable views and arbitrary strides are refused.
+Scalar/vector/ND SGD and Adam state continuation is supported. save_tensor and
+load_tensor preserve tensor values/shape and requires_grad, not its graph/gradients.
+
+`SparseCOO([(row,col),...], values, (rows,cols))` and
+`SparseCSR(indptr, columns, values, shape)` provide explicit rank2 sparse storage.
+Values can be a differentiable vector Tensor. Duplicates are summed by coalesce;
+to_csr/to_coo, explicit to_dense, sparse@dense, save_sparse/load_sparse are supported.
+No implicit densification. Dense results and stored arrays are bounded at100,000
+entries; huge logical sparse shapes do not allocate their product. Empty sparse
+matrices are valid; their values property is None. Sparse×sparse is unsupported.
+
+## Explicit CPU compilation
+
+`build_cpu_kernel(new_directory)` builds NIL's own float64 matrix kernel using an
+existing Linux C compiler and matching Python headers. It downloads nothing and
+never runs during import/install. `load_cpu_kernel(path)` checks its ABI/hash and
+loads explicit trusted code. `a.matmul(b, kernel=kernel)` uses it for forward and
+matrix gradients. Python remains the default; other operators remain Python.
+Rebuild per ABI/target; compiled and reference reductions need numerical tolerance.
+See docs/NATIVE_ENGINE.md for supported shapes, examples and measured limits.

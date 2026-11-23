@@ -43,13 +43,13 @@ not establish a minimum/current matrix for all of them.
 
 ## Recorded hosted acceptance — 2026-11-23
 
-[All four profiles passed](https://github.com/nelostrix/NIL/actions/runs/45115748766)
-at c03b20f. Classical: 67 tests with the minimum-family profile, 69 with current;
-both installed examples passed in each. Torch: 52 CPU/service tests and all three
+[All four profiles passed](https://github.com/nelostrix/NIL/actions/runs/45116372373)
+at 7fc1943. Classical: 67 tests with the minimum-family profile, 69 with current;
+both installed examples passed in each. Torch: 70 CPU/native/service tests and all three
 architecture examples passed with both 2.6.0+cpu and 2.15.0+cpu. All profiles had
 zero skipped tests. [Raw profile reports](benchmarks/2026-11-23-backend-matrix.json)
-include exact versions. Later native multiclass additions extend these profiles;
-the original run is not evidence for code added after its commit.
+include exact versions. The Torch profiles include independent multiclass/Adam gradient, optimizer,
+learning and exact-continuation acceptance.
 
 [Nine base-platform cells also passed](https://github.com/nelostrix/NIL/actions/runs/45115748776).
 The [artifact index](benchmarks/2026-11-23-platform-artifacts.json) records each

@@ -271,7 +271,7 @@ def save(model, path, *, include_replay=True, environment_state=False):
         raise TypeError('Only supported native SB3 algorithms can use this bundle format')
     snapshot = None
     if environment_state:
-        if not include_replay: raise ValueError('Environment continuation requires replay')
+        if not include_replay and getattr(model,'replay_buffer',None) is not None: raise ValueError('Environment continuation requires replay')
         from nil.rl._snapshot import capture
         snapshot = capture(model)
     destination = Path(path).absolute()
@@ -351,7 +351,7 @@ def load(path, *, env=None, trusted=False, device='cpu', restore_rng=False, allo
                 current = None
             if current != version:
                 raise ValueError(f'RL backend version mismatch: {package}')
-    if restore_environment and ('environment.pkl' not in files or 'replay.pkl' not in files):
+    if restore_environment and ('environment.pkl' not in files or (manifest.get('algorithm')=='dqn' and 'replay.pkl' not in files)):
         raise ValueError('Bundle lacks exact environment/replay state')
     if 'normalization.pkl' in files:
         if env is None:
