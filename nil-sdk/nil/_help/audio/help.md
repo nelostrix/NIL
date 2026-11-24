@@ -25,4 +25,8 @@ Explicit audio extra (NumPy); WAV parser is standard library.
 
 Uncompressed8/16/24/32-bit PCM only. Default32MiB/60seconds/8channels. Linear resampling is not bandlimited; no ASR/TTS model or compressed-audio decoder is implied.
 
-See docs/SEVEN_WORKFLOWS.md and the bundled workflow examples for complete protocols and acceptance.
+See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
+
+## Local speech and anti-alias resampling
+
+load_asr(local_dir) loads native CTC or explicit seq2seq; mono input, matching processor rate and at most 30 seconds per call. load_tts(local_dir).synthesize(text, seed=42) uses VITS. Explicit Transformers/Torch required. resample(..., method="polyphase") requires SciPy; normalize headroom explicitly if interpolation overshoots. save_wav creates a new PCM16 file. word_error_rate compares normalized reference/hypothesis words; accuracy is not guaranteed.

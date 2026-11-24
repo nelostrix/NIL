@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "matrix_version": "2026.11.24.2",
+  "matrix_version": "2026.11.24.3",
   "sdk_version": "0.2.1",
   "release_channel": "alpha",
   "scope": "Versioned bounded workflow inventory; not exhaustive 32-area coverage or runtime/hardware readiness",
@@ -1663,12 +1663,17 @@
       ],
       "api": [
         "nil.rag.Index",
-        "nil.rag.evaluate"
+        "nil.rag.evaluate",
+        "nil.rag.load_encoder",
+        "nil.rag.semantic_index",
+        "nil.rag.evaluate_answers"
       ],
       "implementation": "native",
       "validation": "validated",
       "requires": [],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1688,13 +1693,15 @@
         "description": "Ranked provenance/citations, extractive or callback answers, abstention, retrieval metrics and immutable index reload."
       },
       "limits": [
-        "BM25 only; no learned embeddings or general semantic answer-fidelity acceptance.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Dense/hybrid retrieval and explicit reranking are bounded CPU additions; entailment, database-scale storage and multi-writer ingestion remain open.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_core.py"
+        "nil-sdk/tests/test_seven_core.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "rag"
     },
@@ -1706,12 +1713,16 @@
       ],
       "api": [
         "nil.planning.run",
-        "nil.planning.shortest_path"
+        "nil.planning.shortest_path",
+        "nil.planning.agent",
+        "nil.planning.reconcile"
       ],
       "implementation": "native",
       "validation": "validated",
       "requires": [],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1731,13 +1742,15 @@
         "description": "Committed plain-JSON trace, bounded owned calls, cancellation/deadlines, explicit safe-prefix resume and shortest paths."
       },
       "limits": [
-        "Trusted importable tools; ambiguous failed/running external actions require reconciliation; no exactly-once or autonomous-agent quality claim.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Bounded caller-supplied policy loop; per-call deadlines and explicit verified-result reconciliation. Exclusive caller ownership required; no general autonomous reasoning or automatic external-effect recovery.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_core.py"
+        "nil-sdk/tests/test_seven_core.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "planning"
     },
@@ -1750,7 +1763,10 @@
       "api": [
         "nil.probabilistic.BetaBernoulli",
         "nil.probabilistic.BayesianLinear",
-        "nil.probabilistic.causal_ate"
+        "nil.probabilistic.causal_ate",
+        "nil.probabilistic.metropolis",
+        "nil.probabilistic.load_metropolis",
+        "nil.probabilistic.instrumental_ate"
       ],
       "implementation": "hybrid",
       "validation": "validated",
@@ -1758,7 +1774,9 @@
         "numpy",
         "scikit-learn"
       ],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1778,13 +1796,15 @@
         "description": "Posterior predictive statistics and JSON reload, or causal ATE/asymptotic interval with explicit assumptions and fold assignment."
       },
       "limits": [
-        "No general probabilistic programming, causal discovery or identification of unmeasured confounding; overlap violations fail.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Random-walk MCMC/basic diagnostics and linear IV assumptions only; no HMC/NUTS, full probabilistic programming or causal discovery.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_classical.py"
+        "nil-sdk/tests/test_seven_classical.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "probabilistic"
     },
@@ -1799,7 +1819,9 @@
         "nil.learning.self_training",
         "nil.learning.prototypes",
         "nil.learning.contrastive_loss",
-        "nil.learning.ReplayMemory"
+        "nil.learning.ReplayMemory",
+        "nil.learning.adapt",
+        "nil.learning.continual_metrics"
       ],
       "implementation": "hybrid",
       "validation": "validated",
@@ -1808,7 +1830,9 @@
         "scikit-learn",
         "torch"
       ],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1828,13 +1852,15 @@
         "description": "Budgeted query indices, fitted native self-training model, differentiable NT-Xent, few-shot predictions and exact replay continuation."
       },
       "limits": [
-        "No generic quality-improvement, large meta-learning or continual forgetting claim; negative active-learning result is retained.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Functional MAML inner loop and measured matrix summaries, not an end-to-end continual/meta-learning engine.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_classical.py"
+        "nil-sdk/tests/test_seven_classical.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "learning"
     },
@@ -1848,14 +1874,21 @@
         "nil.audio.load_wav",
         "nil.audio.resample",
         "nil.audio.segment",
-        "nil.audio.features"
+        "nil.audio.features",
+        "nil.audio.load_asr",
+        "nil.audio.load_tts",
+        "nil.audio.mono",
+        "nil.audio.save_wav",
+        "nil.audio.word_error_rate"
       ],
       "implementation": "integration",
       "validation": "validated",
       "requires": [
         "numpy"
       ],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1875,13 +1908,15 @@
         "description": "Channel-first waveform, explicit linear resampling, aligned segments and streaming-summary spectral features for classifiers."
       },
       "limits": [
-        "No ASR/TTS, compressed-audio codec or bandlimited-resampling claim; recorded-audio decoding and synthetic-tone classification are separate.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Explicit local native ASR/VITS models require Transformers/Torch; polyphase resampling requires SciPy. Streaming, fine-tuning and multilingual quality acceptance remain open.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_media.py"
+        "nil-sdk/tests/test_seven_media.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "audio"
     },
@@ -1895,7 +1930,8 @@
         "nil.multimodal.load_clip",
         "nil.multimodal.load_video",
         "nil.multimodal.aligned_audio",
-        "nil.multimodal.fuse_features"
+        "nil.multimodal.fuse_features",
+        "nil.multimodal.load_encoder"
       ],
       "implementation": "hybrid",
       "validation": "validated",
@@ -1905,7 +1941,8 @@
         "Pillow"
       ],
       "prerequisites": [
-        "Explicit FFmpeg/ffprobe installation for load_video only"
+        "Explicit FFmpeg/ffprobe installation for load_video only",
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
       ],
       "tested_profiles": [],
       "targets": [
@@ -1926,13 +1963,15 @@
         "description": "Bounded RGB clips/timestamps, aligned audio segments and fused fixed-order vectors/presence masks with checkpointed classifier examples."
       },
       "limits": [
-        "FFmpeg/ffprobe are explicit external prerequisites for MP4/WebM. Constant-rate sampling does not preserve original variable-frame timestamps; no semantic video-language model claim.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Explicit local native CLIP requires Transformers; original PTS is optional and refuses unavailable duration/timestamps. Semantic video-language training and real-world quality acceptance remain open.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_media.py"
+        "nil-sdk/tests/test_seven_media.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "multimodal"
     },
@@ -1948,14 +1987,22 @@
         "nil.graphs.batch",
         "nil.graphs.pool",
         "nil.graphs.save",
-        "nil.graphs.load"
+        "nil.graphs.load",
+        "nil.graphs.weighted_gcn",
+        "nil.graphs.weighted_propagate",
+        "nil.graphs.negative_edges",
+        "nil.graphs.split_links",
+        "nil.graphs.link_logits",
+        "nil.graphs.sample_neighbors"
       ],
       "implementation": "hybrid",
       "validation": "validated",
       "requires": [
         "torch"
       ],
-      "prerequisites": [],
+      "prerequisites": [
+        "Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit."
+      ],
       "tested_profiles": [],
       "targets": [
         {
@@ -1975,13 +2022,15 @@
         "description": "Sparse normalized propagation, disjoint batches, differentiable node/graph logits, pooled features, JSON graphs and neural checkpoints."
       },
       "limits": [
-        "Undirected unweighted homogeneous graphs only; real karate result is transductive, not a citation-network/link-prediction or heterogeneous-graph claim.",
-        "Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md."
+        "Weighted/directed graphs, bounded CPU neighbor sampling and leakage-aware link splits added. Heterogeneous/temporal graphs and distributed loading remain open.",
+        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
-        "nil-sdk/tests/test_seven_neural.py"
+        "nil-sdk/tests/test_seven_neural.py",
+        "docs/ADVANCED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-advanced-workflows.json"
       ],
       "help": "graphs"
     }

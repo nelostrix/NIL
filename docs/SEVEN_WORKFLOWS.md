@@ -1,5 +1,8 @@
 # Seven new AI workflow areas: implemented v1 scope
 
+This document records the v1 acceptance scope. See [the advanced phase](ADVANCED_WORKFLOWS.md)
+for subsequent additions and their separate validation.
+
 Updated 2026-11-24. The seven areas now have runnable, bounded workflows rather
 than only generic custom-model foundations. These implementations do not close
 every advanced requirement in the 32-area roadmap. Each new module is shallow,
@@ -32,7 +35,8 @@ python nil-sdk/examples/media_workflows.py --output /tmp/nil-media
 python nil-sdk/examples/representation_workflows.py --output /tmp/nil-representation
 ```
 
-Each command uses a fresh output directory. They train/save/reload where relevant.
+For CPU-only machines, select a CPU Torch wheel before installing Torch/vision
+extras; see [installation choices](INSTALLATION.md). Each command uses a fresh output directory. They train/save/reload where relevant.
 They never download models or datasets. The statistical example uses sklearn's
 bundled real Iris dataset; synthetic fixtures are identified explicitly elsewhere.
 FFmpeg/ffprobe are external opt-ins for load_video; NIL does not install them.
@@ -237,3 +241,8 @@ SDK regression passed 1,294 tests with 46 optional-target skips. An earlier
 concurrent local full run failed timing-sensitive execution/TLS cases and was
 interrupted; its record is retained. The serial recovery checks passed 22 cases,
 and a serial local full neural run passed 1,171 tests with 32 optional skips.
+
+Final verification at `c8dfba5`: all nine base-platform and ten installed-backend
+jobs passed. Hosted SDK: 1294 passed, 46 optional-target skips.
+Exact versions, failures, safe-refusal limits and raw-report references are in the
+[dated evidence](benchmarks/2026-11-24-seven-workflows.json).

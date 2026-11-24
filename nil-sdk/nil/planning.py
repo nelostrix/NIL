@@ -142,3 +142,59 @@ def shortest_path(start, goal, adjacency, *, max_states=10000):
                 if len(previous) >= max_states: raise ValueError('Planner state budget exceeded')
                 previous[neighbor] = node; queue.append(neighbor)
     return []
+
+
+def reconcile(journal, *, step_id, result, evidence):
+    """Record a caller-verified result for a failed call, without retrying it.
+
+    The caller must verify external effects and exclusive journal ownership.
+    Running/abandoned calls are refused: terminate/recover their owned job first.
+    This is an explicit human assertion, not automatic exactly-once execution.
+    """
+    path=Path(journal)
+    if path.is_symlink() or path.stat().st_size>1024*1024:raise ValueError('Invalid journal')
+    state=json.loads(path.read_text())
+    if state.get('schema_version')!=1 or state.get('status')!='failed' or state.get('active_step')!=step_id:raise ValueError('Only the failed active step can be reconciled')
+    if not isinstance(evidence,str) or not evidence.strip() or len(evidence)>4096 or len(_canonical(result).encode())>16384:raise ValueError('Bounded verification evidence and result required')
+    if any(row['id']==step_id for row in state['completed']):raise ValueError('Step is already completed')
+    state['completed'].append(dict(id=step_id,result=result))
+    state.setdefault('reconciliations',[]).append(dict(step_id=step_id,evidence=evidence))
+    state.update(status='ready',active_step=None);_publish(path,state)
+    return json.loads(_canonical(state))
+
+
+def agent(goal, policy, tools, *, policy_version, allowed, tool_versions, journal_root,
+          max_calls=8, timeout=30., resume=False, cancel_event=None):
+    """Bounded policy/tool loop using owned calls and per-call durable journals.
+
+    policy is an importable Tool accepting goal:str, history:list. It returns
+    {'final':JSON} or {'tool':name,'arguments':dict}. Failed decisions/actions
+    require explicit reconciliation. Caller supplies exclusive root ownership.
+    """
+    if not isinstance(goal,str) or not goal.strip() or len(goal)>16384 or not isinstance(policy,Tool) or not isinstance(policy_version,str) or not policy_version or type(max_calls) is not int or not 1<=max_calls<=32:raise ValueError('Invalid agent goal/policy/budget')
+    allowed=sorted(set(allowed));root=Path(journal_root)
+    contract=dict(goal=goal,policy_version=policy_version,allowed=allowed,tool_versions=tool_versions,max_calls=max_calls,timeout=timeout)
+    if len(_canonical(contract).encode())>65536:raise ValueError('Agent contract exceeds 64 KiB')
+    if resume:
+        path=root/'contract.json'
+        if path.stat().st_size>65536 or json.loads(path.read_text())!=contract:raise ValueError('Agent contract mismatch')
+    else:
+        root.mkdir(parents=True,exist_ok=False);_publish(root/'contract.json',contract)
+    history=[]
+    for number in range(max_calls+1):
+        decision_path=root/f'{number:03d}-decision.json'
+        decision=run([dict(id='decision',tool='policy',arguments=dict(goal=goal,history=history))],{'policy':policy},
+            allowed={'policy'},tool_versions={'policy':policy_version},journal=decision_path,timeout=timeout,
+            resume=resume and decision_path.exists(),cancel_event=cancel_event)
+        if decision['status']=='cancelled':return dict(status='cancelled',history=history)
+        choice=decision['completed'][0]['result']
+        if not isinstance(choice,dict):raise ValueError('Policy must return a decision object')
+        if set(choice)=={'final'}:return dict(status='completed',result=choice['final'],history=history)
+        if set(choice)!={'tool','arguments'}:raise ValueError('Policy must select one tool or a final result')
+        if number==max_calls:return dict(status='budget_exhausted',history=history)
+        action_path=root/f'{number:03d}-action.json'
+        action=run([dict(id='action',tool=choice['tool'],arguments=choice['arguments'])],tools,
+            allowed=allowed,tool_versions=tool_versions,journal=action_path,timeout=timeout,
+            resume=resume and action_path.exists(),cancel_event=cancel_event)
+        if action['status']=='cancelled':return dict(status='cancelled',history=history)
+        history.append(dict(tool=choice['tool'],arguments=choice['arguments'],result=action['completed'][0]['result']))

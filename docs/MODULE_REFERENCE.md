@@ -146,3 +146,5 @@ limits. There is no new mandatory research backend or import-time worker.
 | nil.graphs | Sparse normalized propagation, disjoint batches, GCN node/graph classification |
 
 Each module has bundled help.md. See [complete v1 contracts and limitations](SEVEN_WORKFLOWS.md).
+
+Advanced seven-area additions and still-open requirements: [advanced workflow phase](ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.

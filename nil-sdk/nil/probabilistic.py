@@ -115,3 +115,47 @@ def causal_ate(features, treatment, outcome, *, folds=3, seed=0, overlap=.01, co
                 confidence=confidence,interval=[estimate-z*se,estimate+z*se],samples=len(y),folds=folds,
                 propensity_range=[float(scores.min()),float(scores.max())],fold_ids=fold_ids.tolist(),
                 assumptions=['consistency','positivity','no_unmeasured_confounding','independent_observations'])
+
+
+def metropolis(log_density,initial,*,target_id,scale=.5,seed=0):
+    """Create an explicit bounded multi-chain random-walk sampler."""
+    from nil._mcmc import Metropolis
+    return Metropolis(log_density,initial,target_id=target_id,scale=scale,seed=seed)
+
+
+def load_metropolis(path,*,log_density,target_id):
+    from nil._mcmc import Metropolis
+    return Metropolis.load(path,log_density=log_density,target_id=target_id)
+
+
+def instrumental_ate(instruments,treatment,outcome,*,controls=None,confidence=.95):
+    """Linear2SLS with intercept, HC1 sandwich SE and first-stage partial-F.
+
+    Requires relevant, exogenous excluded instruments with exclusion restriction;
+    these identification assumptions are not verified by predictive diagnostics.
+    """
+    np=require('numpy','audio')
+    z=np.asarray(instruments,dtype=float);t=np.asarray(treatment,dtype=float);y=np.asarray(outcome,dtype=float)
+    if z.ndim==1:z=z[:,None]
+    if z.ndim!=2 or not 20<=len(z)<=100000 or not 1<=z.shape[1]<=128 or t.shape!=(len(z),) or y.shape!=t.shape or not np.isfinite(z).all() or not np.isfinite(t).all() or not np.isfinite(y).all():raise ValueError('Invalid finite IV data')
+    if type(confidence) not in (int,float) or not 0<confidence<1:raise ValueError('Invalid confidence')
+    c=np.empty((len(z),0)) if controls is None else np.asarray(controls,dtype=float)
+    if c.ndim!=2 or len(c)!=len(z) or c.shape[1]>128 or not np.isfinite(c).all():raise ValueError('Invalid controls')
+    base=np.column_stack([np.ones(len(z)),c]);design=np.column_stack([base,t]);instrument=np.column_stack([base,z])
+    if len(y)<=instrument.shape[1]+1 or np.linalg.matrix_rank(instrument)!=instrument.shape[1]:raise ValueError('Insufficient/rank-deficient instruments')
+    projected=instrument@np.linalg.lstsq(instrument,design,rcond=None)[0]
+    moment=design.T@projected
+    if np.linalg.matrix_rank(moment)!=design.shape[1]:raise ValueError('Underidentified treatment equation')
+    inverse=np.linalg.inv(moment);coefficients=inverse@(projected.T@y);residual=y-design@coefficients
+    covariance=inverse@((projected*residual[:,None]).T@(projected*residual[:,None]))@inverse.T*len(y)/(len(y)-design.shape[1])
+    variance=float(covariance[-1,-1])
+    restricted=t-base@np.linalg.lstsq(base,t,rcond=None)[0];unrestricted=t-projected[:,-1]
+    rss=float(unrestricted@unrestricted);restricted_rss=float(restricted@restricted)
+    if rss<=0:partial_f=None
+    else:partial_f=max(0.,(restricted_rss-rss)/z.shape[1]/(rss/(len(y)-instrument.shape[1])))
+    estimate=float(coefficients[-1]);se=math.sqrt(max(0.,variance));critical=NormalDist().inv_cdf((1+confidence)/2)
+    if not all(math.isfinite(v) for v in (estimate,se)):raise ValueError('Nonfinite IV result')
+    return dict(schema_version=1,method='linear_2sls_hc1',ate=estimate,standard_error=se,
+                interval=[estimate-critical*se,estimate+critical*se],confidence=confidence,
+                first_stage_partial_f=partial_f,samples=len(y),
+                assumptions=['instrument_relevance','instrument_exogeneity','exclusion_restriction','linear_constant_treatment_effect','independent_observations'])

@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "scope": "Offline CPU execution/reload; limited probes, not general quality",
+  "versions": {
+    "torch": "2.15.0+cpu",
+    "transformers": "4.57.6",
+    "numpy": "2.5.4",
+    "Pillow": "13.0.0"
+  },
+  "results": {
+    "text": {
+      "seconds": 4.415241165996122,
+      "hit": "pet",
+      "cosine": 0.6228415369987488,
+      "reload_exact": true
+    },
+    "vision": {
+      "seconds": 1.4448553000038373,
+      "shape": [
+        1,
+        512
+      ],
+      "synthetic_similarity": [
+        [
+          0.43309837579727173,
+          0.315876305103302
+        ]
+      ],
+      "reload_atol": 1e-06,
+      "reload_max_absolute_error": 2.9802322387695312e-08
+    },
+    "tts": {
+      "seconds": 11.05358180499752,
+      "duration": 3.296,
+      "reload_exact": true,
+      "caller_rng_preserved": true,
+      "fixture_license": "CC-BY-NC-4.0; research/noncommercial weights, not distributed with NIL",
+      "intelligibility_evaluated": false
+    },
+    "asr": {
+      "seconds": 4.5850638870033436,
+      "text": "I HAD THAT CURIOSITY BESIDE ME AT THIS MOMENT",
+      "duration": 3.4,
+      "reload_exact": true,
+      "wer": null,
+      "reference_transcript_available": false
+    }
+  },
+  "model_manifests": {
+    "text": {
+      "model": "sentence-transformers/paraphrase-MiniLM-L3-v2",
+      "revision": "4ca70771034acceecb2e72475f72050fcdde4ddc",
+      "license": "apache-2.0",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 629,
+          "sha256": "fc00f0ca1c3380f17937a4050908dd2cf743c36bebe437cf448b8aa4e7ddfe4d"
+        },
+        {
+          "file": "model.safetensors",
+          "bytes": 69569488,
+          "sha256": "cf1e4e2d420c664973037c3c73125d7a8fc69952495093ef8f50596f8943a433"
+        },
+        {
+          "file": "special_tokens_map.json",
+          "bytes": 112,
+          "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3"
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 466248,
+          "sha256": "a9576e4dadfe7f78f071a1c00ba6902cc83ec6ed7e9b590ee974950bd4d54393"
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 314,
+          "sha256": "bebb08142e831e77fd87b6fac54626c2ca527ad27203e9de5e787f1e8063608b"
+        },
+        {
+          "file": "vocab.txt",
+          "bytes": 231508,
+          "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+        }
+      ]
+    },
+    "vision": {
+      "model": "wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M",
+      "revision": "a2a8c6eaa2549ad66eb7c31b85022bf58273a26c",
+      "license": "mit",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 4602,
+          "sha256": "c586d856dbd5589b67525db9e791ee0917402405672c7773aead373efb7d7bca"
+        },
+        {
+          "file": "model.safetensors",
+          "bytes": 93812468,
+          "sha256": "9339ee3d736344d0ddcaa6c03edc9f89688f08caaea5401220885233da726fcc"
+        },
+        {
+          "file": "preprocessor_config.json",
+          "bytes": 316,
+          "sha256": "910e70b3956ac9879ebc90b22fb3bc8a75b6a0677814500101a4c072bd7857bd"
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 2224041,
+          "sha256": null
+        }
+      ]
+    },
+    "tts": {
+      "model": "facebook/mms-tts-eng",
+      "revision": "c71de0fe7204c83f1c10820a7d696d0b450048ba",
+      "license": "cc-by-nc-4.0",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 1641,
+          "sha256": "c2a93c1dfbf33b640163f2ade16345b9a5194fa54de9a04a04272b76a97fe171"
+        },
+        {
+          "file": "model.safetensors",
+          "bytes": 145227512,
+          "sha256": "69cf8b651c1493f1801dfd2311c298d694a38357bc9a1e41f410491ea6f0e1be"
+        },
+        {
+          "file": "special_tokens_map.json",
+          "bytes": 47,
+          "sha256": "87c02ba90dba0e0765358bd3aa2265714b2405429b069a89af51e292db9b8c3d"
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 287,
+          "sha256": "77c74b93b1d36f29248926dbd7714bda59990159cd14cd7ba45fd0115bff905b"
+        },
+        {
+          "file": "vocab.json",
+          "bytes": 413,
+          "sha256": "304f7e71c40d601f9b89d81904609512eebe96b2a941f0a251fc0c9f397bcc45"
+        }
+      ]
+    },
+    "asr": {
+      "model": "facebook/wav2vec2-base-960h",
+      "revision": "22aad52d435eb6dbaf354bdad9b0da84ce7d6156",
+      "license": "apache-2.0",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 1596,
+          "sha256": "d3ec255c063d9f95057b553b19c20135b259875834a4fe9deb218a6be25b4cf3"
+        },
+        {
+          "file": "feature_extractor_config.json",
+          "bytes": 158,
+          "sha256": "d3de0c797bf9b65f90bc65c30cb7b303ebeda341f6fc80af33628c4b26b95632"
+        },
+        {
+          "file": "model.safetensors",
+          "bytes": 377607901,
+          "sha256": "8aa76ab2243c81747a1f832954586bc566090c83a0ac167df6f31f0fa917d74a"
+        },
+        {
+          "file": "preprocessor_config.json",
+          "bytes": 159,
+          "sha256": "b225d617c025463b9e157e06afea8b90dc7078fc70b013c533328423e0486b4a"
+        },
+        {
+          "file": "special_tokens_map.json",
+          "bytes": 85,
+          "sha256": "bb7068de1150661a10b55f9e4b12a0e77af8bf91f5e45e1b58afaf1d0e17f675"
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 163,
+          "sha256": "dc790594f5bc351a4311c6624f40acd95850d4aaf2a5cb3c656c9b610720b608"
+        },
+        {
+          "file": "vocab.json",
+          "bytes": 291,
+          "sha256": "19727f8944fe6459fc3f240ae2c198395b740f6a029bd23e06656266b83bcf64"
+        }
+      ]
+    }
+  },
+  "prior_failures": [
+    {
+      "attempt": 1,
+      "failure": "Pretrained CLIP reload differed by max 2.9802322e-08; exact-array gate was inappropriate for native serialization. Subsequent acceptance explicitly requires atol/rtol 1e-6 and reports measured error."
+    },
+    {
+      "attempt": 2,
+      "failure": "Forwarding use_fast=False via AutoProcessor also selected a slow tokenizer whose vocab files were absent. Fixed by explicitly constructing CLIPImageProcessor and native fast tokenizer separately."
+    }
+  ],
+  "resource_scope": "Single CPU host with OMP/BLAS threads=1. No measured process-tree RAM/energy or GPU/old-PC acceptance in this phase.",
+  "local_regression": {
+    "passed": 1192,
+    "skipped": 32,
+    "seconds": 130.89,
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=nil-sdk robotics-venv/bin/python -m pytest nil-sdk/tests -q",
+    "note": "Includes all advanced contracts except the subsequently added synthetic link-learning gate; final advanced neural subset:10 passed in2.73s."
+  },
+  "wheel": {
+    "bytes": 591797,
+    "sha256": "1f70e2854ac2c7a4f4000ccd4f46a299b5d269736237149d7c8626c6c21de184",
+    "python_files": 223,
+    "help_guides": 114,
+    "base_dependencies": [],
+    "offline_resolution": "passed"
+  },
+  "installed_profiles": {
+    "current_classical": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "advanced-installed-classical-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "advanced-installed-classical-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "advanced-installed-classical-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "advanced-installed-classical-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "advanced-installed-classical-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "advanced-installed-classical-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "advanced-installed-classical-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 96,
+        "skipped": 0
+      },
+      "seconds": 12.051834309000697
+    },
+    "minimum_classical": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "advanced-installed-min-classical-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 94,
+        "skipped": 0
+      },
+      "seconds": 9.604084165999666
+    }
+  }
+}

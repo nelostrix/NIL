@@ -92,3 +92,26 @@ passed 1,253 tests with 46 optional-target skips. All nine Linux/macOS/Windows b
 at verification commit `318e453`. The [base run](https://github.com/nelostrix/NIL/actions/runs/45365343708)
 and [backend run](https://github.com/nelostrix/NIL/actions/runs/45365343865)
 cover these new contracts; hardware targets remain separate.
+
+
+## Seven-workflow acceptance — 2026-11-24
+
+The installed classical profile now includes retrieval/tools/probabilistic tests
+and the real-Iris/causal example. The Torch profile adds graph, contrastive, audio,
+GIF/timing/fusion and actual MP4 tests plus the corresponding runnable examples.
+FFmpeg/ffprobe are explicit external test dependencies installed only by those CI
+jobs; the NIL wheel still has no mandatory dependencies or codec binaries.
+
+Local profiles passed 189 Torch, 88 current-classical and 86 minimum-classical tests,
+all with zero skips. The final hosted full SDK regression passed 1,294 tests with 46
+optional-target skips. See [dated reports](benchmarks/2026-11-24-seven-workflows.json).
+On macOS, the dead-supervisor fault case verifies existing safe refusal of active-
+job identity recovery; it does not assert that unsupported recovery works. Normal
+owned calls and completed-prefix plan resume have separate positive acceptance.
+
+Final verification at `c8dfba5`: all nine base-platform and ten installed-backend
+jobs passed. Hosted SDK: 1294 passed, 46 optional-target skips.
+Exact versions, failures, safe-refusal limits and raw-report references are in the
+[dated evidence](benchmarks/2026-11-24-seven-workflows.json).
+
+Advanced seven-area additions and still-open requirements: [advanced workflow phase](ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.

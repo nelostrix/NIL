@@ -652,3 +652,37 @@ examples. Offline resolver-enabled base installation still adds NIL only. See
 and [evidence](../benchmarks/2026-11-24-compact-readiness.json). The existing scoped
 FSDP, feature-type adapters, training measurement and hardware/resource gaps are
 explicitly documented; no additional GPU or multi-host acceptance was performed.
+
+
+## Seven AI workflow areas — v1, 2026-11-24
+
+Implemented nil.rag, nil.planning, nil.probabilistic, nil.learning, nil.audio,
+nil.multimodal and nil.graphs. Each has offline help and runnable end-to-end
+examples. The [scope guide](../SEVEN_WORKFLOWS.md) records exact contracts and
+advanced work left open; the [37-workflow inventory](../WORKFLOWS.md) exposes the
+new subset. The master 32-area backlog remains intact.
+
+Local installed-wheel profiles passed 189 Torch, 88 classical-current and 86
+classical-minimum tests with zero skips and all examples passing. Final hosted
+SDK CI passed 1,294 tests/46 optional skips; serial local neural suite passed 1,171
+with 32 skips. An interrupted concurrent local run's four execution/TLS failures
+are retained separately; serial recovery checks passed 22. CI explicitly installs
+FFmpeg for codec acceptance; NIL itself still installs no dependencies by default.
+
+Real Iris self-training reached 93.33% held-out accuracy; real karate-club node
+classification reached 93.75% (transductive, 2 labeled training/32 held-out nodes).
+Recorded speech/whistle acceptance covers decoding/features only. Synthetic
+audio/video and representation tests are not ASR/TTS or general multimodal quality.
+Active entropy selection reduced Iris accuracy; no improvement claim is made.
+
+The wheel matches 216 Python sources and 114 help guides, with no compiled binary,
+model weights or media fixtures. A 6M-character/6667-chunk BM25 indexing check took
+about 0.275 seconds on the current host after moving provenance hashing outside
+the chunk loop. See [complete dated evidence](../benchmarks/2026-11-24-seven-workflows.json).
+
+Final verification at `c8dfba5`: all nine base-platform and ten installed-backend
+jobs passed. Hosted SDK: 1294 passed, 46 optional-target skips.
+Exact versions, failures, safe-refusal limits and raw-report references are in the
+[dated evidence](../benchmarks/2026-11-24-seven-workflows.json).
+
+Advanced seven-area additions and still-open requirements: [advanced workflow phase](../ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.

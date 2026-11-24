@@ -43,11 +43,21 @@ def load_wav(path, *, max_bytes=32*1024*1024, max_seconds=60.):
     return Waveform(values.reshape(-1,channels).T.copy(),rate)
 
 
-def resample(waveform, sample_rate):
+def resample(waveform, sample_rate, *, method="linear"):
     np=require('numpy','audio');x=_waveform(waveform)
     if type(sample_rate) is not int or not 1<=sample_rate<=192000:raise ValueError('Invalid target rate')
     count=max(1,round(x.shape[1]*sample_rate/waveform.sample_rate))
     if count>192000*60:raise ValueError('Resampled waveform exceeds budget')
+    if method not in {'linear','polyphase'}:raise ValueError('Choose linear or polyphase resampling')
+    if method=='polyphase':
+        from math import gcd
+        factor=gcd(waveform.sample_rate,sample_rate);up=sample_rate//factor;down=waveform.sample_rate//factor
+        if max(up,down)>2048:raise ValueError('Polyphase ratio exceeds filter budget')
+        signal=require('scipy.signal','signal')
+        result=signal.resample_poly(x,up,down,axis=1)[:,:count]
+        if result.shape[1]<count:result=np.pad(result,((0,0),(0,count-result.shape[1])))
+        if np.max(np.abs(result))>1:raise ValueError('Resampling overshoot exceeds normalized amplitude; normalize input explicitly')
+        return Waveform(result.astype(np.float32),sample_rate)
     old=np.arange(x.shape[1]);new=np.arange(count)*waveform.sample_rate/sample_rate
     # Linear interpolation is explicit and deterministic, not a bandlimited codec.
     return Waveform(np.stack([np.interp(new,old,row) for row in x]).astype(np.float32),sample_rate)
@@ -82,3 +92,46 @@ def features(waveform, *, bands=32, n_fft=512, hop=256):
     mean=total/count;std=np.sqrt(np.maximum(0,squares/count-mean*mean))
     rms=float(np.sqrt(np.mean(x.astype(float)**2)));zcr=float(np.mean((x[1:]>=0)!=(x[:-1]>=0))) if len(x)>1 else 0.
     return np.concatenate([mean,std,[rms,zcr]]).astype(np.float32)
+
+
+def mono(waveform):
+    """Explicit channel-mean downmix, returning an owned waveform."""
+    x=_waveform(waveform)
+    return Waveform(x.mean(axis=0,keepdims=True).copy(),waveform.sample_rate)
+
+
+def save_wav(waveform,path):
+    """Create a new16-bit PCM WAV; no overwrite or implicit amplitude clipping."""
+    np=require('numpy','audio');x=_waveform(waveform)
+    path=Path(path)
+    with path.open('xb') as stream:
+        with wave.open(stream,'wb') as writer:
+            writer.setnchannels(x.shape[0]);writer.setsampwidth(2);writer.setframerate(waveform.sample_rate)
+            writer.writeframes(np.rint(x.T*32767).astype('<i2').tobytes())
+    return path
+
+
+def load_asr(path,*,kind='ctc',max_model_bytes=1024**3):
+    """Load an existing local CTC/seq2seq model and processor; never download."""
+    from nil._speech_models import Recognizer
+    return Recognizer(path,kind=kind,max_model_bytes=max_model_bytes)
+
+
+def load_tts(path,*,max_model_bytes=1024**3):
+    """Load an existing local VITS model/tokenizer; native weights remain explicit."""
+    from nil._speech_models import Synthesizer
+    return Synthesizer(path,max_model_bytes=max_model_bytes)
+
+
+def word_error_rate(reference,hypothesis):
+    """Case-folded Unicode word WER; punctuation removed, insertions may exceed1."""
+    import re
+    if not isinstance(reference,str) or not isinstance(hypothesis,str):raise TypeError('Text strings required')
+    first=re.findall(r'\w+',reference.casefold());second=re.findall(r'\w+',hypothesis.casefold())
+    if not first or max(len(first),len(second))>2000:raise ValueError('Nonempty bounded reference required')
+    previous=list(range(len(second)+1))
+    for i,a in enumerate(first,1):
+        row=[i]
+        for j,b in enumerate(second,1):row.append(min(row[-1]+1,previous[j]+1,previous[j-1]+(a!=b)))
+        previous=row
+    return previous[-1]/len(first)

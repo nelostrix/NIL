@@ -88,3 +88,30 @@ class ReplayMemory:
         for row in r['records']:
             if len(json.dumps(row,allow_nan=False).encode())>4096:raise ValueError('Invalid replay record')
         memory.seen=r['seen'];memory._records=r['records'];return memory
+
+
+def adapt(model, inputs, targets, loss, **options):
+    """Functional first/second-order MAML inner adaptation; no model mutation."""
+    from nil._meta import adapt as implementation
+    return implementation(model,inputs,targets,loss,**options)
+
+
+def continual_metrics(accuracy):
+    """Summarize a stage-by-task accuracy matrix (None before a task is learned).
+
+    Row i evaluates all tasks 0..i after stage i. Forgetting compares the best
+    previous accuracy with final accuracy; negative values indicate improvement.
+    Training, test-set isolation and replay remain explicit caller responsibilities.
+    """
+    if not isinstance(accuracy,(list,tuple)) or not 1<=len(accuracy)<=100:raise ValueError('Require 1..100 stages')
+    count=len(accuracy)
+    for stage,row in enumerate(accuracy):
+        if not isinstance(row,(list,tuple)) or len(row)!=count:raise ValueError('Expected square stage-by-task matrix')
+        for task,value in enumerate(row):
+            if task>stage:
+                if value is not None:raise ValueError('Future tasks must be None')
+            elif type(value) not in (int,float) or not math.isfinite(value) or not 0<=value<=1:raise ValueError('Accuracy must be finite in [0,1]')
+    forgetting=[max(accuracy[s][task] for s in range(task,count-1))-accuracy[-1][task] for task in range(count-1)]
+    return dict(final_average=sum(accuracy[-1])/count,forgetting=forgetting,
+                mean_forgetting=sum(forgetting)/len(forgetting) if forgetting else None,
+                backward_transfer=sum(accuracy[-1][i]-accuracy[i][i] for i in range(count-1))/(count-1) if count>1 else None)

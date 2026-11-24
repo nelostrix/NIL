@@ -25,4 +25,8 @@ Beta uses standard library; BayesianLinear needs NumPy; causal_ate needs the cla
 
 No general probabilistic-programming or causal-discovery engine. ATE assumes consistency, positivity, independent rows and no unmeasured confounding; these cannot be established by this function.
 
-See docs/SEVEN_WORKFLOWS.md and the bundled workflow examples for complete protocols and acceptance.
+See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
+
+## Sampling and instrumental variables
+
+metropolis(log_density, initial_chains, target_id=...).sample(draws) provides bounded random-walk sampling; save/load_metropolis preserve state/RNG. Basic split-Rhat/ESS are diagnostics, not convergence proof. instrumental_ate(z,t,y) provides linear 2SLS/HC1; identification assumptions remain caller-owned.

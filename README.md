@@ -219,3 +219,5 @@ and homogeneous GCN classification. Numerical/codec backends remain explicit
 opt-ins. See the [workflow guide and remaining limits](docs/SEVEN_WORKFLOWS.md)
 and each module's `nil help TOPIC`; these are not claims of complete ASR/TTS,
 autonomous planning or all graph/probabilistic architectures.
+
+Advanced seven-area additions and still-open requirements: [advanced workflow phase](docs/ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.

@@ -61,7 +61,7 @@ def main():
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['docs/HARDWARE_ACCEPTANCE.md'] = root / 'docs/HARDWARE_ACCEPTANCE.md'
-        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md','SEVEN_WORKFLOWS.md'):
+        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md','SEVEN_WORKFLOWS.md','ADVANCED_WORKFLOWS.md'):
             files['docs/'+name]=root/'docs'/name
         files['scripts/render_workflows.py']=root/'scripts/render_workflows.py'
         files['nil-sdk/nil/_workflows.json']=root/'nil-sdk/nil/_workflows.json'
@@ -72,7 +72,7 @@ def main():
         files['scripts/benchmark_rl_coverage.py'] = root / 'scripts/benchmark_rl_coverage.py'
         files['scripts/benchmark_model_coverage.py'] = root / 'scripts/benchmark_model_coverage.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
-        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py','accept_pretrained.py','accept_vision.py'):
+        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py','accept_pretrained.py','accept_vision.py','accept_advanced_models.py','prepare_advanced_models.py'):
             files['scripts/'+name]=root/'scripts'/name
         files['scripts/accept_gpu.py'] = root / 'scripts/accept_gpu.py'
         files['scripts/accept_execution.py'] = root / 'scripts/accept_execution.py'

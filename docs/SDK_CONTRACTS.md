@@ -58,3 +58,19 @@ loaded no numerical backends; five fresh-process samples measured median NIL imp
 0.22ms (excluding interpreter startup), explicit inventory/package-metadata query
 42.48ms, and at most 20,258,816-byte total interpreter peak RSS on this host.
 These timings are observations, not performance guarantees or older-PC acceptance.
+
+## Seven-workflow v1 contracts
+
+The graph, contrastive, audio and fused-feature examples use ordinary Torch modules
+and the existing nil.train/TrainingResult/checkpoint interface. Self-training returns
+a native sklearn estimator and uses existing classical prediction/persistence.
+Retrieval, tool plans, causal estimates and conjugate posteriors have explicit
+module-specific reports/state; call a posterior's predict method directly rather
+than assuming generic nil.predict dispatches every probabilistic object. Immutable
+index/posterior/graph/replay snapshots share the existing bounded JSONL integrity
+protocol. Audio/visual processor metadata and labels are saved separately from
+model weights and must match on reload. See [workflow contracts](SEVEN_WORKFLOWS.md)
+for exact input schemas, budgets, missing modalities, causal assumptions and the
+macOS active-job-recovery refusal boundary.
+
+Advanced seven-area additions and still-open requirements: [advanced workflow phase](ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.

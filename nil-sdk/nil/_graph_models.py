@@ -18,3 +18,21 @@ class GCN(torch.nn.Module):
             return pool(output,batch)
         if batch is not None:raise ValueError('Node classification does not accept batch IDs')
         return output
+
+
+class WeightedGCN(GCN):
+    def __init__(self,inputs,hidden,outputs,task,directed,normalization):
+        super().__init__(inputs,hidden,outputs,task);self.directed=directed;self.normalization=normalization
+
+    def extra_repr(self):return f'task={self.task},directed={self.directed},normalization={self.normalization}'
+
+    def forward(self,features,edge_index,edge_weight,batch=None):
+        from nil.graphs import weighted_propagate,pool
+        options=dict(directed=self.directed,normalization=self.normalization)
+        hidden=self.first(weighted_propagate(features,edge_index,edge_weight,**options)).relu()
+        output=self.second(weighted_propagate(hidden,edge_index,edge_weight,**options))
+        if self.task=='graph':
+            if batch is None:raise ValueError('Graph classification requires batch IDs')
+            return pool(output,batch)
+        if batch is not None:raise ValueError('Node classification does not accept batch IDs')
+        return output

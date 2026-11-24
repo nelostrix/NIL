@@ -25,4 +25,8 @@ Explicit Torch extra. No PyG/DGL/NetworkX runtime dependency.
 
 Homogeneous undirected unweighted graphs. Self loops are deduplicated. Caller owns train/test masks; transductive topology visibility is distinct from unseen-graph evaluation. Advanced sampling/heterogeneous/link-prediction workflows remain open.
 
-See docs/SEVEN_WORKFLOWS.md and the bundled workflow examples for complete protocols and acceptance.
+See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
+
+## Weighted graphs and links
+
+weighted_gcn and weighted_propagate accept explicit weights/direction. Duplicate edges sum; supply each undirected pair once. split_links excludes all known positives from true-nonedge samples. Use training positives alone for message passing. sample_neighbors is bounded CPU sampling, not an unbiased full-GCN estimate. Heterogeneous/temporal graphs remain open.

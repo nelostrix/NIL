@@ -27,9 +27,9 @@ PROFILES={
     },
     'classical': {
         'packages':('scikit-learn','numpy','scipy','pandas','pytest'),
-        'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py','test_classical_result_contract.py','test_seven_core.py','test_seven_classical.py'),
+        'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py','test_classical_result_contract.py','test_seven_core.py','test_seven_classical.py','test_advanced_workflows.py','test_advanced_planning.py'),
         'exclude':'',
-        'examples':(('classical_workflow.py',),('sklearn_mirror.py',),('knowledge_workflows.py',),('statistical_workflows.py',)),
+        'examples':(('classical_workflow.py',),('sklearn_mirror.py',),('knowledge_workflows.py',),('statistical_workflows.py',),('advanced_workflows.py',)),
     },
     'torch': {
         'packages':('torch','numpy','Pillow','pytest'),
@@ -37,7 +37,7 @@ PROFILES={
                  'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py',
                  'test_native_nd.py','test_native_sparse.py','test_native_cpu.py',
                  'test_quantization_ownership.py','test_pretrained_loading_contract.py','test_pretrained_runner.py',
-                 'test_framework_contracts.py','test_neural_result_contract.py','test_vision.py','test_compact_research.py','test_seven_core.py','test_seven_neural.py','test_seven_media.py','test_seven_ffmpeg.py'),
+                 'test_framework_contracts.py','test_neural_result_contract.py','test_vision.py','test_compact_research.py','test_seven_core.py','test_seven_neural.py','test_seven_media.py','test_seven_ffmpeg.py','test_advanced_neural_workflows.py','test_advanced_planning.py'),
         'exclude':'not cuda',
         'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer'),('image_classification.py',),('compact_research.py',),('knowledge_workflows.py',),('graph_workflows.py',),('media_workflows.py',),('representation_workflows.py',)),
     },

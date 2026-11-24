@@ -26,4 +26,8 @@ GIF/TIFF needs vision extra; fusion/audio alignment needs NumPy; MP4/WebM additi
 
 MP4 sampling is constant-rate, not original variable timestamps. No pretrained multimodal encoder, language generation or semantic video quality claim. Default decoded cap64MiB; source is trusted local data.
 
-See docs/SEVEN_WORKFLOWS.md and the bundled workflow examples for complete protocols and acceptance.
+See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
+
+## Local CLIP and original timestamps
+
+load_encoder(local_dir) loads a native CPU CLIP with explicit Transformers; encode_text and encode_images(PIL_images) return normalized joint-space vectors. load_video(..., preserve_timestamps=True) requires original PTS and last-frame duration, or refuses. Default remains CFR; video-language training remains open.

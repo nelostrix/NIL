@@ -71,9 +71,10 @@ These checks certify their documented subsets, not the full categories below.
 | D | Production serving and trust boundaries: 27, 29 | Acceptance on a chosen deployment with authorization, failure recovery and workload SLO evidence |
 | E | Specialist extensions: 21–23 and optional domains | Independently scoped plugins with validated user workloads; no mandatory core dependencies |
 
-Current user priority: establish research readiness for efficient training,
-address-based cross-computer execution, explicit RAM/SSD offload and compact
-intelligence. Follow the [ordered research TODO](RESEARCH_TODO.md) and
+Current user priority: deliver usable workflows for the original seven areas
+14,20,22,23,16,17,21 (the checked v1 deliverables below). Research readiness for
+efficient training, cross-computer execution, explicit RAM/SSD offload and compact
+intelligence remains tracked in the [ordered research TODO](RESEARCH_TODO.md) and
 [capability audit](../RESEARCH_READINESS.md) before claiming larger-model readiness.
 The first foundation and classification deliverables remain complete; this does
 not close every Wave A gate, all computer-vision work or the research program.
@@ -98,6 +99,12 @@ The seven previously incomplete areas now have scoped v1 workflows with examples
 offline help, mathematical/codec references and persistence/recovery checks. See
 [SEVEN_WORKFLOWS.md](../SEVEN_WORKFLOWS.md). This completes that v1 implementation
 batch; it does not close every advanced research/modality requirement below.
+Final verification: nine base-platform jobs and ten backend jobs passed; hosted
+SDK 1294 passed/46 optional skips. [Evidence](../benchmarks/2026-11-24-seven-workflows.json).
+
+The [advanced workflow phase](../ADVANCED_WORKFLOWS.md) extends each of these
+seven areas. Its checked subitems below are bounded additions; broad acceptance
+requirements and the research program remain open.
 
 ## Capability backlog — all 32 areas
 
@@ -230,6 +237,9 @@ batch; it does not close every advanced research/modality requirement below.
 - [x] Ship bounded cited BM25 retrieval/RAG, update/delete, index snapshots, access filtering, abstention and retrieval metrics; validate corpus/citation/restart failures.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
+- [x] Add bounded local dense/hybrid retrieval, explicit reranker identity, atomic bulk ingestion/schema migration and reference answer EM/F1/citation metrics.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
 - [ ] Audit existing memory/retrieval components and define ingestion/chunking,
   embedding index, hybrid search and reranking interfaces.
 - [ ] Add provenance, incremental updates, access-aware retrieval and index/schema
@@ -257,6 +267,9 @@ batch; it does not close every advanced research/modality requirement below.
 - [x] Ship bounded PCM WAV/channel/rate/segment/spectral workflows and actual audio classification/reload; validate real recorded speech/whistle decoding separately from synthetic quality.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
+- [x] Add local native CTC/seq2seq recognition and VITS generation adapters, exclusive PCM export, WER and explicit SciPy polyphase resampling; validate native execution and reload separately from unmeasured quality.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
 - [ ] Define waveform/sample-rate/channel, spectrogram, feature and alignment
   contracts; add bounded preprocessing and augmentation.
 - [ ] Add declared recognition, synthesis, speaker and classification workflows
@@ -268,6 +281,9 @@ batch; it does not close every advanced research/modality requirement below.
 
 - [x] Ship timed GIF/TIFF, opt-in owned MP4/WebM decoding, explicit audio alignment and feature fusion with missing-modality masks, processor manifests and classifier reload.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
+- [x] Add local native CLIP image/text encoding and processor reload; preserve original video PTS/durations under explicit FFmpeg acceptance.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
 
 - [ ] Define video sampling/timestamp, multimodal processor and aligned-label
   contracts with bounded decoding and data loading.
@@ -299,6 +315,9 @@ batch; it does not close every advanced research/modality requirement below.
 - [x] Ship approved schema-checked tool plans, owned execution/deadlines/cancellation, durable completed-prefix recovery and bounded shortest-path search.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
+- [x] Add bounded policy-driven owned tool loop and completed-call resume, plus explicit verified-output reconciliation for failed calls; reject unapproved tools.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
 - [ ] Audit existing tools, memory, agent state and planning/search components;
   align them with shared execution, configuration and artifact contracts.
 - [ ] Standardize structured outputs, permissions, bounded retries/tool budgets,
@@ -311,6 +330,9 @@ batch; it does not close every advanced research/modality requirement below.
 - [x] Ship homogeneous undirected normalized graph propagation, disjoint batching, node/graph GCN classification, dtype-preserving graph JSON and checkpoint reload; validate real karate data.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
+- [x] Add independently checked weighted/directed GCN operations, true-nonedge sampling, leakage-aware link splits and bounded CPU neighborhood sampling.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
 - [ ] Define graph data, sparse storage, sampling and batching contracts before
   adding node/edge/graph prediction and link-prediction workflows.
 - [ ] Add selected message-passing, heterogeneous-graph and embedding integrations
@@ -321,6 +343,9 @@ batch; it does not close every advanced research/modality requirement below.
 
 - [x] Ship conjugate Beta-Bernoulli/Bayesian linear posteriors and cross-fitted binary-treatment AIPW with explicit assumptions, independent references and posterior reload.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
+- [x] Add multi-chain Metropolis with diagnostics/exact state continuation and linear IV 2SLS/HC1 with explicit assumptions and independent reference.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
 
 - [ ] Inventory existing uncertainty/probabilistic utilities and scope Bayesian
   inference, probabilistic programs and causal graph extensions separately.
@@ -333,6 +358,9 @@ batch; it does not close every advanced research/modality requirement below.
 
 - [x] Ship entropy pool queries, native self-training, two-view contrastive objectives, prototype few-shot classification and bounded exact-continuation reservoir replay.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
+- [x] Add functional first/second-order MAML inner adaptation, a held-out synthetic adaptation learning gate and stage/task continual accuracy/forgetting summaries.
+  [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
 
 - [ ] Scope self-supervised, semi-supervised, active, transfer and few-shot
   workflows using existing training/data abstractions where possible.
