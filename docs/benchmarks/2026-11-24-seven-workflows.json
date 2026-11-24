@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-24",
+  "status": "passed",
+  "scope": "Bounded v1 workflows for seven AI areas; not completion of every advanced modality/task in the master roadmap",
+  "source_runs": {
+    "knowledge": {
+      "status": "passed",
+      "scope": "Small deterministic retrieval/tool/probability integration",
+      "answer": {
+        "text": "GPU training requires an explicitly installed compatible backend.",
+        "citations": [
+          "hardware:0"
+        ],
+        "abstained": false
+      },
+      "tool_calls": 2,
+      "tool_result": 64,
+      "posterior": {
+        "probability": 0.6666666666666666,
+        "variance": 0.031746031746031744
+      }
+    },
+    "statistical": {
+      "status": "passed",
+      "data": "sklearn bundled Iris + explicit synthetic causal simulation",
+      "held_out_iris_samples": 45,
+      "semi_supervised_accuracy": 0.9333333333333333,
+      "active_before": 0.9555555555555556,
+      "active_after": 0.9111111111111111,
+      "active_labels_added": 12,
+      "few_shot_accuracy": 0.8666666666666667,
+      "causal_ate": 3.0284890386069123,
+      "causal_interval": [
+        2.9918518272558177,
+        3.065126249958007
+      ],
+      "causal_true_effect": 3.0,
+      "limitations": "No causal identification from data alone; no guarantee of active/semi-supervised improvement."
+    },
+    "real_graph": {
+      "status": "passed",
+      "source": "Zachary karate-club graph from NetworkX 3.7",
+      "nodes": 34,
+      "edges": 78,
+      "training_nodes": 2,
+      "held_out_nodes": 32,
+      "held_out_accuracy": 0.9375,
+      "exact_reload": true,
+      "scope": "Transductive homogeneous undirected node classification, not unseen-graph/heterogeneous/link prediction acceptance"
+    },
+    "media": {
+      "status": "passed",
+      "scope": "Synthetic tone/color classification wiring and codecs; not speech recognition, video understanding or natural-data quality",
+      "training_samples": 12,
+      "held_out_samples": 8,
+      "results": {
+        "audio": {
+          "loss": 1.7136031601694413e-05,
+          "accuracy": 1.0,
+          "count": 8,
+          "exact_reload": true
+        },
+        "fusion": {
+          "loss": 0.05232078954577446,
+          "accuracy": 1.0,
+          "count": 8,
+          "exact_reload": true
+        }
+      },
+      "manifest": {
+        "schema_version": 1,
+        "classes": [
+          "low_tone_red",
+          "high_tone_blue"
+        ],
+        "audio": {
+          "sample_rate": 8000,
+          "bands": 32,
+          "n_fft": 512,
+          "hop": 256
+        },
+        "video": {
+          "codec": "GIF",
+          "size": [
+            8,
+            8
+          ],
+          "max_frames": 64
+        },
+        "fusion_dimensions": {
+          "audio": 66,
+          "video": 9
+        },
+        "missing": "error"
+      }
+    },
+    "representation": {
+      "status": "passed",
+      "scope": "Synthetic two-view representation learning and nine-example prototype support; not general few-shot/continual-learning quality",
+      "before_contrastive_loss": 3.55590558052063,
+      "after_contrastive_loss": 2.4735615253448486,
+      "support_examples": 9,
+      "held_out_examples": 48,
+      "held_out_accuracy": 1.0,
+      "exact_checkpoint_reload": true
+    }
+  },
+  "recorded_audio": {
+    "status": "passed",
+    "scope": "Actual recorded speech/whistle PCM decoding and feature extraction only; no ASR or real-data classifier quality claim",
+    "recordings": [
+      {
+        "source": {
+          "file": "steam-train-whistle-daniel_simon.wav",
+          "url": "https://download.pytorch.org/torchaudio/tutorial-assets/steam-train-whistle-daniel_simon.wav",
+          "bytes": 437516,
+          "sha256": "762b6783be7f20aa8be03812eeb33184bb5b1497db7422607a70b5d441fc45e9"
+        },
+        "sample_rate": 44100,
+        "channels": 2,
+        "samples": 109368,
+        "seconds": 2.48,
+        "feature_count": 66
+      },
+      {
+        "source": {
+          "file": "Lab41-SRI-VOiCES-src-sp0307-ch127535-sg0042-8000hz.wav",
+          "url": "https://download.pytorch.org/torchaudio/tutorial-assets/Lab41-SRI-VOiCES-src-sp0307-ch127535-sg0042-8000hz.wav",
+          "bytes": 54444,
+          "sha256": "17c4b9935a0d336478d97a60c3f737e80cdb4cc334c9b411050a8e32e2c2ec88"
+        },
+        "sample_rate": 8000,
+        "channels": 1,
+        "samples": 27200,
+        "seconds": 3.4,
+        "feature_count": 66
+      }
+    ]
+  },
+  "graph_data": {
+    "file": "external development fixtures/karate.json",
+    "sha256": "976bcd0cb33b4d2884319b66e6a7bc848f79874c99c31d666ec87d744f371b0f",
+    "source": "NetworkX3.7 karate_club_graph; underlying Zachary karate club dataset",
+    "scope": "Transductive; topology/features visible, 32 held-out labels excluded from loss"
+  },
+  "source_tests": {
+    "classical": {
+      "passed": 19,
+      "skipped": 0
+    },
+    "neural_and_media": {
+      "passed": 27,
+      "skipped": 0
+    }
+  },
+  "installed_profiles": {},
+  "ci": {},
+  "known_limits": [
+    "No ASR/TTS, general video understanding or graph-family completeness claim.",
+    "Iris entropy-query active accuracy fell from95.56% to91.11%; no improvement claim.",
+    "Audio/video learned quality uses generated tones/colors; actual recorded audio acceptance covers decoding/features only.",
+    "Causal interval/estimate is validated on a known-effect simulation under stated identification assumptions.",
+    "FFmpeg decoding is an explicit external backend; ordinary import/install never starts it or installs it."
+  ],
+  "source_suite": {
+    "classical": {
+      "passed": 1168,
+      "skipped": 54,
+      "seconds": 37.42
+    },
+    "note": "Absent optional backends/targets may skip in source suites; installed profiles require zero skips."
+  }
+}

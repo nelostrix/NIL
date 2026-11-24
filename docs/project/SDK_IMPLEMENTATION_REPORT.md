@@ -602,3 +602,53 @@ Full neural/RL source regression:1098 passed/30 skips; final focused guard check
 86 passed. See the live phases/TODO for installed/matrix acceptance and remaining
 real-device, old-machine, larger-model and deployment gates. These are bounded
 implemented contracts, not a claim of replacing all numerical kernels/algorithms.
+
+## Framework boundary and image classification — 2026-11-24
+
+Implemented versioned workflow discovery (`nil.coverage`, `nil workflows`),
+structural contracts and result metadata (`nil.contracts`), and neural
+TrainingResult prediction/evaluation dispatch. Offline metadata remains passive.
+The master TODO checks these scoped deliverables without claiming completion of
+all 32 areas.
+
+Added optional `nil.vision`: bounded lazy decoding, explicit EXIF/RGB/alpha/resize
+semantics, shared class mapping, CNN training/evaluation, JSON preprocessing/label
+manifest, checkpoint reload and streamed inference. A real digit dataset with
+1,000 training and 300 held-out images reached 89.33% accuracy in 29.93 seconds,
+with 333,979,648-byte peak child RSS and exact prediction reload. Detection,
+segmentation, OCR, tracking, retrieval and visual export/serving remain open.
+
+Installed profiles passed 153 Torch, 36 RL, 70 current-classical and 68 minimum-
+classical tests, with zero skips and every example passing. The full current-
+classical source suite passed 1,154 tests with 50 optional skips. Hosted full SDK
+CI passed 1,253 tests with 46 optional skips. Offline installation still adds only
+NIL with the resolver enabled. The 545,103-byte wheel matches 207 Python sources
+and 107 help guides, with no compiled binaries or model weights.
+
+All nine Linux/macOS/Windows Python 3.10–3.12 base jobs and all ten declared
+minimum/current backend jobs passed at commit `318e453`. Actual GPU, older-PC and
+public deployment acceptance remains unchanged. See the [framework evidence](../benchmarks/2026-11-24-framework.json),
+[image evidence](../benchmarks/2026-11-24-vision-digits.json),
+[workflow inventory](../WORKFLOWS.md) and [contracts](../SDK_CONTRACTS.md).
+
+
+## Compact-research readiness — 2026-11-24
+
+Added an existing-capability audit and a 78-task research plan for efficient training,
+compact intelligence and all seven previously requested incomplete workflow areas.
+The first four preparation/readiness tasks are checked, with real evidence for
+the fourth. The proposed 1M/10M study and 10–20B/100B–1T comparisons remain open.
+
+The local CPU example uses shared attention and a custom frozen-logit distillation
+loss. Three seeds passed updates/loss-reduction/reload checks. Ten focused tests
+passed shared-gradient parity, independent KL reference, frozen teacher behavior,
+uneven accumulation, exact resume and changed-depth refusal before weight loading.
+Distillation did not improve on ordinary shared-model accuracy on this tiny task;
+that negative outcome is retained, with no intelligence-equivalence claim.
+
+Installed-wheel Torch acceptance passed 163 tests with zero skips and all five
+examples. Offline resolver-enabled base installation still adds NIL only. See
+[readiness audit](../RESEARCH_READINESS.md), [ordered tasks](RESEARCH_TODO.md)
+and [evidence](../benchmarks/2026-11-24-compact-readiness.json). The existing scoped
+FSDP, feature-type adapters, training measurement and hardware/resource gaps are
+explicitly documented; no additional GPU or multi-host acceptance was performed.

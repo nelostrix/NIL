@@ -26,6 +26,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+audio = ["numpy>=1.26,<3"]
 vision = ["Pillow>=10.4,<14", "torch>=2.6,<3", "numpy>=1.26,<3"]
 rl-contrib = ["sb3-contrib>=2.4,<3", "stable-baselines3>=2.4,<3", "gymnasium>=1,<2", "torch>=2.6,<3"]
 lightgbm = ["lightgbm>=4,<5", "scikit-learn>=1.4,<2"]

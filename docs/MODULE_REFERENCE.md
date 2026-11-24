@@ -124,3 +124,25 @@ combinations: [CPU_COMPLETION.md](CPU_COMPLETION.md).
 - `nil.model("nelo_vision_mini", ...)`: compact trainable CNN baseline; `nil help nelo_vision_mini`.
 
 See [SDK contracts](SDK_CONTRACTS.md), [workflow inventory](WORKFLOWS.md) and [image acceptance](VISION.md).
+
+## Compact-model research readiness
+
+Use the existing `nil.Trainer` custom-step interface and native Torch modules for
+local shared-block experiments. The runnable `compact_research.py` example and
+[readiness audit](RESEARCH_READINESS.md) document supported local behavior, the
+current tied-parameter distributed restriction, measurement gaps and experimental
+limits. There is no new mandatory research backend or import-time worker.
+
+## Seven AI workflow areas
+
+| Module | Implemented v1 |
+|---|---|
+| nil.rag | Cited BM25 retrieval, extractive/explicit-generator answers, updates and snapshots |
+| nil.planning | Existing Tool plans, owned deadlines, cancellation, recovery and shortest paths |
+| nil.probabilistic | Beta-Bernoulli, Bayesian linear prediction and cross-fitted causal ATE |
+| nil.learning | Entropy queries, self-training, contrastive loss, prototypes and reservoir replay |
+| nil.audio | Bounded PCM WAV, explicit resampling/segments and spectral classification features |
+| nil.multimodal | Timed GIF/TIFF, opt-in FFmpeg video, audio alignment and fixed-schema fusion |
+| nil.graphs | Sparse normalized propagation, disjoint batches, GCN node/graph classification |
+
+Each module has bundled help.md. See [complete v1 contracts and limitations](SEVEN_WORKFLOWS.md).

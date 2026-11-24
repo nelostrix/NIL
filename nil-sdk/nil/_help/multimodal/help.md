@@ -1,0 +1,29 @@
+# multimodal
+
+## Usage
+
+```python
+import nil
+clip = nil.multimodal.load_clip('animation.gif', size=(32,32))
+visual = nil.multimodal.visual_features(clip)
+# video = nil.multimodal.load_video('clip.mp4', job_root='video_jobs')
+fused = nil.multimodal.fuse_features({'visual': visual}, {'visual':9})
+```
+
+## Parameters
+
+Frame/byte/pixel/decoded budgets, image size and durations; load_video fps/timeout/job_root; explicit feature dimensions and missing policy.
+
+## Output
+
+TCHW Clip/timing; visual summary; aligned audio segments; fixed-order fused vector plus presence mask.
+
+## Requirements
+
+GIF/TIFF needs vision extra; fusion/audio alignment needs NumPy; MP4/WebM additionally needs explicitly installed FFmpeg/ffprobe.
+
+## Limitations
+
+MP4 sampling is constant-rate, not original variable timestamps. No pretrained multimodal encoder, language generation or semantic video quality claim. Default decoded cap64MiB; source is trusted local data.
+
+See docs/SEVEN_WORKFLOWS.md and the bundled workflow examples for complete protocols and acceptance.

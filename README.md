@@ -192,3 +192,30 @@ python scripts/build_sdk_bundle.py --output dist
 The bundle builder verifies a fresh offline installation adds only NIL. A skipped
 optional test is not acceptance for that feature. GPU tests require real devices;
 Windows acceptance requires Windows rather than portable mocks.
+
+## Research readiness
+
+NIL is being prepared for efficient training and compact-model experiments:
+shared/repeated computation, adaptive depth, distillation, retrieval/tools, low-bit
+execution and alternative architectures. The [readiness audit](docs/RESEARCH_READINESS.md)
+distinguishes existing support from missing acceptance, and the
+[research TODO](docs/project/RESEARCH_TODO.md) orders the work. Address-based
+multi-host orchestration and SSD training offload remain future implementations.
+A 10–20B model matching a named 100B–1T baseline is a research target, not a current
+capability or a guaranteed outcome.
+
+`python -I nil-sdk/examples/compact_research.py --output /tmp/nil-compact-smoke`
+runs a tiny offline CPU compatibility example with explicit Torch dependencies.
+It tests shared attention, frozen-logit distillation and checkpoint reload;
+it is not a useful language-model or intelligence benchmark.
+
+## Additional AI workflows
+
+Seven areas now have scoped end-to-end workflows: `nil.rag`, `nil.planning`,
+`nil.probabilistic`, `nil.learning`, `nil.audio`, `nil.multimodal` and `nil.graphs`.
+They cover cited lexical retrieval, owned tool plans, conjugate/causal estimation,
+selected learning regimes, PCM audio classification, timed video/feature fusion
+and homogeneous GCN classification. Numerical/codec backends remain explicit
+opt-ins. See the [workflow guide and remaining limits](docs/SEVEN_WORKFLOWS.md)
+and each module's `nil help TOPIC`; these are not claims of complete ASR/TTS,
+autonomous planning or all graph/probabilistic architectures.

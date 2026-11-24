@@ -49,3 +49,12 @@ custom/higher-order differentiation, broader CPU kernels, then actual accelerato
 operators with numerical and resource acceptance. Integrated Torch/sklearn
 coverage does not complete these milestones. GPU and actual older-PC acceptance
 remain open in the [roadmap](project/TODO.md).
+
+Recorded [2026-11-24 framework acceptance](benchmarks/2026-11-24-framework.json):
+regular-wheel 153 Torch, 36 RL, 70 current-classical and 68 minimum-classical tests,
+all with zero skips and all installed examples passing. Hosted full SDK regression
+passed 1,253 tests with 46 explicitly skipped optional-target cases. Passive discovery
+loaded no numerical backends; five fresh-process samples measured median NIL import
+0.22ms (excluding interpreter startup), explicit inventory/package-metadata query
+42.48ms, and at most 20,258,816-byte total interpreter peak RSS on this host.
+These timings are observations, not performance guarantees or older-PC acceptance.

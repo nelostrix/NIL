@@ -24,7 +24,9 @@ the historical section below; their old open boxes are not the current master st
 Evidence for these bounded foundation deliverables: [workflow inventory](../WORKFLOWS.md),
 [SDK contracts/release criteria](../SDK_CONTRACTS.md), `nil workflows --json`,
 `nil help coverage` and `nil help contracts`. Stable release criteria are defined;
-NIL is still alpha. The inventory has 30 scoped records, not 32 completed areas.
+NIL is still alpha. The inventory has 37 scoped records, not 32 completed areas.
+[2026-11-24 validation](../benchmarks/2026-11-24-framework.json): all nine base
+platform jobs and ten backend jobs passed; full SDK: 1,253 passed with 46 optional skips.
 
 Permanent constraints: base installation adds only nil-sdk; imports start no model
 loads/downloads, compilation, processes or services. Backends, accelerators, model
@@ -69,14 +71,33 @@ These checks certify their documented subsets, not the full categories below.
 | D | Production serving and trust boundaries: 27, 29 | Acceptance on a chosen deployment with authorization, failure recovery and workload SLO evidence |
 | E | Specialist extensions: 21–23 and optional domains | Independently scoped plugins with validated user workloads; no mandatory core dependencies |
 
-Current user priority: implement framework foundations first, then image workflows.
-The first foundation and classification deliverables are complete; this does not
-close every Wave A gate or all computer-vision tasks.
+Current user priority: establish research readiness for efficient training,
+address-based cross-computer execution, explicit RAM/SSD offload and compact
+intelligence. Follow the [ordered research TODO](RESEARCH_TODO.md) and
+[capability audit](../RESEARCH_READINESS.md) before claiming larger-model readiness.
+The first foundation and classification deliverables remain complete; this does
+not close every Wave A gate, all computer-vision work or the research program.
 
 Within each wave, inventory and repair existing paths before expansion. Hardware
 or deployment gates can remain blocked while unrelated software work proceeds.
 New specialist rows are optional extension scope, not prerequisites for every SDK
 release. Revisit priorities using actual supported user workloads.
+
+## Research program and previously requested workflows
+
+The [research TODO](RESEARCH_TODO.md) covers recursive computation, adaptive
+thinking, external knowledge, low-bit execution, neuro-symbolic tools,
+distillation and alternative architectures; it also tracks cross-computer
+orchestration, configurable memory/storage budgets, measurement and scale gates.
+It preserves the seven requested incomplete workflow areas: 14, 20, 22, 23, 16, 17, 21.
+A small custom-model smoke does not complete these areas. The first full study
+is approximately 1M versus 10M parameters; 10–20B versus 100B–1T remains a research
+target requiring resources and per-task evidence, not a promised capability.
+
+The seven previously incomplete areas now have scoped v1 workflows with examples,
+offline help, mathematical/codec references and persistence/recovery checks. See
+[SEVEN_WORKFLOWS.md](../SEVEN_WORKFLOWS.md). This completes that v1 implementation
+batch; it does not close every advanced research/modality requirement below.
 
 ## Capability backlog — all 32 areas
 
@@ -206,6 +227,9 @@ release. Revisit priorities using actual supported user workloads.
 
 ### 14. Retrieval and RAG — Wave C
 
+- [x] Ship bounded cited BM25 retrieval/RAG, update/delete, index snapshots, access filtering, abstention and retrieval metrics; validate corpus/citation/restart failures.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
 - [ ] Audit existing memory/retrieval components and define ingestion/chunking,
   embedding index, hybrid search and reranking interfaces.
 - [ ] Add provenance, incremental updates, access-aware retrieval and index/schema
@@ -230,6 +254,9 @@ release. Revisit priorities using actual supported user workloads.
 
 ### 16. Speech and audio — Wave C
 
+- [x] Ship bounded PCM WAV/channel/rate/segment/spectral workflows and actual audio classification/reload; validate real recorded speech/whistle decoding separately from synthetic quality.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
 - [ ] Define waveform/sample-rate/channel, spectrogram, feature and alignment
   contracts; add bounded preprocessing and augmentation.
 - [ ] Add declared recognition, synthesis, speaker and classification workflows
@@ -238,6 +265,9 @@ release. Revisit priorities using actual supported user workloads.
   audio data and selected devices.
 
 ### 17. Video and multimodal AI — Wave C
+
+- [x] Ship timed GIF/TIFF, opt-in owned MP4/WebM decoding, explicit audio alignment and feature fusion with missing-modality masks, processor manifests and classifier reload.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
 - [ ] Define video sampling/timestamp, multimodal processor and aligned-label
   contracts with bounded decoding and data loading.
@@ -266,6 +296,9 @@ release. Revisit priorities using actual supported user workloads.
 
 ### 20. Agents and planning — Wave C
 
+- [x] Ship approved schema-checked tool plans, owned execution/deadlines/cancellation, durable completed-prefix recovery and bounded shortest-path search.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
 - [ ] Audit existing tools, memory, agent state and planning/search components;
   align them with shared execution, configuration and artifact contracts.
 - [ ] Standardize structured outputs, permissions, bounded retries/tool budgets,
@@ -275,6 +308,9 @@ release. Revisit priorities using actual supported user workloads.
 
 ### 21. Graph learning — Wave E
 
+- [x] Ship homogeneous undirected normalized graph propagation, disjoint batching, node/graph GCN classification, dtype-preserving graph JSON and checkpoint reload; validate real karate data.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
+
 - [ ] Define graph data, sparse storage, sampling and batching contracts before
   adding node/edge/graph prediction and link-prediction workflows.
 - [ ] Add selected message-passing, heterogeneous-graph and embedding integrations
@@ -282,6 +318,9 @@ release. Revisit priorities using actual supported user workloads.
 - [ ] Validate actual graph-learning datasets, artifacts and target backends.
 
 ### 22. Probabilistic and causal modeling — Wave E
+
+- [x] Ship conjugate Beta-Bernoulli/Bayesian linear posteriors and cross-fitted binary-treatment AIPW with explicit assumptions, independent references and posterior reload.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
 - [ ] Inventory existing uncertainty/probabilistic utilities and scope Bayesian
   inference, probabilistic programs and causal graph extensions separately.
@@ -291,6 +330,9 @@ release. Revisit priorities using actual supported user workloads.
   presenting predictive accuracy or attribution as causal evidence.
 
 ### 23. Other learning regimes — Wave E
+
+- [x] Ship entropy pool queries, native self-training, two-view contrastive objectives, prototype few-shot classification and bounded exact-continuation reservoir replay.
+  [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
 - [ ] Scope self-supervised, semi-supervised, active, transfer and few-shot
   workflows using existing training/data abstractions where possible.

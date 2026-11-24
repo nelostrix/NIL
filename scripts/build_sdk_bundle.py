@@ -44,6 +44,7 @@ def main():
             f"wheels/{wheel.name}": wheel,
             "README.md": root / "README.md",
             "docs/project/TODO.md": root / "docs/project/TODO.md",
+            "docs/project/RESEARCH_TODO.md": root / "docs/project/RESEARCH_TODO.md",
             "docs/MODEL_DEVELOPMENT.md": root / "docs/MODEL_DEVELOPMENT.md",
             "docs/NEURAL_RL.md": root / "docs/NEURAL_RL.md",
             "docs/SHALLOW_DESIGN.md": root / "docs/SHALLOW_DESIGN.md",
@@ -60,7 +61,7 @@ def main():
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['docs/HARDWARE_ACCEPTANCE.md'] = root / 'docs/HARDWARE_ACCEPTANCE.md'
-        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md'):
+        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md','SEVEN_WORKFLOWS.md'):
             files['docs/'+name]=root/'docs'/name
         files['scripts/render_workflows.py']=root/'scripts/render_workflows.py'
         files['nil-sdk/nil/_workflows.json']=root/'nil-sdk/nil/_workflows.json'

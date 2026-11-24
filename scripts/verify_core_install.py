@@ -60,7 +60,7 @@ assert nil.list_models() and nil.help('linear_regression')
 for name in ('pipeline', 'fit', 'save', 'load', 'split', 'cross_validate', 'tune',
              'Trainer', 'training', 'preprocessing', 'inspection', 'predict', 'evaluate', 'sklearn',
              'streaming', 'uncertainty', 'imbalance', 'selection', 'execution', 'rl',
-             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets', 'native', 'distributed', 'contracts', 'coverage', 'vision'):
+             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets', 'native', 'distributed', 'contracts', 'coverage', 'vision', 'rag', 'planning', 'probabilistic', 'learning', 'audio', 'multimodal', 'graphs'):
     assert getattr(nil, name) is not None, name
 assert len(nil.coverage.areas()) == 32
 assert nil.coverage.describe('native.tensor')['requires'] == []

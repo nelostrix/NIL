@@ -91,3 +91,14 @@ The iterator never fetches a surplus batch to test the budget. Source SHA-256
 is checked before iteration/checkpoint/restore; use a local immutable file.
 The supported boundary is a completed bounded chunk/epoch, not an interrupted
 batch or arbitrary live simulator/worker state. Empty/exhausted streams fail.
+
+## Compact-model research experiments
+
+The bundled `compact_research.py` example uses an ordinary custom Torch module
+with shared attention blocks and an optional custom temperature-scaled offline
+logit-distillation objective. The Trainer's normal accumulation and checkpoint
+contracts apply; encode reuse depth in architecture identity because tied-depth
+changes can leave parameter shapes unchanged. Teacher logits are frozen dataset
+entries and are not teacher model checkpoints. Learned halting, token/process
+objectives and shared-model distributed acceptance are not implemented by that
+example. See docs/RESEARCH_READINESS.md and docs/project/RESEARCH_TODO.md.

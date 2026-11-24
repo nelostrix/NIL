@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-24",
+  "status": "passed",
+  "scope": "Tiny synthetic local CPU framework compatibility only; not an intelligence, language-model, multi-host or large-model acceptance benchmark",
+  "recipe": "nil-sdk/examples/compact_research.py",
+  "recipe_sha256": "2553d9392f47d11b44114251b8778f9a759cecf00dfb87a66810797521678cb6",
+  "seeds": [
+    7,
+    11,
+    19
+  ],
+  "runs": [
+    {
+      "schema_version": 1,
+      "status": "passed",
+      "scope": "Synthetic CPU integration smoke: fixed-depth shared attention and offline classification-logit distillation; no intelligence-equivalence claim",
+      "seed": 7,
+      "epochs": 12,
+      "train_examples": 96,
+      "held_out_examples": 48,
+      "dataset_sha256": "1db93a99ccbb8fa72ee0bb3c9e56d4327cc669c3542db4478d5016d6bce34fc9",
+      "parameter_counts": {
+        "untied_baseline": 9282,
+        "shared_supervised": 2610,
+        "shared_distilled": 2610
+      },
+      "runs": {
+        "untied_baseline": {
+          "before": {
+            "loss": 0.7508124311765035,
+            "accuracy": 0.5625,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.0005436867165068785,
+            "accuracy": 1.0,
+            "count": 48
+          },
+          "training_seconds": 1.86618946899398,
+          "exact_reload": true,
+          "architecture": {
+            "shared": false,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_supervised": {
+          "before": {
+            "loss": 1.1831377347310383,
+            "accuracy": 0.375,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.0016265280234316986,
+            "accuracy": 1.0,
+            "count": 48
+          },
+          "training_seconds": 0.4428995100024622,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_distilled": {
+          "before": {
+            "loss": 1.1831377347310383,
+            "accuracy": 0.375,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.15859939453851743,
+            "accuracy": 0.9791666666666666,
+            "count": 48
+          },
+          "training_seconds": 0.4726769129993045,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        }
+      },
+      "seconds": 2.8347666620029486,
+      "adaptive_halting": false,
+      "compute_matched": false,
+      "teacher_cost_included_in_total_seconds": true,
+      "large_model_readiness": false
+    },
+    {
+      "schema_version": 1,
+      "status": "passed",
+      "scope": "Synthetic CPU integration smoke: fixed-depth shared attention and offline classification-logit distillation; no intelligence-equivalence claim",
+      "seed": 11,
+      "epochs": 12,
+      "train_examples": 96,
+      "held_out_examples": 48,
+      "dataset_sha256": "fedb5814e02b8ed04bcdfa66cfc526306184ee0493dc3af8e58adc5d4c214cf4",
+      "parameter_counts": {
+        "untied_baseline": 9282,
+        "shared_supervised": 2610,
+        "shared_distilled": 2610
+      },
+      "runs": {
+        "untied_baseline": {
+          "before": {
+            "loss": 0.5021988153457642,
+            "accuracy": 0.7916666666666666,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.0007931435635934273,
+            "accuracy": 1.0,
+            "count": 48
+          },
+          "training_seconds": 2.024222544001532,
+          "exact_reload": true,
+          "architecture": {
+            "shared": false,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_supervised": {
+          "before": {
+            "loss": 0.8810790777206421,
+            "accuracy": 0.4375,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.006946211719575028,
+            "accuracy": 1.0,
+            "count": 48
+          },
+          "training_seconds": 0.5550098629973945,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_distilled": {
+          "before": {
+            "loss": 0.8810790777206421,
+            "accuracy": 0.4375,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.5058095082640648,
+            "accuracy": 0.9166666666666666,
+            "count": 48
+          },
+          "training_seconds": 0.5153726229982567,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        }
+      },
+      "seconds": 3.114071234995208,
+      "adaptive_halting": false,
+      "compute_matched": false,
+      "teacher_cost_included_in_total_seconds": true,
+      "large_model_readiness": false
+    },
+    {
+      "schema_version": 1,
+      "status": "passed",
+      "scope": "Synthetic CPU integration smoke: fixed-depth shared attention and offline classification-logit distillation; no intelligence-equivalence claim",
+      "seed": 19,
+      "epochs": 12,
+      "train_examples": 96,
+      "held_out_examples": 48,
+      "dataset_sha256": "b2770cef6a8da685463bac5e95d2d15abd51e811e1675f680d8e4a6f724e3427",
+      "parameter_counts": {
+        "untied_baseline": 9282,
+        "shared_supervised": 2610,
+        "shared_distilled": 2610
+      },
+      "runs": {
+        "untied_baseline": {
+          "before": {
+            "loss": 0.902353564898173,
+            "accuracy": 0.375,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.15349950222298503,
+            "accuracy": 0.9583333333333334,
+            "count": 48
+          },
+          "training_seconds": 2.009219364001183,
+          "exact_reload": true,
+          "architecture": {
+            "shared": false,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_supervised": {
+          "before": {
+            "loss": 0.6837610602378845,
+            "accuracy": 0.5833333333333334,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.10741345180819432,
+            "accuracy": 0.9791666666666666,
+            "count": 48
+          },
+          "training_seconds": 0.5550086920047761,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        },
+        "shared_distilled": {
+          "before": {
+            "loss": 0.6837610602378845,
+            "accuracy": 0.5833333333333334,
+            "count": 48
+          },
+          "after": {
+            "loss": 0.16169898553440967,
+            "accuracy": 0.9583333333333334,
+            "count": 48
+          },
+          "training_seconds": 0.5142758560032235,
+          "exact_reload": true,
+          "architecture": {
+            "shared": true,
+            "depth": 4,
+            "width": 16,
+            "heads": 2,
+            "vocab": 16,
+            "length": 6
+          }
+        }
+      },
+      "seconds": 3.0980792339978507,
+      "adaptive_halting": false,
+      "compute_matched": false,
+      "teacher_cost_included_in_total_seconds": true,
+      "large_model_readiness": false
+    }
+  ],
+  "tests": {
+    "passed": 10,
+    "skipped": 0,
+    "scope": "gradient parity, independent KL reference, frozen teacher, uneven accumulation, exact resume, architecture guard and invalid options"
+  },
+  "known_results": [
+    "Distilled shared students did not outperform shared supervised students on any tested seed; these data do not demonstrate a distillation improvement.",
+    "Fixed-depth recursion only; adaptive halting is not implemented.",
+    "Untied model has9282 parameters; each shared model has2610. This is not the proposed1M/10M study.",
+    "Training FLOPs, energy and peak training memory are unmeasured; wall times include validation and checkpoint/reload work and two runs were concurrent.",
+    "Existing same-host scoped distributed FSDP rejects tied parameters; this recipe is local CPU only."
+  ],
+  "equivalence_claim": false,
+  "large_model_readiness": false,
+  "python": "3.12.16",
+  "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+  "versions": {
+    "nil-sdk": "0.2.1",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.5.4",
+    "pytest": "9.2.0"
+  },
+  "execution": {
+    "device": "cpu",
+    "precision": "fp32",
+    "threads": 1,
+    "loader_workers": 0,
+    "model_or_dataset_downloads": false,
+    "hard_resource_quota": false
+  },
+  "installed_torch_profile": {
+    "schema_version": 1,
+    "profile": "torch",
+    "status": "passed",
+    "python": "3.12.16",
+    "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+    "versions": {
+      "nil-sdk": "0.2.1",
+      "torch": "2.15.0+cpu",
+      "numpy": "2.5.4",
+      "Pillow": "13.0.0",
+      "pytest": "9.2.0"
+    },
+    "steps": [
+      {
+        "name": "installed-import",
+        "returncode": 0,
+        "log": "installed-torch-installed-import.log"
+      },
+      {
+        "name": "tests",
+        "returncode": 0,
+        "log": "installed-torch-tests.log"
+      },
+      {
+        "name": "example-1",
+        "returncode": 0,
+        "log": "installed-torch-example-1.log"
+      },
+      {
+        "name": "example-2",
+        "returncode": 0,
+        "log": "installed-torch-example-2.log"
+      },
+      {
+        "name": "example-3",
+        "returncode": 0,
+        "log": "installed-torch-example-3.log"
+      },
+      {
+        "name": "example-4",
+        "returncode": 0,
+        "log": "installed-torch-example-4.log"
+      },
+      {
+        "name": "example-5",
+        "returncode": 0,
+        "log": "installed-torch-example-5.log"
+      }
+    ],
+    "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+    "tests": {
+      "collected": 163,
+      "skipped": 0
+    },
+    "seconds": 49.451168609994056
+  },
+  "base_install": {
+    "status": "passed",
+    "offline": true,
+    "resolver_enabled": true,
+    "added_packages": {
+      "nil-sdk": "0.2.1"
+    }
+  },
+  "wheel": {
+    "name": "nil_sdk-0.2.1-py3-none-any.whl",
+    "sha256": "f8f4c1af7a0da4a6d9c7bae382d1686b4656f51ce07481a45dbbd98d16f02638",
+    "bytes": 545796
+  }
+}

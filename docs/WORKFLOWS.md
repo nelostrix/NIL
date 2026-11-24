@@ -1,6 +1,6 @@
 # Supported workflow inventory
 
-Matrix 2026.11.24.1; schema 1; SDK 0.2.1 (alpha).
+Matrix 2026.11.24.2; schema 1; SDK 0.2.1 (alpha).
 
 This is a bounded inventory, not a completeness score for the 32 roadmap areas.
 Recorded validation does not verify the current machine. Package detection does
@@ -41,6 +41,13 @@ or `nil.coverage.matrix()`. All APIs below resolve without optional backend impo
 | serving.public | unimplemented | target_blocked | none |
 | vision.classification | integration | validated | torch, Pillow, numpy |
 | sdk.result_contract | native | validated | none |
+| rag.lexical | native | validated | none |
+| agents.tool_plans | native | validated | none |
+| probability.causal | hybrid | validated | numpy, scikit-learn |
+| learning.regimes | hybrid | validated | numpy, scikit-learn, torch |
+| audio.classification | integration | validated | numpy |
+| video.multimodal | hybrid | validated | numpy, torch, Pillow |
+| graphs.classification | hybrid | validated | torch |
 
 ## sdk.extensions
 
@@ -701,6 +708,160 @@ Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
 Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
 
 Evidence: [SDK_CONTRACTS.md](../docs/SDK_CONTRACTS.md), [test_framework_contracts.py](../nil-sdk/tests/test_framework_contracts.py), [test_neural_result_contract.py](../nil-sdk/tests/test_neural_result_contract.py), [test_classical_result_contract.py](../nil-sdk/tests/test_classical_result_contract.py), [test_rl_control.py](../nil-sdk/tests/test_rl_control.py), [test_rl_centralized.py](../nil-sdk/tests/test_rl_centralized.py), [test_offline_neural_rl.py](../nil-sdk/tests/test_offline_neural_rl.py)
+
+## rag.lexical
+
+Cited lexical retrieval and explicit-generator RAG
+
+Areas: 14. Offline help: `nil help rag`.
+
+APIs: `nil.rag.Index`, `nil.rag.evaluate`
+
+Input: Unicode document text with source IDs, bounded chunking, questions and optional explicit generator callback.
+
+Output: Ranked provenance/citations, extractive or callback answers, abstention, retrieval metrics and immutable index reload.
+
+Limits: BM25 only; no learned embeddings or general semantic answer-fidelity acceptance. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_core.py](../nil-sdk/tests/test_seven_core.py)
+
+## agents.tool_plans
+
+Approved tool plans, owned deadlines and durable prefix recovery
+
+Areas: 20. Offline help: `nil help planning`.
+
+APIs: `nil.planning.run`, `nil.planning.shortest_path`
+
+Input: Ordered tool plan, existing Tool schemas, explicit allowed names/versions and journal path.
+
+Output: Committed plain-JSON trace, bounded owned calls, cancellation/deadlines, explicit safe-prefix resume and shortest paths.
+
+Limits: Trusted importable tools; ambiguous failed/running external actions require reconciliation; no exactly-once or autonomous-agent quality claim. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_core.py](../nil-sdk/tests/test_seven_core.py)
+
+## probability.causal
+
+Conjugate posteriors and cross-fitted binary-treatment AIPW
+
+Areas: 22. Offline help: `nil help probabilistic`.
+
+APIs: `nil.probabilistic.BetaBernoulli`, `nil.probabilistic.BayesianLinear`, `nil.probabilistic.causal_ate`
+
+Input: Binary outcomes for Beta; Gaussian linear data; or bounded features/binary treatment/continuous outcome with identification assumptions.
+
+Output: Posterior predictive statistics and JSON reload, or causal ATE/asymptotic interval with explicit assumptions and fold assignment.
+
+Limits: No general probabilistic programming, causal discovery or identification of unmeasured confounding; overlap violations fail. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_classical.py](../nil-sdk/tests/test_seven_classical.py)
+
+## learning.regimes
+
+Active/semi/self-supervised, prototype and bounded replay workflows
+
+Areas: 23. Offline help: `nil help learning`.
+
+APIs: `nil.learning.query_uncertain`, `nil.learning.self_training`, `nil.learning.prototypes`, `nil.learning.contrastive_loss`, `nil.learning.ReplayMemory`
+
+Input: Explicit labeled/unlabeled pools, paired views, support/query embeddings or bounded JSON stream records.
+
+Output: Budgeted query indices, fitted native self-training model, differentiable NT-Xent, few-shot predictions and exact replay continuation.
+
+Limits: No generic quality-improvement, large meta-learning or continual forgetting claim; negative active-learning result is retained. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_classical.py](../nil-sdk/tests/test_seven_classical.py)
+
+## audio.classification
+
+PCM WAV and audio classification frontend
+
+Areas: 16. Offline help: `nil help audio`.
+
+APIs: `nil.audio.load_wav`, `nil.audio.resample`, `nil.audio.segment`, `nil.audio.features`
+
+Input: Bounded local uncompressed integer PCM WAV, explicit sample rate/channel/duration and FFT configuration.
+
+Output: Channel-first waveform, explicit linear resampling, aligned segments and streaming-summary spectral features for classifiers.
+
+Limits: No ASR/TTS, compressed-audio codec or bandlimited-resampling claim; recorded-audio decoding and synthetic-tone classification are separate. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_media.py](../nil-sdk/tests/test_seven_media.py)
+
+## video.multimodal
+
+Timed visual clips, owned video decoding and fixed-schema fusion
+
+Areas: 17. Offline help: `nil help multimodal`.
+
+APIs: `nil.multimodal.load_clip`, `nil.multimodal.load_video`, `nil.multimodal.aligned_audio`, `nil.multimodal.fuse_features`
+
+Input: Local GIF/TIFF or explicit FFmpeg video; declared frames/timelines/audio coverage and modality feature dimensions.
+
+Output: Bounded RGB clips/timestamps, aligned audio segments and fused fixed-order vectors/presence masks with checkpointed classifier examples.
+
+Limits: FFmpeg/ffprobe are explicit external prerequisites for MP4/WebM. Constant-rate sampling does not preserve original variable-frame timestamps; no semantic video-language model claim. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: Explicit FFmpeg/ffprobe installation for load_video only
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_media.py](../nil-sdk/tests/test_seven_media.py)
+
+## graphs.classification
+
+Homogeneous GCN node and graph classification
+
+Areas: 21. Offline help: `nil help graphs`.
+
+APIs: `nil.graphs.gcn`, `nil.graphs.propagate`, `nil.graphs.batch`, `nil.graphs.pool`, `nil.graphs.save`, `nil.graphs.load`
+
+Input: Finite float32/64 homogeneous node features, int64 endpoints, caller-owned labels and explicit train/test masks.
+
+Output: Sparse normalized propagation, disjoint batches, differentiable node/graph logits, pooled features, JSON graphs and neural checkpoints.
+
+Limits: Undirected unweighted homogeneous graphs only; real karate result is transductive, not a citation-network/link-prediction or heterogeneous-graph claim. Current v1 scope and remaining requirements are explicit in SEVEN_WORKFLOWS.md.
+
+Prerequisites: No additional declared prerequisites.
+
+Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
+
+Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
+
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_neural.py](../nil-sdk/tests/test_seven_neural.py)
 
 ## Recorded backend profiles
 

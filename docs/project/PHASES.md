@@ -327,3 +327,38 @@ vision requirements. Callback/cancellation convergence, broader data/evaluation
 and artifact contracts, detection/segmentation/OCR/tracking/retrieval, pretrained
 visual backbones and export/serving acceptance remain open. Existing actual GPU,
 older-PC and public deployment gates remain unchanged.
+
+
+## Research-readiness priority — 2026-11-24
+
+The compact-intelligence and efficient-learning objectives now have a separate
+[capability audit](../RESEARCH_READINESS.md) and [ordered research TODO](RESEARCH_TODO.md).
+The order is local framework proof, experiment protocol, measurement, recursive/
+adaptive research, then justified retrieval/tools/distillation/low-bit extensions
+and actual multi-host/offload acceptance. Previously requested audio/video/graph,
+probabilistic/causal and other learning-regime workflows remain tracked.
+
+A CPU recipe tests repeated shared attention, frozen-logit distillation, real
+training and checkpoint reload; dedicated tests verify shared gradient accounting,
+loss normalization, exact resume and depth-mismatch rejection. This is a tiny
+synthetic compatibility check, not the proposed 1M/10M experiment or evidence of
+1T-level intelligence. Current strict distributed FSDP does not support this
+shared-parameter architecture, and training FLOP/energy measurement and SSD
+training offload still need implementation and target acceptance.
+
+
+## Seven AI workflow areas — v1 implementation, 2026-11-24
+
+The user's seven original areas now have bounded end-to-end workflows: RAG,
+approved tool planning, probabilistic/causal estimation, selected learning regimes,
+audio classification, timed video/multimodal feature fusion and graph learning.
+The [scope guide](../SEVEN_WORKFLOWS.md) records contracts, examples and remaining
+advanced work; master checkboxes mark these specific v1 deliverables only.
+
+Independent BM25/posterior/causal/contrastive/graph references, actual training,
+held-out Iris/karate results, recorded-audio decoding, real MP4 codec execution,
+checkpoint/index/replay reload, cancellation and malformed-input checks accompany
+the code. Active entropy selection reduced Iris accuracy in the recorded case;
+that result remains visible. Synthetic tone/color quality does not establish
+ASR/TTS or semantic video understanding. Optional backends/codecs remain explicit,
+and importing NIL still starts no worker/model/compiler/service.
