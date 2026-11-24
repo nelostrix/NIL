@@ -23,11 +23,12 @@ class Index:
     def _rebuild(self, documents):
         chunks=[];df=Counter();size=self.config['chunk_chars'];stride=size-self.config['overlap']
         for key,document in sorted(documents.items()):
+            document_hash=hashlib.sha256(document['text'].encode()).hexdigest()
             for start in range(0,len(document['text']),stride):
                 text=document['text'][start:start+size];terms=Counter(_tokens(text))
                 chunks.append(dict(id=f'{key}:{start}',document_id=key,source=document['source'],
                                    start=start,end=start+len(text),text=text,
-                                   document_sha256=hashlib.sha256(document['text'].encode()).hexdigest(),terms=terms,length=sum(terms.values())))
+                                   document_sha256=document_hash,terms=terms,length=sum(terms.values())))
                 df.update(terms.keys())
                 if len(chunks)>10000:raise ValueError('Index exceeds 10000 chunks')
                 if start+size>=len(document['text']):break
