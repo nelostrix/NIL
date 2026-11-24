@@ -149,3 +149,11 @@ def test_dead_supervisor_recovers_instead_of_hanging(tmp_path,monkeypatch):
         nil.planning.run(plan,{'power':tool},allowed=['power'],journal=tmp_path/'trace.json',tool_versions={'power':'1'})
     assert time.monotonic()-started<5
     assert json.loads((tmp_path/'trace.json').read_text())['status']=='failed'
+
+
+@pytest.mark.parametrize('alpha,beta',[(1e-200,1e-200),(1e12,1e12),(1e-200,1.)])
+def test_beta_extreme_valid_priors_remain_finite(alpha,beta):
+    import math
+    result=nil.probabilistic.BetaBernoulli(alpha,beta).predict()
+    assert math.isfinite(result['probability']) and math.isfinite(result['variance'])
+    assert 0<=result['probability']<=1 and 0<=result['variance']<=.25

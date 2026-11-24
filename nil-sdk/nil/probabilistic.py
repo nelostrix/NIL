@@ -23,7 +23,8 @@ class BetaBernoulli:
 
     def predict(self):
         total=self.alpha+self.beta
-        return dict(probability=self.alpha/total,variance=self.alpha*self.beta/(total*total*(total+1)))
+        probability=self.alpha/total
+        return dict(probability=probability,variance=probability*(1-probability)/(total+1))
 
     def save(self,path):return _save(path,'beta-bernoulli',dict(alpha=self.alpha,beta=self.beta))
 
