@@ -56,9 +56,15 @@ jobs:
       - name: Install current RL profile
         if: matrix.profile == 'rl' && matrix.versions == 'current'
         run: python -m pip install '.[rl-contrib]'
-      - name: Require explicit external video codec for Torch acceptance
+      - name: Install explicit external video codec for Torch acceptance
         if: matrix.profile == 'torch'
-        run: python -c "import shutil; assert shutil.which('ffmpeg') and shutil.which('ffprobe'), 'FFmpeg/ffprobe required for video acceptance'"
+        shell: python
+        run: |
+          import shutil, subprocess
+          if not shutil.which('ffmpeg') or not shutil.which('ffprobe'):
+              subprocess.run(['sudo','apt-get','update'],check=True)
+              subprocess.run(['sudo','apt-get','install','-y','--no-install-recommends','ffmpeg'],check=True)
+          assert shutil.which('ffmpeg') and shutil.which('ffprobe')
       - name: Build and install regular NIL wheel
         shell: python
         run: |

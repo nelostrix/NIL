@@ -104,7 +104,7 @@ def run(steps, tools, *, allowed, journal, tool_versions, max_steps=32, timeout=
         job=None
         try:
             job=submit(_invoke,_transfer(tools[step['tool']]),arguments,limits=limits,job_root=path.parent/'tool_jobs')
-            while job.status()['status'] not in {'completed','failed','timed_out','cancelled','interrupted','resource_limited'}:
+            while job.process.poll() is None and job.status()['status'] not in {'completed','failed','timed_out','cancelled','interrupted','resource_limited'}:
                 if cancel_event is not None and cancel_event.is_set():job.cancel()
                 time.sleep(.02)
             result=job.result()

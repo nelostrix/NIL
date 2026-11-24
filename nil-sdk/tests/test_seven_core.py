@@ -132,3 +132,20 @@ def test_plan_cancellation_before_launch_is_resumable(tool_module,tmp_path):
     assert not (tmp_path/'tool_jobs').exists()
     event.clear()
     assert nil.planning.run(plan,{'add':tool_module.add},resume=True,**kwargs)['completed'][0]['result']==3
+
+
+def test_dead_supervisor_recovers_instead_of_hanging(tmp_path,monkeypatch):
+    import time
+    original=nil.execution.submit
+    def terminate_before_start(*args,**kwargs):
+        job=original(*args,**kwargs)
+        job.process.kill();job.process.wait()
+        return job
+    monkeypatch.setattr(nil.execution,'submit',terminate_before_start)
+    plan=[dict(id='one',tool='power',arguments=dict(base=2,exp=3))]
+    tool=Tool(name='power',parameters={'base':{'type':'integer'},'exp':{'type':'integer'}},fn=pow)
+    started=time.monotonic()
+    with pytest.raises(nil.execution.ExecutionError):
+        nil.planning.run(plan,{'power':tool},allowed=['power'],journal=tmp_path/'trace.json',tool_versions={'power':'1'})
+    assert time.monotonic()-started<5
+    assert json.loads((tmp_path/'trace.json').read_text())['status']=='failed'
