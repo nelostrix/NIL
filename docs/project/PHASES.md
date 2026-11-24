@@ -6,6 +6,12 @@ checkboxes: writing a runner or encountering a skip does not pass them. Preserve
 NIL-only installation, passive imports, shallow public modules and per-module
 help. Existing optional integrations remain available while native work expands.
 
+The expanded [32-area master TODO](TODO.md) now defines the broader framework
+backlog and Waves A–E. The numbered phases below retain their concrete existing
+implementation and target-acceptance gates; they are not an exhaustive list of
+the expanded scope. Start new software work with the master coverage/API audit,
+and preserve open hardware/deployment gates while progressing independent tasks.
+
 ## Phase 1 — Execution containment and resource budgets (active)
 
 - [x] Add optional Linux process-group RSS monitoring with typed resource-limit
@@ -38,6 +44,9 @@ and hard aggregate-memory acceptance remains open until the target checks pass.
 - [x] Extend the fresh-process benchmark runner with bounded time, per-sample
   failures, distribution summaries and machine-readable budget decisions.
 - [x] Run core/native, classical and neural profiles on the current host.
+- [x] Run all three small installed-wheel profiles under real CPUQuota100%,
+  MemoryMax1GiB, zero-swap and TasksMax64 limits. Accuracy/learning, latency/RSS
+  budgets and zero OOM kills pass in three fresh transient user units.
 - [ ] Run the same workload/budgets on an identified ten-year-old PC; publish raw
   samples and compare NIL wrapper overhead against the corresponding backend.
 
@@ -86,6 +95,8 @@ Exit: current-host evidence can pass independently; old-PC certification cannot.
   CPU deployment matrix. Authenticated counters, periodic/final snapshots,
   descriptor-validated credentials and sanitized CLI failures pass. Public ingress
   and other service targets remain separate acceptance.
+- [ ] Accept an actual public-facing or multi-tenant deployment, revocation/
+  authorization policy and model-specific reliability targets on its chosen host.
 
 ## Phase 7 — Release compatibility matrix
 
@@ -104,33 +115,48 @@ Exit: current-host evidence can pass independently; old-PC certification cannot.
 
 - [x] Define benchmarked stages beyond the existing CPU float64 reference engine:
   N-dimensional shape/stride semantics, dtype policy and parameter/state contracts.
+- [x] Implement nonempty rank0–8 tensors, owned shape transforms/slicing,
+  axis reductions, batched/vector matmul and scalar/vector/ND SGD/Adam state.
 - [x] Add selected dense operators and optimizers with independent numerical
   gradients, persistence and reference-backend parity before expanding further.
-- [ ] Add sparse representations/operators and explicit unsupported combinations.
-- [ ] Add compiled/vectorized CPU kernels before claiming large-array performance.
+- [x] Add bounded COO/CSR, duplicate coalescing, sparse×dense gradients, explicit
+  densification and JSON persistence; sparse×sparse/other ranks remain unsupported.
+- [x] Add an explicit NIL-owned Linux C matrix/VJP kernel, ABI/hash guards and
+  actual workload measurements. Default import/install never compiles or loads it.
 - [ ] Add device/kernel management and GPU operators only with real-device tests.
 - [x] Map which workflows can run using NIL alone; do not present adapters as
   independent engines or force optional dependencies into base installation.
 
-Phase8 scope: row-wise stable softmax/log-softmax, categorical cross entropy and
-Adam with exact model/optimizer continuation. Finite differences and Torch float64
-parity pass. ND shape/stride, sparse, compiled CPU and GPU stages are defined in
-[the engine contract](../NATIVE_ENGINE.md), not implemented by these checkmarks.
+Phase8 CPU scope is implemented and tested in [the engine contract](../NATIVE_ENGINE.md).
+Compiled acceleration currently covers matmul/VJPs, not every operator. The engine
+remains bounded float64 CPU; zero-sized tensors and GPU/device execution are open.
 
 ## Phase 9 — Broader RL and model compatibility
 
-- [ ] Implement/test masked parallel multi-agent collection including terminal
+- [x] Implement/test masked parallel multi-agent collection including terminal
   masks, heterogeneous spaces and recurrent state lifecycle.
-- [ ] Add a separately scoped centralized-critic multi-agent learning algorithm
+- [x] Add a separately scoped centralized-critic multi-agent learning algorithm
   with real environments and multi-seed baseline comparisons.
-- [ ] Extend exact simulator-state continuation beyond the existing CPU DQN
+- [x] Extend exact simulator-state continuation beyond the existing CPU DQN
   contract only for explicitly supported env/wrapper/algorithm combinations.
-- [ ] Add offline CQL/IQL-style algorithms if required by the declared coverage
+- [x] Add offline CQL/IQL-style algorithms if required by the declared coverage
   target, with dataset/OOD-action contracts and real held-out learning evidence.
-- [ ] Broaden RL learning benchmarks beyond the tiny bandit to discrete,
+- [x] Broaden RL learning benchmarks beyond the tiny bandit to discrete,
   continuous, recurrent/masked and multi-agent tasks with seed-level intervals.
-- [ ] Broaden pretrained-model/LoRA/quantization/export cases and measure realistic
-  datasets/large models on documented supported hardware.
+- [x] Add real bundled-digit classification with INT8/ONNX parity and local
+  held-out-document causal training/LoRA/merged reload checks on the CPU host.
+- [x] Accept a pinned external134.5M SmolLM2/Llama checkpoint for CPU inference,
+  LoRA/adapter-only reload and INT8 weight storage under actual2GiB/no-swap/
+  one-CPU limits. Dynamic activation INT8 fails this target's unchanged fidelity
+  threshold; weight-only storage passes and is distinguished from INT8 compute.
+- [ ] Broaden downloaded pretrained architectures and large-model/quantization
+  coverage on declared hardware; local tiny models do not close this target gate.
+
+Phase9 completed contracts are scoped: offline centralized-value AWR with fixed
+aligned agents/explicit team returns; discrete CQL (not continuous CQL or IQL);
+CPU PPO/A2C ordinary-rollout continuation with flat Box/discrete protocol envs;
+five three-seed learning tasks. These do not imply MAPPO, arbitrary simulator
+snapshots, partially observed memory learning or general benchmark superiority.
 
 Every phase must update TODO.md with exact commands, outcomes, versions and known
 limits before its acceptance checkbox can be closed. Do not infer a percentage
@@ -250,3 +276,33 @@ also passed all nine target cells with dependency-free multiclass training in th
 fresh-wheel verifier. Local full neural/RL source regression: 1026 passed/30
 explicit skips. Local final regular-wheel checks: 70 Torch and 67 minimum-classical
 tests plus installed examples, all with zero skips. No base dependency was added.
+
+## Final phase8–9 verification — 2026-11-23
+
+At commit761ca07, [all nine base cells](https://github.com/nelostrix/NIL/actions/runs/45145136514),
+[all ten backend cells](https://github.com/nelostrix/NIL/actions/runs/45145136494)
+and [full SDK CI](https://github.com/nelostrix/NIL/actions/runs/45145136525) pass.
+The final ordinary wheel matches203 Python sources, includes the optional kernel's
+C source, contains no compiled binary and installs only nil-sdk in a fresh offline
+environment. Explicit existing dev environments use the rebuilt regular wheel.
+The ND engine's core/native workload also passed again under actual CPUQuota100%,
+MemoryMax1GiB, no-swap and TasksMax64 limits; unit peak32.6MiB, zero swap/OOM kills.
+Actual GPU/device quotas, a physical old PC, external large pretrained targets and
+public/multi-tenant deployment acceptance remain open as listed above.
+
+## Pinned pretrained CPU follow-on — 2026-11-23
+
+The external134.5M SmolLM2/Llama gate passes installed-wheel FP32 inference,
+LoRA/frozen-base/adapter-only reload and explicit INT8 weight storage under actual
+2GiB/no-swap/one-CPU limits. [Exact source, fidelity limits and failed dynamic
+configuration](../PRETRAINED_CPU.md) remain separate from tiny local models and
+from GPU/billion-scale targets. Model/tokenizer pinning now shares revision/cache/
+auth options; optional weight-only conversion reduces storage with FP32 compute.
+
+At commit93d8937, [all nine base cells](https://github.com/nelostrix/NIL/actions/runs/45151221151),
+[all ten backend cells](https://github.com/nelostrix/NIL/actions/runs/45151221178)
+and [full SDK CI](https://github.com/nelostrix/NIL/actions/runs/45151221134) pass.
+Installed Torch/native/service/preparation checks pass131 tests with zero skips.
+The final pure wheel matches204 Python sources, includes no model/native binary
+payload and installs only nil-sdk through a fresh offline resolver. Actual GPU,
+physical older-PC, broader large architectures and public deployment remain open.

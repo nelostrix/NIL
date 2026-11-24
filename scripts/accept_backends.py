@@ -18,6 +18,13 @@ import xml.etree.ElementTree as ET
 
 
 PROFILES={
+    'rl': {
+        'packages':('torch','numpy','gymnasium','stable-baselines3','sb3-contrib','pytest'),
+        'tests':('test_rl_correctness.py','test_rl_control.py','test_rl_snapshot.py','test_offline_neural_rl.py',
+                 'test_rl_cql.py','test_rl_centralized.py','test_rl_parallel_masks.py','test_rl_structured.py'),
+        'exclude':'',
+        'examples':(('rl_workflow.py','--algorithm','ppo'),('rl_workflow.py','--algorithm','sac')),
+    },
     'classical': {
         'packages':('scikit-learn','numpy','scipy','pandas','pytest'),
         'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py'),
@@ -27,7 +34,9 @@ PROFILES={
     'torch': {
         'packages':('torch','numpy','pytest'),
         'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py','test_native_engine.py','test_native_multiclass.py',
-                 'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py'),
+                 'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py',
+                 'test_native_nd.py','test_native_sparse.py','test_native_cpu.py',
+                 'test_quantization_ownership.py','test_pretrained_loading_contract.py','test_pretrained_runner.py'),
         'exclude':'not cuda',
         'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer')),
     },
@@ -57,6 +66,7 @@ def run(profile,output,*,timeout=300):
             shutil.copytree(root/'nil-sdk/examples',work/'nil-sdk/examples')
             (work/'scripts').mkdir()
             shutil.copy2(root/'scripts/_tls_acceptance.py',work/'scripts/_tls_acceptance.py')
+            shutil.copy2(root/'scripts/accept_pretrained.py',work/'scripts/accept_pretrained.py')
             def execute(name,arguments):
                 log=output.with_name(output.stem+'-'+name+'.log')
                 with log.open('wb') as stream:

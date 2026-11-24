@@ -18,8 +18,8 @@ CUDA is explicitly excluded from CPU profiles, not counted as accepted.
 
 These are exact declared profiles, not every permutation allowed by dependency
 ranges. The classical profile uses the maintained 1.4 patch family rather than
-claiming the oldest patch of every package. All four hosted jobs use Linux and
-Python 3.12. JSON reports record actual resolved versions, OS and interpreter;
+claiming the oldest patch of every package. The expanded profiles use Python3.12: classical runs on Linux/macOS/Windows,
+while CPU Torch and RL run on Linux. JSON reports record actual resolved versions, OS and interpreter;
 CI preserves the wheel, report and step logs as named artifacts.
 
 ```sh
@@ -39,7 +39,7 @@ the verifier or installed by importing NIL. OpenSSL is explicit TLS test tooling
 Generative, ONNX, RL, specialized backends, GPU, other optional-backend OS/Python
 combinations and public Internet deployment remain separate contracts. The
 existing SDK development workflow exercises additional integrations, but does
-not establish a minimum/current matrix for all of them.
+not establish a minimum/current matrix for all of them. See the later expanded profile evidence below.
 
 ## Recorded hosted acceptance — 2026-11-23
 
@@ -57,3 +57,25 @@ built wheel/bundle artifact ID, digest, size and expiry alongside its passing jo
 Download using `gh run download 45115748776 --repo nelostrix/NIL` into a scratch
 directory. These are verification artifacts subject to CI retention, not a stable
 release or package-index upload. The first failing run remains visible for audit.
+
+## Expanded phase8–9 profiles
+
+[Run45143679440](https://github.com/nelostrix/NIL/actions/runs/45143679440)
+passed ten installed-wheel cells at aa3bfb8, all with zero skips:
+
+| Profile | OS/Python | Versions | Accepted work |
+| --- | --- | --- | --- |
+| Classical | Linux/macOS/Windows, Python3.12 | Minimum/current | 67/69 tests and two installed examples per cell |
+| Torch CPU | Linux, Python3.12 | Torch2.6.0+cpu/current | 118 tests, actual local C compilation, ND/sparse parity, service contracts and three examples |
+| RL CPU | Linux, Python3.12 | SB3/contrib2.4.0, Gymnasium1.0.0, Torch2.6 / current | 36 tests, masked/recurrent/centralized/CQL contracts, exact DQN/PPO/A2C simulator continuation and PPO/SAC examples |
+
+[Raw reports](benchmarks/2026-11-23-phase8-9-backends.json) record actual package
+versions and artifact log names. The minimum RL job uses NumPy1.26.4 and the
+current job resolves the declared RL-contrib extras. No core dependency changed.
+The compiled CPU profile requires explicit Linux compiler/Python headers; the
+base wheel/import does not. Non-Linux optional Torch/RL, other Python/backend
+combinations and real GPU acceptance remain separate profiles rather than inferred
+passes. [Base run45143679690](https://github.com/nelostrix/NIL/actions/runs/45143679690)
+passes all nine OS/Python3.10–3.12 cells, and
+[full SDK run45143679678](https://github.com/nelostrix/NIL/actions/runs/45143679678)
+also passes. Base success still does not imply every optional backend combination.

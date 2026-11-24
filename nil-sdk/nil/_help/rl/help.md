@@ -119,14 +119,15 @@ transitions require `terminal_action_masks` in info.
 `collect_multiagent(env, {'agent_id': policy}, steps=...)` accepts a parallel dict
 environment returning observation/reward/terminated/truncated/info dictionaries.
 `multiagent_fit(datasets, per_agent_options=...)` trains independent neural
-policies; this is not centralized-critic MARL. Masked multi-agent collection is
-explicitly unsupported, rather than silently dropping terminal masks.
+policies; this is not centralized-critic MARL. Masked parallel collection is supported with explicit current/terminal masks,
+heterogeneous per-agent spaces and recurrent state lifecycle; see below.
 
 ## Exact supported simulator continuation
 
 `save(model, new_path, environment_state=True)` and
 `load(path, env=raw_env, trusted=True, restore_rng=True, restore_environment=True)`
-restore CPU DQN with ordinary replay, one DummyVecEnv and the standard file-free
+restore CPU DQN with ordinary replay or PPO/A2C at complete rollout/update
+boundaries, one DummyVecEnv and the standard file-free
 Monitor. The raw unwrapped environment must implement `state_dict()`, nonmutating
 `validate_state_dict(state)`, and `load_state_dict(state)`. State includes actual
 simulator, env/space RNG, vector buffers, monitor counters and last observation.
@@ -139,3 +140,39 @@ collection. Snapshots require a completed NIL train/cancel boundary; early False
 callbacks and failures cannot claim exact continuation. Compare identical learn
 chunk schedules: backend schedules may differ from one monolithic learn call.
 Measured five-seed learning results and limitations ship in docs/benchmarks.
+
+## Masked parallel collection and additional CPU offline learning
+
+Use collect_multiagent(..., masked_agents=('agent_id',)) for compatible masked
+predictors; native MaskablePPO is detected automatically. Wrapped observations
+with observation/action_mask, per-agent info and env.action_masks(agent) are
+supported. Truncations need terminal_observation and terminal_action_masks.
+Terminal metadata overrides reset-looking future observations. Current actions
+must be valid under masks and declared spaces; recurrent state resets at agent
+end/reappearance. Compatible custom recurrent predictors declare nil_recurrent=True.
+Native RecurrentPPO cannot combine action masks. Heterogeneous agent data stays
+in separate arrays. Caller RNG and policy modes are restored even on failure.
+
+`offline_fit(data, algorithm='cql', action_count=..., conservative_weight=1.)`
+adds discrete log-sum-exp conservative Q regularization to the terminal-aware
+fitted-Q baseline. Supports masks, target network, immutable trusted bundles and
+exact same-data/config continuation. Continuous CQL and IQL are unsupported.
+
+`centralized_fit(datasets, action_counts={...}, returns=team_returns)` trains a
+joint-observation value critic and local discrete actors using offline
+advantage-weighted regression. Data rows must be explicitly aligned; datasets
+contain observations/actions plus optional masks, and one team return per row.
+Use result.policies[agent].predict(local_observation) for execution, and
+centralized_load(result.checkpoint, trusted=True) for checkpoint weights.
+1–16 fixed agents, bounded CPU networks/datasets, exact same-config update resume.
+This is not online MAPPO, variable-population MARL or arbitrary simulator recovery.
+
+Exact environment snapshots now also cover CPU PPO/A2C at completed rollout/update
+boundaries: flat Box observations, discrete actions, standard RolloutBuffer, no SDE,
+one DummyVecEnv and a file-free Monitor over an explicit state-protocol environment.
+DQN's ordinary-replay contract remains. Always compare identical learn chunks and
+restore_rng=True/restore_environment=True with matching versions and trusted=True.
+
+Five three-seed task-specific learning gates cover discrete CQL, centralized AWR,
+continuous BC, masked PPO and recurrent PPO. See docs/NEURAL_RL.md and the bundled
+raw coverage report for replay provenance, returns, intervals and limitations.

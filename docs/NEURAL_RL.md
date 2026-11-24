@@ -124,3 +124,107 @@ preflights descriptor/cursor contracts before model mutation. Persistent workers
 unacknowledged iterable prefetch and unbounded iterables are explicitly rejected.
 See `nil.help('training')` and `nil.help('data')` for scope and examples. Arbitrary
 map data/transform/collate content is caller-owned, not fingerprinted by type/length.
+
+## Extended CPU RL contracts — 2026-11-23
+
+`collect_multiagent(..., masked_agents=('agent',))` supports explicit masked agents
+and automatically detects native MaskablePPO. Masks come from wrapped observations
+`{'observation': array, 'action_mask': mask}`, info or env.action_masks(agent).
+Native recurrent policies carry state; compatible custom predictors can declare
+nil_recurrent=True and accept state/episode_start. Native RecurrentPPO does not
+accept masks and is refused for a combined masked contract. Per-agent Box/Discrete
+spaces, when provided, validate observations/actions independently; heterogeneous
+agents remain separate arrays. All masks/actions/terminal flags are checked.
+
+Terminal observations in info take precedence over reset-looking future values.
+Truncation requires a real terminal observation and valid terminal_action_masks;
+true termination can use a zero next mask because it never bootstraps. Agent state
+is discarded on end and starts fresh on reappearance/reset. RNG/mode preservation,
+transition limits and finite data checks apply to successful and failed collection.
+
+`offline_fit(..., algorithm='cql', action_count=..., conservative_weight=1.)`
+adds a discrete conservative fitted-Q objective: ordinary terminal-aware target
+loss plus alpha*(logsumexp(valid Q)-Q(recorded action)). Only valid current actions
+enter the regularizer. Finite next-action masks are required for nonterminal and
+truncated rows. The existing bounded transition schema, target network, exact
+same-data/config resume and trusted policy bundles apply. This is a discrete
+CQL-style baseline, not continuous-action CQL, IQL or a guarantee for arbitrary
+out-of-distribution datasets. No new package is required beyond explicit Torch.
+
+`nil.rl.centralized_fit(datasets, action_counts={...}, returns=team_returns)` is
+an offline centralized-value advantage-weighted regression algorithm. Datasets
+contain aligned per-agent observations/actions and optional action_masks; returns
+contain one explicit discounted team return per aligned row. A critic sees joint
+observations; separate actors see only their own observations during inference.
+Weights are exp((return-value)/temperature), bounded by max_weight. It supports
+1–16 fixed discrete agents, flat finite observations, bounded models/datasets,
+local deterministic sampling and same-data/config optimizer resume. It does not
+infer row alignment or simulator returns, collect online exploration, handle
+variable populations, or implement MAPPO. Call result.policies[agent].predict(...)
+for decentralized inference. Reload its checkpoint with
+centralized_load(path, trusted=True). Checkpoint restore is for weights/training;
+it does not resume an environment or later external actor sampling history.
+
+Exact simulator continuation additionally supports CPU PPO/A2C with ordinary
+RolloutBuffer, flat Box observations, discrete actions and no SDE at a completed
+NIL rollout/update boundary. The raw environment still needs the explicit
+state_dict/validate_state_dict/load_state_dict protocol, one DummyVecEnv, a standard
+file-free Monitor and identical backend versions. No arbitrary-wrapper, recurrent,
+continuous-action or multi-environment exact-state guarantee is implied. DQN still
+requires ordinary replay; PPO/A2C have no replay archive to restore. For all three,
+compare identical learn-call chunk schedules and explicitly restore RNG/state.
+
+## Measured broader learning scope
+
+[Raw three-seed CPU evidence](benchmarks/2026-11-23-rl-coverage.json) includes:
+
+| Contract | Task/data | Learning result |
+| --- | --- | --- |
+| Discrete CQL | Fixed deterministic FrozenLake4x4, 1,000 random and256 scripted-expert replay episodes | All learned policies reached the goal; paired mean improvement0.95 over random |
+| Centralized-value AWR | Two real CartPole environments as a fixed cooperative team;32 expert joint episodes, explicit discounted team returns | Paired mean improvement484.42 joint steps over random |
+| Continuous BC | MountainCarContinuous,64 velocity-controller expert episodes, explicit observation scaling | Paired mean improvement122.98 return over random |
+| Masked PPO | Three-action contextual task with one forbidden distractor | Paired mean improvement0.49 over random-valid actions |
+| Recurrent PPO | Fully observed CartPole,8,192 training steps/seed | Paired mean improvement223.9 steps over random |
+
+Seeds3/7/11 are the statistical sampling units; evaluation episodes are held out.
+The report contains per-seed returns and bootstrap intervals. FrozenLake uses the
+same map/dynamics; the masked task is one-step; recurrent CartPole does not test
+partial-observation memory learning. Offline expert replay is explicit, not an
+online-exploration claim. These tests establish declared task learning, not general
+algorithm superiority. Reproduce with scripts/benchmark_rl_coverage.py; its cases
+can be selected independently. No models or datasets are downloaded by the runner.
+
+## Broader small-model CPU/data checks
+
+[The real-data model report](benchmarks/2026-11-23-model-coverage.json) adds a
+stratified80/20 split of bundled scikit-learn handwritten digits: a64→32→10 MLP
+trained for20 epochs achieved held-out accuracy0.9667. CPU dynamic INT8 accuracy
+and ONNX logits are checked against the same held-out examples; the report records
+actual accuracy/error, dataset digest, normalization, backend versions and seed.
+
+A separate local text check trains a small two-layer,width32 GPT2-style model
+from scratch, using a byte BPE tokenizer fit only on training documents. The
+held-out file is separate. Base held-out NLL fell from6.2511 to4.9308; LoRA training
+updates only adapters, then merge/save/local reload reproduces held-out NLL.
+Source-file hashes, context length, training epochs and adapter counts are recorded.
+This is local small-model workflow coverage, not acceptance of a downloaded
+pretrained checkpoint, large-model quality, INT4/GPTQ/AWQ, arbitrary export graphs
+or realistic GPU memory behavior. Those remain explicit target cases.
+
+Reproduce without downloads: in the classical environment run
+`python scripts/benchmark_model_coverage.py --prepare-digits /absolute/digits.npz`;
+then in an explicit generative/ONNX/Torch environment run
+`python scripts/benchmark_model_coverage.py --digits-data /absolute/digits.npz
+--output /absolute/report.json`. The temporary model/checkpoint outputs are removed;
+the prepared data stays only at the explicitly selected path.
+
+## External pretrained CPU target
+
+A pinned134.5M SmolLM2/Llama safetensors checkpoint now passes actual CPU inference,
+LoRA frozen-base/update/adapter-only reload and INT8 weight-storage checks under
+one-CPU/2GiB/no-swap controls. Dynamic-activation INT8 did not meet the unchanged
+fidelity threshold; per-channel weight storage with FP32 compute did. Details,
+failed configurations, source hashes and reproducible preparation/acceptance:
+[pretrained CPU target](PRETRAINED_CPU.md). This does not imply GPU, billion-scale,
+long-context or all-architecture acceptance. NIL still downloads no model during
+installation/import and default model loading remains local-only.

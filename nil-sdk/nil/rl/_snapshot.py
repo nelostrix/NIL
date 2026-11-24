@@ -11,16 +11,20 @@ def _parts(model):
     sb3=require('stable_baselines3','rl'); gym=require('gymnasium','rl')
     from stable_baselines3.common.vec_env import DummyVecEnv
     from stable_baselines3.common.monitor import Monitor
-    if type(model) is not sb3.DQN or model.device.type!='cpu' or type(model.get_env()) is not DummyVecEnv or model.n_envs!=1:
-        raise ValueError('Exact simulator continuation supports CPU DQN with one DummyVecEnv only')
+    if type(model) not in (sb3.DQN,sb3.PPO,sb3.A2C) or model.device.type!='cpu' or type(model.get_env()) is not DummyVecEnv or model.n_envs!=1:
+        raise ValueError('Exact simulator continuation supports CPU DQN/PPO/A2C with one DummyVecEnv only')
     vector=model.get_env(); monitor=vector.envs[0]
     if type(monitor) is not Monitor or monitor.results_writer is not None:
         raise ValueError('Exact simulator continuation requires the standard file-free Monitor')
     env=monitor.env
     if isinstance(env,gym.Wrapper) or any(not callable(getattr(env,key,None)) for key in ('state_dict','validate_state_dict','load_state_dict')):
         raise ValueError('Raw environment must implement state_dict/validate_state_dict/load_state_dict; wrappers unsupported')
-    from stable_baselines3.common.buffers import ReplayBuffer
-    if type(model.replay_buffer) is not ReplayBuffer: raise ValueError('Exact simulator continuation requires ordinary replay')
+    from stable_baselines3.common.buffers import ReplayBuffer,RolloutBuffer
+    if type(model) is sb3.DQN:
+        if type(model.replay_buffer) is not ReplayBuffer:raise ValueError('Exact DQN continuation requires ordinary replay')
+    else:
+        if type(model.rollout_buffer) is not RolloutBuffer or getattr(model,'use_sde',False) or not isinstance(env.observation_space,gym.spaces.Box) or len(env.observation_space.shape)!=1 or not isinstance(env.action_space,gym.spaces.Discrete):
+            raise ValueError('Exact PPO/A2C continuation requires standard rollout buffer, flat Box observations and discrete actions without SDE')
     return vector,monitor,env
 
 

@@ -13,6 +13,24 @@ import tempfile
 import time
 
 
+def validate_sample(case,sample):
+    """Latency alone cannot pass acceptance when the numerical work is broken."""
+    for name in ('workload_s','peak_rss_mib'):
+        value=sample.get(name)
+        if type(value) not in (int,float) or not math.isfinite(value) or value<0:
+            raise ValueError('Missing or nonfinite workload measurement: '+name)
+    if case in ('core_import','native_cpu') and sample.get('optional_backends_loaded') is not False:
+        raise ValueError('Core workload imported an optional backend')
+    if case=='native_cpu' and not 0<=sample.get('final_mse',float('inf'))<1e-6:
+        raise ValueError('Native regression accuracy gate failed')
+    if case in ('ridge_native','ridge_nil') and not 0<=sample.get('training_rmse',float('inf'))<.05:
+        raise ValueError('Ridge regression accuracy gate failed')
+    if case=='torch_cpu':
+        losses=sample.get('losses',[])
+        if len(losses)!=2 or any(type(value) not in (int,float) or not math.isfinite(value) or value<0 for value in losses) or not losses[-1]<losses[0]:
+            raise ValueError('Neural loss did not improve with finite measurements')
+
+
 def worker(case,size="medium"):
     import resource
     started = time.perf_counter()
@@ -75,6 +93,7 @@ def main():
     parser.add_argument('--timeout',type=float,default=120)
     parser.add_argument('--budgets',type=Path,help='Explicit JSON case budgets (max_wall_s, max_peak_rss_mib)')
     parser.add_argument('--host-label',default='current-host')
+    parser.add_argument('--installed',action='store_true',help='Use isolated workers with installed NIL, ignoring PYTHONPATH')
     args = parser.parse_args()
     if not math.isfinite(args.timeout) or not 0<args.timeout<=3600: parser.error('--timeout must be finite, positive and <=3600')
     if args.worker: worker(args.worker,args.size); return 0
@@ -98,7 +117,8 @@ def main():
     report = {'schema_version': 2, 'profile':args.profile,'size':args.size,'host_label':args.host_label,'budgets':budgets, 'timestamp_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'platform': platform.platform(), 'cpu': cpu, 'logical_cpus': os.cpu_count(),
               'python': sys.version, 'versions': versions,
-              'old_pc_acceptance': False,
+              'old_pc_acceptance': False,'installed_workers':args.installed,
+              'physical_memory_bytes':int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemTotal:')))*1024,
               'scope': 'Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.',
               'cases': {}}
     env = dict(os.environ)
@@ -108,9 +128,10 @@ def main():
         for index in range(args.repeats):
             started=time.perf_counter()
             try:
-                completed=subprocess.run([sys.executable,str(Path(__file__).resolve()),'--worker',case,'--size',args.size],
+                completed=subprocess.run([sys.executable,*(['-I'] if args.installed else []),str(Path(__file__).resolve()),'--worker',case,'--size',args.size],
                     capture_output=True,text=True,check=True,timeout=args.timeout,env=env)
                 sample=json.loads(completed.stdout)
+                validate_sample(case,sample)
                 sample['process_wall_s']=time.perf_counter()-started
                 samples.append(sample)
             except (subprocess.TimeoutExpired,subprocess.CalledProcessError,ValueError) as error:

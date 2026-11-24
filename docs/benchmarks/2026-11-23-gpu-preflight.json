@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "mode": "all",
+  "precision": "all",
+  "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.12.16",
+  "status": "failed",
+  "tests": {},
+  "devices": [],
+  "scope": "Actual CUDA training acceptance; CPU results and non-CUDA display adapters cannot pass",
+  "display_adapters": [
+    {
+      "vendor_id": "0x1002",
+      "device_id": "0x1506",
+      "driver": "amdgpu"
+    }
+  ],
+  "torch": "2.15.0+cpu",
+  "cuda_runtime": null,
+  "hip_runtime": null,
+  "cuda_available": false,
+  "error": "Actual CUDA device and explicit CUDA-enabled Torch required",
+  "next_step": "Use a provisioned CUDA machine; this runner does not install drivers/backends or certify AMD/Intel adapters"
+}

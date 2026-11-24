@@ -59,3 +59,21 @@ def test_cancel_commits_complete_collection_and_rejects_unknown_simulator(tmp_pa
     nil.rl.train(other,total_timesteps=1,output_dir=tmp_path/'unsupported')
     with pytest.raises(ValueError,match='implement'): nil.rl.save(other,tmp_path/'unsupported-save',environment_state=True)
     other.get_env().close()
+
+
+@pytest.mark.parametrize('algorithm',['ppo','a2c'])
+def test_exact_onpolicy_rollout_boundary_resume_with_stateful_simulator(tmp_path,algorithm):
+    options=dict(n_steps=8,seed=7,learning_rate=.001,policy_kwargs={'net_arch':[8]})
+    if algorithm=='ppo':options.update(batch_size=8,n_epochs=2)
+    model=nil.rl.create(algorithm,Stateful(),**options)
+    nil.rl.train(model,total_timesteps=16,output_dir=tmp_path/'first')
+    bundle=nil.rl.save(model,tmp_path/'onpolicy',environment_state=True,include_replay=False)
+    nil.rl.train(model,total_timesteps=24,output_dir=tmp_path/'resident')
+    expected=copy.deepcopy(model.policy.state_dict());expected_environment=model.get_env().envs[0].env.state_dict()
+    restored=nil.rl.load(bundle,env=Stateful(),trusted=True,restore_rng=True,restore_environment=True)
+    nil.rl.train(restored,total_timesteps=24,output_dir=tmp_path/'restored')
+    for name,value in expected.items():torch.testing.assert_close(restored.policy.state_dict()[name],value,rtol=0,atol=0)
+    assert restored.get_env().envs[0].env.state_dict()==expected_environment
+    np.testing.assert_array_equal(restored._last_obs,model._last_obs)
+    assert restored.num_timesteps==model.num_timesteps and restored._n_updates==model._n_updates
+    model.get_env().close();restored.get_env().close()

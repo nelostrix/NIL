@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "profile": "neural",
+  "old_pc_acceptance": false,
+  "scope": "Current host under actual kernel limits: <=1 CPU, <=1 GiB RAM, zero swap, <=64 tasks. Not old CPU/ISA/storage emulation.",
+  "started_utc": "2026-11-23T07:05:37Z",
+  "kernel_policy": {
+    "memory.max": "1073741824",
+    "memory.swap.max": "0",
+    "cpu.max": "100000 100000",
+    "pids.max": "64"
+  },
+  "benchmark_started": true,
+  "benchmark_exit_code": 0,
+  "workloads": {
+    "schema_version": 2,
+    "profile": "neural",
+    "size": "small",
+    "host_label": "current-host-1cpu-1GiB-no-swap",
+    "budgets": {
+      "core_import": {
+        "max_wall_s": 0.5,
+        "max_peak_rss_mib": 35
+      },
+      "native_cpu": {
+        "max_wall_s": 1.0,
+        "max_peak_rss_mib": 35
+      },
+      "torch_cpu": {
+        "max_wall_s": 20.0,
+        "max_peak_rss_mib": 1024
+      }
+    },
+    "timestamp_utc": "2026-11-23T07:05:37Z",
+    "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+    "cpu": "AMD Ryzen 3 7320U with Radeon Graphics",
+    "logical_cpus": 8,
+    "python": "3.12.16 (main, Nov 11 2026, 00:15:59) [Clang 23.1.3 ]",
+    "versions": {
+      "nil-sdk": "0.2.1",
+      "numpy": "2.5.4",
+      "torch": "2.15.0+cpu"
+    },
+    "old_pc_acceptance": false,
+    "installed_workers": true,
+    "physical_memory_bytes": 7513694208,
+    "scope": "Current host only; one BLAS/Torch thread, fresh child per sample; cold filesystem cache not enforced. RSS is measured, not a memory quota.",
+    "cases": {
+      "core_import": {
+        "samples": [
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00018287800048710778,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.06908109500000137
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.00015480500042031053,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.07171397899946896
+          },
+          {
+            "version": "0.2.1",
+            "optional_backends_loaded": false,
+            "workload_s": 0.0001716269998723874,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.06931609300045238
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.06931609300045238,
+        "max_wall_s": 0.07171397899946896,
+        "max_peak_rss_mib": 22.43359375,
+        "budget_violations": []
+      },
+      "native_cpu": {
+        "samples": [
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08834275200024422,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.0890781819998665,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.15831346199956897
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.09013129800041497,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.09091798699955689,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.16020740900057717
+          },
+          {
+            "rows": 65,
+            "features": 1,
+            "epochs": 150,
+            "fit_s": 0.08843654100019194,
+            "final_mse": 1.5608189909186995e-14,
+            "optional_backends_loaded": false,
+            "workload_s": 0.08924426000157837,
+            "peak_rss_mib": 22.43359375,
+            "process_wall_s": 0.1598383560012735
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 0.1598383560012735,
+        "max_wall_s": 0.16020740900057717,
+        "max_peak_rss_mib": 22.43359375,
+        "budget_violations": []
+      },
+      "torch_cpu": {
+        "samples": [
+          {
+            "rows": 512,
+            "features": 8,
+            "epochs": 2,
+            "batch_size": 64,
+            "training_s": 0.9218495740005892,
+            "losses": [
+              7.867258548736572,
+              7.726565182209015
+            ],
+            "workload_s": 1.9227983119999408,
+            "peak_rss_mib": 309.15234375,
+            "process_wall_s": 2.697695716000453
+          },
+          {
+            "rows": 512,
+            "features": 8,
+            "epochs": 2,
+            "batch_size": 64,
+            "training_s": 0.9299482770002214,
+            "losses": [
+              7.867258548736572,
+              7.726565182209015
+            ],
+            "workload_s": 1.938692159999846,
+            "peak_rss_mib": 309.16796875,
+            "process_wall_s": 2.707952763999856
+          },
+          {
+            "rows": 512,
+            "features": 8,
+            "epochs": 2,
+            "batch_size": 64,
+            "training_s": 1.0398298830004933,
+            "losses": [
+              7.867258548736572,
+              7.726565182209015
+            ],
+            "workload_s": 2.0403954189987417,
+            "peak_rss_mib": 309.203125,
+            "process_wall_s": 2.939594247000059
+          }
+        ],
+        "failures": [],
+        "status": "passed",
+        "median_wall_s": 2.707952763999856,
+        "max_wall_s": 2.939594247000059,
+        "max_peak_rss_mib": 309.203125,
+        "budget_violations": []
+      }
+    },
+    "status": "passed"
+  },
+  "kernel_usage": {
+    "memory_peak_bytes": 250978304,
+    "memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    },
+    "cpu_stat": {
+      "usage_usec": 9068118,
+      "user_usec": 8146643,
+      "system_usec": 921474,
+      "nice_usec": 0,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 92,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    }
+  },
+  "oom_kill_delta": 0,
+  "finished_utc": "2026-11-23T07:05:46Z"
+}

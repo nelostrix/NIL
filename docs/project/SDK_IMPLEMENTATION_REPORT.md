@@ -589,3 +589,16 @@ regular wheel; 197 Python sources match and 103 help guides are bundled.
 Native Windows acceptance is still unrun; ten real-kernel cases and three Windows
 CI cells require a target host. The Linux --require-windows report fails with
 exit 2, so portable test success is not mistaken for Windows certification.
+
+## Phase8–9 implementation update — 2026-11-23
+
+The independent float64 CPU engine now has explicit ND semantics, COO/CSR algebra
+and an optional NIL-owned C matmul/VJP kernel. Base packaging remains pure Python
+plus help/C source, with no mandatory numerical dependency or install-time compiler.
+RL adds masked parallel collection, discrete CQL, fixed-cohort offline centralized
+AWR and supported CPU PPO/A2C simulator snapshots. Five three-seed task-specific
+learning benchmarks pass; exact data/protocol limits are in NEURAL_RL.md.
+Full neural/RL source regression:1098 passed/30 skips; final focused guard checks:
+86 passed. See the live phases/TODO for installed/matrix acceptance and remaining
+real-device, old-machine, larger-model and deployment gates. These are bounded
+implemented contracts, not a claim of replacing all numerical kernels/algorithms.

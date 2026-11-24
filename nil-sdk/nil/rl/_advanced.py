@@ -17,3 +17,9 @@ def collect_multiagent(*args,**kwargs):
 def multiagent_fit(*args,**kwargs):
     from nil.rl._rollouts import multiagent_fit as run
     return run(*args,**kwargs)
+def centralized_fit(*args,**kwargs):
+    from nil.rl._centralized import fit
+    return fit(*args,**kwargs)
+def centralized_load(*args,**kwargs):
+    from nil.rl._centralized import load
+    return load(*args,**kwargs)

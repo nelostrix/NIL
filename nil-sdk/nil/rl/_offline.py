@@ -103,7 +103,7 @@ def _dataset(data,algorithm,action_count,max_bytes):
     if 'action_masks' in values:
         mask=values['action_masks']
         if not mask.any(dim=1).all() or not mask.gather(1,values['actions'][:,None]).all(): raise ValueError('Dataset contains masked-out actions')
-    if algorithm=='offline_dqn':
+    if algorithm in ('offline_dqn','cql'):
         if values['next_observations'].shape!=x.shape or values['rewards'].shape!=(count,): raise ValueError('Transition observation/reward shape differs')
         for name in ('terminated','truncated'):
             if values[name].shape!=(count,) or not ((values[name]==0)|(values[name]==1)).all(): raise ValueError('Terminal/truncation flags must be binary vectors')
@@ -118,8 +118,9 @@ def _dataset(data,algorithm,action_count,max_bytes):
 
 def fit(data,*,algorithm='behavior_cloning',action_count=None,steps=500,batch_size=64,
         hidden=(64,64),lr=.001,gamma=.99,target_update=50,seed=0,action_bounds=None,
-        max_dataset_bytes=64000000,output_dir='./nil_offline',resume=None,cancel_event=None):
-    if algorithm not in ('behavior_cloning','offline_dqn'): raise ValueError('Choose behavior_cloning or offline_dqn')
+        max_dataset_bytes=64000000,output_dir='./nil_offline',resume=None,cancel_event=None,conservative_weight=1.):
+    if algorithm not in ('behavior_cloning','offline_dqn','cql'): raise ValueError('Choose behavior_cloning, offline_dqn or cql')
+    if type(conservative_weight) not in (int,float) or not math.isfinite(conservative_weight) or not 0<=conservative_weight<=100:raise ValueError('conservative_weight must be finite in [0,100]')
     for name,value in [('steps',steps),('batch_size',batch_size),('target_update',target_update),('max_dataset_bytes',max_dataset_bytes)]: positive_int(value,name)
     if type(seed) is not int or not 0<=seed<2**32 or not math.isfinite(lr) or lr<=0 or not math.isfinite(gamma) or not 0<=gamma<=1: raise ValueError('Invalid offline optimizer/seed/discount')
     values,continuous,outputs,digest=_dataset(data,algorithm,action_count,max_dataset_bytes)
@@ -129,6 +130,7 @@ def fit(data,*,algorithm='behavior_cloning',action_count=None,steps=500,batch_si
         if ((values['actions']<low)|(values['actions']>high)).any(): raise ValueError('Dataset actions exceed supplied bounds')
         action_bounds=[low.tolist(),high.tolist()]
     config={'algorithm':algorithm,'input_dim':values['observations'].shape[1],'output_dim':outputs,'continuous':continuous,'hidden':list(hidden),'lr':lr,'gamma':gamma,'target_update':target_update,'seed':seed,'batch_size':batch_size,'dataset_sha256':digest,'action_bounds':action_bounds}
+    if algorithm=='cql':config['conservative_weight']=conservative_weight
     policy=OfflinePolicy(config); start=0; history=[]
     if resume:
         payload=checkpoint.read(resume)
@@ -155,12 +157,16 @@ def fit(data,*,algorithm='behavior_cloning',action_count=None,steps=500,batch_si
                 best=future.max(dim=1).values
                 best=torch.where(values['terminated'][indices],torch.zeros_like(best),best)
                 target=values['rewards'][indices]+gamma*best
-            loss=torch.nn.functional.smooth_l1_loss(output.gather(1,actions[:,None]).squeeze(1),target)
+            chosen=output.gather(1,actions[:,None]).squeeze(1)
+            loss=torch.nn.functional.smooth_l1_loss(chosen,target)
+            if algorithm=='cql':
+                conservative=output.masked_fill(~values['action_masks'][indices],-torch.inf) if 'action_masks' in values else output
+                loss=loss+conservative_weight*(torch.logsumexp(conservative,dim=1)-chosen).mean()
         if not torch.isfinite(loss): raise ValueError('Nonfinite offline objective')
         policy.optimizer.zero_grad(set_to_none=True); loss.backward()
         if any(parameter.grad is not None and not torch.isfinite(parameter.grad).all() for parameter in policy.policy.parameters()): raise ValueError('Nonfinite offline gradients')
         policy.optimizer.step(); completed=update+1
-        if algorithm=='offline_dqn' and completed%target_update==0: policy.target.load_state_dict(policy.policy.state_dict())
+        if algorithm in ('offline_dqn','cql') and completed%target_update==0: policy.target.load_state_dict(policy.policy.state_dict())
         history.append(float(loss.detach()))
     policy.policy.eval()
     policy.state={'updates':completed,'history':history,'offline_config':config,'sampling_rng':policy.generator.get_state(),'action_rng':policy.action_generator.get_state(),'target':policy.target.state_dict()}

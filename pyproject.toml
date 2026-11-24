@@ -61,7 +61,7 @@ where = ["nil-sdk"]
 include = ["nil*"]
 
 [tool.setuptools.package-data]
-nil = ["_help/*/help.md"]
+nil = ["_help/*/help.md", "_kernels/*.c"]
 
 [tool.pytest.ini_options]
 testpaths = ["nil-sdk/tests"]

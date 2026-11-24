@@ -1,0 +1,445 @@
+{
+  "schema_version": 1,
+  "commit": "aa3bfb8",
+  "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440",
+  "profiles": {
+    "backend-macos-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 69,
+        "skipped": 0
+      },
+      "seconds": 5.06255550000003
+    },
+    "backend-macos-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 67,
+        "skipped": 0
+      },
+      "seconds": 5.452964958999999
+    },
+    "backend-ubuntu-latest-torch-current": {
+      "schema_version": 1,
+      "profile": "torch",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 118,
+        "skipped": 0
+      },
+      "seconds": 41.998219714
+    },
+    "backend-windows-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 67,
+        "skipped": 0
+      },
+      "seconds": 4.7660000000000196
+    },
+    "backend-ubuntu-latest-torch-minimum": {
+      "schema_version": 1,
+      "profile": "torch",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 118,
+        "skipped": 0
+      },
+      "seconds": 32.944903015999984
+    },
+    "backend-ubuntu-latest-rl-minimum": {
+      "schema_version": 1,
+      "profile": "rl",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "gymnasium": "1.0.0",
+        "stable-baselines3": "2.4.0",
+        "sb3-contrib": "2.4.0",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 36,
+        "skipped": 0
+      },
+      "seconds": 22.123959670999994
+    },
+    "backend-ubuntu-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 67,
+        "skipped": 0
+      },
+      "seconds": 3.176018428000006
+    },
+    "backend-ubuntu-latest-rl-current": {
+      "schema_version": 1,
+      "profile": "rl",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "gymnasium": "1.4.0",
+        "stable-baselines3": "2.9.2",
+        "sb3-contrib": "2.9.2",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 36,
+        "skipped": 0
+      },
+      "seconds": 13.643242722999993
+    },
+    "backend-ubuntu-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 69,
+        "skipped": 0
+      },
+      "seconds": 4.874920775999996
+    },
+    "backend-windows-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 69,
+        "skipped": 0
+      },
+      "seconds": 9.078000000000031
+    }
+  }
+}
