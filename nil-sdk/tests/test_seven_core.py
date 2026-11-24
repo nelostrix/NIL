@@ -157,3 +157,4 @@ def test_beta_extreme_valid_priors_remain_finite(alpha,beta):
     result=nil.probabilistic.BetaBernoulli(alpha,beta).predict()
     assert math.isfinite(result['probability']) and math.isfinite(result['variance'])
     assert 0<=result['probability']<=1 and 0<=result['variance']<=.25
+    assert result['variance']==nil.probabilistic.BetaBernoulli(beta,alpha).predict()['variance']
