@@ -13,7 +13,7 @@ import threading
 import time
 import uuid
 
-from nil.lifecycle import atomic_json, sha256
+from nil.lifecycle import atomic_json, sha256, _read_json
 
 _TERMINAL = {"completed", "failed", "timed_out", "cancelled", "interrupted", "resource_limited"}
 
@@ -163,7 +163,7 @@ class _Supervisor:
         self.process.wait()
 
     def _watch(self):
-        record = json.loads((self.path / "job.json").read_text())
+        record = _read_json(self.path / "job.json")
         started = record["started_monotonic"]
         peak_rss, peak_processes = 0, 0
 
@@ -253,7 +253,7 @@ class Job:
         self.path, self.process, self.limits = path, process, limits
 
     def status(self):
-        return json.loads((self.path / "job.json").read_text())
+        return _read_json(self.path / "job.json")
 
     def cancel(self):
         (self.path / "cancel").touch()
@@ -359,7 +359,7 @@ def recover(path, *, trusted=False, result=False):
     path = Path(path)
     if path.is_symlink() or (path / "job.json").is_symlink():
         raise ValueError("Job records must not use symlinks")
-    record = json.loads((path / "job.json").read_text())
+    record = _read_json(path / "job.json")
     if record.get("schema_version") != 1 or record.get("id") != path.name:
         raise ValueError("Unsupported job record")
     if record["status"] not in _TERMINAL:

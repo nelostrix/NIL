@@ -98,3 +98,37 @@ def test_unrelated_windows_file_error_is_not_retried_or_published(tmp_path,monke
     monkeypatch.setattr(lifecycle.os,'replace',fail)
     with pytest.raises(PermissionError):lifecycle._replace_atomic(source,target,windows=True)
     assert len(attempts)==1 and target.read_text()=='old' and source.read_text()=='new'
+
+
+@pytest.mark.parametrize('winerror',[5,32,33,None])
+def test_status_read_retries_only_windows_sharing_race(tmp_path,monkeypatch,winerror):
+    from nil import lifecycle
+    import time
+    path=tmp_path/'job.json';path.write_text('{"status":"completed"}')
+    original=type(path).read_text;calls=[]
+    def transient(self,**kwargs):
+        calls.append(1)
+        if len(calls)<3:
+            error=PermissionError(13,'Windows atomic rename sharing race')
+            if winerror is not None:error.winerror=winerror
+            raise error
+        return original(self,**kwargs)
+    monkeypatch.setattr(type(path),'read_text',transient)
+    monkeypatch.setattr(time,'sleep',lambda _:None)
+    assert lifecycle._read_json(path,windows=True)=={'status':'completed'}
+    assert len(calls)==3
+    calls.clear()
+    with pytest.raises(PermissionError):lifecycle._read_json(path,windows=False)
+    assert len(calls)==1
+
+
+def test_status_read_persistent_permission_and_corruption_fail_closed(tmp_path,monkeypatch):
+    from nil import lifecycle
+    import time
+    path=tmp_path/'job.json';path.write_text('invalid JSON')
+    with pytest.raises(ValueError):lifecycle._read_json(path,windows=True)
+    def denied(self,**kwargs):
+        error=PermissionError('persistent access denial');error.winerror=5;raise error
+    monkeypatch.setattr(type(path),'read_text',denied)
+    ticks=iter([0.,1.]);monkeypatch.setattr(time,'monotonic',lambda:next(ticks))
+    with pytest.raises(PermissionError):lifecycle._read_json(path,windows=True)

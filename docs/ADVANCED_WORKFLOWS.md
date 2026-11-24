@@ -158,6 +158,10 @@ a commercial-weight entitlement. No weights or recordings ship with NIL.
 
 Pretrained probe results and pinned manifests: [dated evidence](benchmarks/2026-11-24-advanced-workflows.json). The CLIP reload gate uses absolute/relative tolerance 1e-6 and records observed error; bitwise pretrained CLIP equality is not claimed. Earlier failed attempts are retained.
 
-Local full regression: **1,192 passed / 32 optional skips** in 130.89 s. A subsequent synthetic link-learning gate passes in the 10-test advanced neural subset. Minimum/current installed classical profiles pass with zero skips. The verified base wheel is 591,797 bytes, contains 223 Python files and 114 offline help guides, and declares no mandatory dependencies. GPU and actual older-PC acceptance remain unavailable.
+Local full regression: **1,192 passed / 32 optional skips** in 130.89 s. A subsequent synthetic link-learning gate passes in the 10-test advanced neural subset. Minimum/current installed classical profiles (96/94 tests) and current Torch (202 tests, nine examples) pass with zero skips. The verified base wheel is 591,900 bytes, contains 223 Python files and 114 offline help guides, and declares no mandatory dependencies. GPU and actual older-PC acceptance remain unavailable.
 
 Native save_pretrained may rewrite configuration files and therefore change the conservative content fingerprint. Save and reload the canonical encoder bundle before building an index intended to travel with it.
+
+Hosted platform/backend verification runs for commit `904e91a6811ef9b43d5067e48e2bb2916702f053` are recorded separately in the evidence file. Pending jobs do not establish acceptance. Native seq2seq ASR loading is exposed experimentally; this phase executed CTC speech recognition, not a seq2seq recognition-quality gate.
+
+Installed-wheel pretrained acceptance also passed offline in21.82s; measured Linux single-process lifetime RSS peak899,552KiB. That includes sequentially loaded native models and is not a process-tree or memory-quota gate. Hosted Windows minimum-classical exposed a status-file atomic-rename read race (93 passed/1 failure); bounded Windows read retries address the sharing violation while persistent access denial/corrupt JSON remain errors. Final verification is tracked separately.

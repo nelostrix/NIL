@@ -27,6 +27,26 @@ def _replace_atomic(source,target,*,windows=False):
             time.sleep(.01)
 
 
+
+def _read_json(path, *, windows=None):
+    """Read a committed record; bounded retry for Windows rename sharing races."""
+    windows=os.name=="nt" if windows is None else windows
+    path=Path(path)
+    if not windows:return json.loads(path.read_text(encoding="utf-8"))
+    import time
+    import errno
+    deadline=time.monotonic()+.5
+    while True:
+        try:return json.loads(path.read_text(encoding="utf-8"))
+        except PermissionError as error:
+            code=getattr(error,'winerror',None)
+            # Python FileIO uses CRT errno=EACCES on Windows, sometimes without
+            # winerror; native Win32 opens report sharing/access codes instead.
+            sharing=code in (5,32,33) or code is None and error.errno==errno.EACCES
+            if not sharing or time.monotonic()>=deadline:raise
+            time.sleep(.01)
+
+
 def atomic_json(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
