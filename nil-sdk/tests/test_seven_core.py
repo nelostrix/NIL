@@ -134,7 +134,7 @@ def test_plan_cancellation_before_launch_is_resumable(tool_module,tmp_path):
     assert nil.planning.run(plan,{'add':tool_module.add},resume=True,**kwargs)['completed'][0]['result']==3
 
 
-def test_dead_supervisor_recovers_instead_of_hanging(tmp_path,monkeypatch):
+def test_dead_supervisor_recovers_or_refuses_safely_without_hanging(tmp_path,monkeypatch):
     import time
     original=nil.execution.submit
     def terminate_before_start(*args,**kwargs):
@@ -145,7 +145,8 @@ def test_dead_supervisor_recovers_instead_of_hanging(tmp_path,monkeypatch):
     plan=[dict(id='one',tool='power',arguments=dict(base=2,exp=3))]
     tool=Tool(name='power',parameters={'base':{'type':'integer'},'exp':{'type':'integer'}},fn=pow)
     started=time.monotonic()
-    with pytest.raises(nil.execution.ExecutionError):
+    expected=nil.execution.ExecutionError if nil.execution.capabilities()['identity_safe_recovery'] else NotImplementedError
+    with pytest.raises(expected):
         nil.planning.run(plan,{'power':tool},allowed=['power'],journal=tmp_path/'trace.json',tool_versions={'power':'1'})
     assert time.monotonic()-started<5
     assert json.loads((tmp_path/'trace.json').read_text())['status']=='failed'

@@ -93,6 +93,11 @@ Resume reuses a completed prefix only when plan, permissions, versions and timeo
 match. Completed calls are not repeated. A crash after a side effect but before
 commit is ambiguous: failed/running steps require caller reconciliation and are
 never retried automatically. There is no exactly-once external-side-effect claim.
+On macOS, identity-safe recovery of active-job records is intentionally unsupported:
+a lost supervisor fails closed with NotImplementedError and requires manual
+reconciliation. Normal owned calls and completed-prefix resume are supported.
+The platform fault test verifies that refusal; it does not certify active-job
+recovery on macOS.
 Versions are explicit caller assertions; pin executable tool code with your run
 artifacts. Do not edit journals while a runner owns them or run simultaneous owners.
 A cancellation before a call can resume; cancellation during a call fails that step
@@ -217,3 +222,18 @@ It distinguishes real Iris/karate/recorded-audio fixtures from synthetic control
 source versus installed acceptance, and external FFmpeg acceptance. Downloaded
 development fixtures remain outside the repository/wheel; no models or recordings
 are bundled or implicitly fetched by these workflows.
+
+
+Recorded v1 results: Iris self-training 93.33% held-out accuracy; karate-club node
+classification 93.75% on 32 held-out nodes using 2 labeled training nodes. The
+synthetic audio/fusion and representation/prototype checks reached 100% on their
+small held-out controls. The active Iris round declined from 95.56% to 91.11%; its
+negative result is preserved. These are task-specific outcomes, not broad-domain
+accuracy or proof of general autonomous/audio/video intelligence.
+
+Final local installed profiles passed 189 Torch, 88 current-classical and 86 minimum-
+classical tests, zero skips, with all selected examples passing. The final hosted
+SDK regression passed 1,294 tests with 46 optional-target skips. An earlier
+concurrent local full run failed timing-sensitive execution/TLS cases and was
+interrupted; its record is retained. The serial recovery checks passed 22 cases,
+and a serial local full neural run passed 1,171 tests with 32 optional skips.
