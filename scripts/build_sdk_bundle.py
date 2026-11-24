@@ -44,6 +44,7 @@ def main():
             f"wheels/{wheel.name}": wheel,
             "README.md": root / "README.md",
             "docs/project/TODO.md": root / "docs/project/TODO.md",
+            "docs/project/RESEARCH_TODO.md": root / "docs/project/RESEARCH_TODO.md",
             "docs/MODEL_DEVELOPMENT.md": root / "docs/MODEL_DEVELOPMENT.md",
             "docs/NEURAL_RL.md": root / "docs/NEURAL_RL.md",
             "docs/SHALLOW_DESIGN.md": root / "docs/SHALLOW_DESIGN.md",
@@ -60,6 +61,10 @@ def main():
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['docs/HARDWARE_ACCEPTANCE.md'] = root / 'docs/HARDWARE_ACCEPTANCE.md'
+        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md'):
+            files['docs/'+name]=root/'docs'/name
+        files['scripts/render_workflows.py']=root/'scripts/render_workflows.py'
+        files['nil-sdk/nil/_workflows.json']=root/'nil-sdk/nil/_workflows.json'
         files['docs/PRETRAINED_CPU.md'] = root / 'docs/PRETRAINED_CPU.md'
         files['scripts/benchmark_rl.py'] = root / 'scripts/benchmark_rl.py'
         files['scripts/benchmark_native.py'] = root / 'scripts/benchmark_native.py'
@@ -67,7 +72,7 @@ def main():
         files['scripts/benchmark_rl_coverage.py'] = root / 'scripts/benchmark_rl_coverage.py'
         files['scripts/benchmark_model_coverage.py'] = root / 'scripts/benchmark_model_coverage.py'
         files['scripts/verify_neural.py'] = root / 'scripts/verify_neural.py'
-        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py','accept_pretrained.py'):
+        for name in ('accept_serving.py','_tls_acceptance.py','accept_cgroup.py','accept_backends.py','accept_low_resource.py','accept_pretrained.py','accept_vision.py'):
             files['scripts/'+name]=root/'scripts'/name
         files['scripts/accept_gpu.py'] = root / 'scripts/accept_gpu.py'
         files['scripts/accept_execution.py'] = root / 'scripts/accept_execution.py'

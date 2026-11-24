@@ -65,6 +65,7 @@ class TrainingResult:
     history: list
     checkpoint: Path | None
     status: str
+    _nil_training_result = True
 
 
 class Trainer:

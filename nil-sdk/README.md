@@ -128,3 +128,10 @@ PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests -q
 Run this from the repository root with your chosen optional dependencies. Optional backend tests may skip when dependencies are absent. The dependency-free catalog and import-isolation tests run without them.
 
 Classical and specialized workflows now include forecasting, ranking, sparse recommendation, survival, optional LightGBM/CatBoost, bounded Shapley explanations, typed transactional datasets, distributed random search and additional conformal contracts. See [supported scope and acceptance](../docs/CLASSICAL_SPECIALIZED.md).
+
+## Workflow contracts and local images
+
+`nil workflows --json` inspects a versioned, bounded workflow inventory without importing numerical backends.
+`nil help contracts` documents result metadata and family-specific API boundaries. Neural training results can be passed directly to nil.predict/nil.evaluate.
+
+Opt in to `pip install "nil-sdk[vision]"` for Pillow/Torch image loading, classification, shared label/preprocessing manifests and checkpoint inference. See `nil help vision` and the image_classification.py example. Installing NIL alone still installs only NIL.

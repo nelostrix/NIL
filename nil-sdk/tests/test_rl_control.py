@@ -54,6 +54,8 @@ def test_each_native_algorithm_trains_and_roundtrips(tmp_path, name):
     assert type(model).__name__ == name.upper()
     before = copy.deepcopy(model.policy.state_dict())
     result = nil.rl.train(model, total_timesteps=32, output_dir=tmp_path / 'runs')
+    info = nil.contracts.result_info(result)
+    assert info.family == 'rl.control' and info.actual_steps == 32 and info.requested_steps == 32
     assert result.status == 'completed' and result.actual_steps == 32
     assert any(not torch.equal(value, before[key]) for key, value in model.policy.state_dict().items())
     observation = np.zeros(1, np.float32)

@@ -1,0 +1,1659 @@
+{
+  "schema_version": 1,
+  "matrix_version": "2026.11.24.1",
+  "sdk_version": "0.2.1",
+  "release_channel": "alpha",
+  "scope": "Versioned bounded workflow inventory; not exhaustive 32-area coverage or runtime/hardware readiness",
+  "areas": [
+    {
+      "id": 1,
+      "title": "Consistent public API"
+    },
+    {
+      "id": 2,
+      "title": "Numerical foundation"
+    },
+    {
+      "id": 3,
+      "title": "Automatic differentiation"
+    },
+    {
+      "id": 4,
+      "title": "Efficient execution"
+    },
+    {
+      "id": 5,
+      "title": "Hardware support"
+    },
+    {
+      "id": 6,
+      "title": "Data system"
+    },
+    {
+      "id": 7,
+      "title": "Classical machine learning"
+    },
+    {
+      "id": 8,
+      "title": "Specialized machine learning"
+    },
+    {
+      "id": 9,
+      "title": "Deep-learning building blocks"
+    },
+    {
+      "id": 10,
+      "title": "Training engine"
+    },
+    {
+      "id": 11,
+      "title": "Model selection"
+    },
+    {
+      "id": 12,
+      "title": "Evaluation and uncertainty"
+    },
+    {
+      "id": 13,
+      "title": "Language-model workflows"
+    },
+    {
+      "id": 14,
+      "title": "Retrieval and RAG"
+    },
+    {
+      "id": 15,
+      "title": "Computer vision"
+    },
+    {
+      "id": 16,
+      "title": "Speech and audio"
+    },
+    {
+      "id": 17,
+      "title": "Video and multimodal AI"
+    },
+    {
+      "id": 18,
+      "title": "Generative modeling"
+    },
+    {
+      "id": 19,
+      "title": "Reinforcement learning"
+    },
+    {
+      "id": 20,
+      "title": "Agents and planning"
+    },
+    {
+      "id": 21,
+      "title": "Graph learning"
+    },
+    {
+      "id": 22,
+      "title": "Probabilistic and causal modeling"
+    },
+    {
+      "id": 23,
+      "title": "Other learning regimes"
+    },
+    {
+      "id": 24,
+      "title": "Distributed and large-model systems"
+    },
+    {
+      "id": 25,
+      "title": "Compression and inference optimization"
+    },
+    {
+      "id": 26,
+      "title": "Model interoperability"
+    },
+    {
+      "id": 27,
+      "title": "Serving"
+    },
+    {
+      "id": 28,
+      "title": "Experiment lifecycle"
+    },
+    {
+      "id": 29,
+      "title": "Security and privacy"
+    },
+    {
+      "id": 30,
+      "title": "Developer experience"
+    },
+    {
+      "id": 31,
+      "title": "Release engineering"
+    },
+    {
+      "id": 32,
+      "title": "Validation infrastructure"
+    }
+  ],
+  "profiles": {
+    "backend-macos-latest-classical-current": {
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-macos-latest-classical-minimum": {
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-torch-current": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-windows-latest-classical-minimum": {
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-torch-minimum": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-rl-minimum": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "gymnasium": "1.0.0",
+        "stable-baselines3": "2.4.0",
+        "sb3-contrib": "2.4.0",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-classical-minimum": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-rl-current": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "gymnasium": "1.4.0",
+        "stable-baselines3": "2.9.2",
+        "sb3-contrib": "2.9.2",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-ubuntu-latest-classical-current": {
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1016-aws-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "backend-windows-latest-classical-current": {
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-23-phase8-9-backends.json",
+      "run_url": "https://github.com/nelostrix/NIL/actions/runs/45143679440"
+    },
+    "local-vision-cpu-current": {
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.4",
+        "Pillow": "13.0.0"
+      },
+      "evidence": "docs/benchmarks/2026-11-24-vision-digits.json",
+      "run_url": null
+    }
+  },
+  "workflows": [
+    {
+      "id": "sdk.extensions",
+      "title": "Lazy model registration",
+      "area_ids": [
+        1,
+        30
+      ],
+      "api": [
+        "nil.register_model",
+        "nil.model",
+        "nil.list_models"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux",
+            "Darwin",
+            "Windows"
+          ],
+          "python": [
+            "3.10",
+            "3.11",
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Identifier, callable constructor, group and optional local help path"
+      },
+      "outputs": {
+        "description": "Native constructor object selected explicitly"
+      },
+      "limits": [
+        "Factories execute only at explicit construction; registration is process-local; names cannot replace built-ins"
+      ],
+      "evidence": [
+        "nil-sdk/tests/test_catalog.py",
+        "docs/SHALLOW_DESIGN.md"
+      ],
+      "help": "catalog"
+    },
+    {
+      "id": "sdk.offline_help",
+      "title": "Offline module/model documentation",
+      "area_ids": [
+        30
+      ],
+      "api": [
+        "nil.help",
+        "nil.documentation.topics"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux",
+            "Darwin",
+            "Windows"
+          ],
+          "python": [
+            "3.10",
+            "3.11",
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Known topic identifier"
+      },
+      "outputs": {
+        "description": "Bundled Markdown string or sorted topic list"
+      },
+      "limits": [
+        "No backend import, remote fetch or documentation server"
+      ],
+      "evidence": [
+        "nil-sdk/tests/test_catalog.py",
+        "docs/MODULE_REFERENCE.md"
+      ],
+      "help": "catalog"
+    },
+    {
+      "id": "native.tensor",
+      "title": "Independent dense tensors and autograd",
+      "area_ids": [
+        2,
+        3,
+        9
+      ],
+      "api": [
+        "nil.native.Tensor",
+        "nil.native.fit",
+        "nil.native.SGD",
+        "nil.native.Adam",
+        "nil.native.save_tensor",
+        "nil.native.load_tensor"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Finite built-in numbers, nonempty rectangular lists, optional explicit shape; native model and targets for fit"
+      },
+      "outputs": {
+        "description": "Rank0\u20138 float64 CPU Tensor, matching-shape leaf gradients; fit mapping with model/history/steps"
+      },
+      "limits": [
+        "100,000 elements per tensor; no zero-size dimensions or GPU operators; legacy scalar/vector normalization retained"
+      ],
+      "evidence": [
+        "docs/NATIVE_ENGINE.md",
+        "nil-sdk/tests/test_native_nd.py",
+        "nil-sdk/tests/test_native_multiclass.py"
+      ],
+      "help": "native"
+    },
+    {
+      "id": "native.sparse",
+      "title": "Independent COO/CSR algebra",
+      "area_ids": [
+        2,
+        3
+      ],
+      "api": [
+        "nil.native.SparseCOO",
+        "nil.native.SparseCSR",
+        "nil.native.save_sparse",
+        "nil.native.load_sparse"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Explicit rank2 coordinates/row pointers, finite values and positive logical shape"
+      },
+      "outputs": {
+        "description": "Sparse container or bounded dense result; gradients reach supplied values/dense operands"
+      },
+      "limits": [
+        "100,000 stored entries/dense result; no implicit densification or sparse\u00d7sparse"
+      ],
+      "evidence": [
+        "docs/NATIVE_ENGINE.md",
+        "nil-sdk/tests/test_native_sparse.py"
+      ],
+      "help": "native"
+    },
+    {
+      "id": "native.compiled_cpu",
+      "title": "Explicit compiled matmul and gradients",
+      "area_ids": [
+        4
+      ],
+      "api": [
+        "nil.native.build_cpu_kernel",
+        "nil.native.load_cpu_kernel"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [
+        "Linux C compiler",
+        "Matching CPython development headers"
+      ],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Fresh output directory, trusted ABI-matching kernel, Tensor.matmul(kernel=...)"
+      },
+      "outputs": {
+        "description": "Locally built kernel or float64 matmul result with VJPs"
+      },
+      "limits": [
+        "Only explicit opt-in; Linux/CPython target; no automatic compilation or general operator acceleration"
+      ],
+      "evidence": [
+        "docs/NATIVE_ENGINE.md",
+        "docs/benchmarks/2026-11-23-native-cpu-kernels.json"
+      ],
+      "help": "native"
+    },
+    {
+      "id": "classical.supervised",
+      "title": "Classical fit/predict/evaluate/persistence",
+      "area_ids": [
+        7,
+        26
+      ],
+      "api": [
+        "nil.fit",
+        "nil.predict",
+        "nil.evaluate",
+        "nil.save",
+        "nil.load"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-macos-latest-classical-current",
+        "backend-macos-latest-classical-minimum",
+        "backend-windows-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-current",
+        "backend-windows-latest-classical-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux",
+            "Darwin",
+            "Windows"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Estimator, row-aligned features/targets, optional nonnegative weights and held-out validation"
+      },
+      "outputs": {
+        "description": "ClassicalResult with model/run/metrics/task/warnings/status; prediction arrays or versioned trusted bundle"
+      },
+      "limits": [
+        "Backend estimator parameters remain explicit; trust required for executable artifact loading"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_ML.md",
+        "nil-sdk/tests/test_classical_workflow.py"
+      ],
+      "help": "classical"
+    },
+    {
+      "id": "classical.validation",
+      "title": "Pipelines, leakage-safe CV and search",
+      "area_ids": [
+        6,
+        11,
+        12
+      ],
+      "api": [
+        "nil.pipeline",
+        "nil.split",
+        "nil.cross_validate",
+        "nil.tune"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-macos-latest-classical-current",
+        "backend-macos-latest-classical-minimum",
+        "backend-windows-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-current",
+        "backend-windows-latest-classical-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux",
+            "Darwin",
+            "Windows"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Unfitted pipeline, features/targets, explicit split/CV/search parameters and fit budgets"
+      },
+      "outputs": {
+        "description": "Split/CV/search results preserving held-out boundaries"
+      },
+      "limits": [
+        "Declared group/temporal/nested contracts; adaptive distributed search is separately scoped"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_ML.md",
+        "nil-sdk/tests/test_classical_validation.py"
+      ],
+      "help": "validation"
+    },
+    {
+      "id": "classical.unsupervised",
+      "title": "Unsupervised catalog workflows",
+      "area_ids": [
+        7
+      ],
+      "api": [
+        "nil.model",
+        "nil.fit",
+        "nil.transform"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-macos-latest-classical-current",
+        "backend-macos-latest-classical-minimum",
+        "backend-windows-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-minimum",
+        "backend-ubuntu-latest-classical-current",
+        "backend-windows-latest-classical-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Selected estimator and finite compatible feature representation"
+      },
+      "outputs": {
+        "description": "Fitted ClassicalResult, labels/projections or task metrics"
+      },
+      "limits": [
+        "Supported paths depend on estimator predict/transform methods; catalog aliases are not independent implementations"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_ML.md",
+        "nil-sdk/tests/test_classical_models.py"
+      ],
+      "help": "classical"
+    },
+    {
+      "id": "specialized.forecasting",
+      "title": "Fixed-horizon forecasting",
+      "area_ids": [
+        8
+      ],
+      "api": [
+        "nil.forecasting.fit"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Ordered univariate series, lags/horizon and fixed-cadence calendar options"
+      },
+      "outputs": {
+        "description": "Scoped forecaster and rolling-origin reports"
+      },
+      "limits": [
+        "Not a general ARIMA, multivariate, irregular or hierarchical suite"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_SPECIALIZED.md",
+        "nil-sdk/tests/test_specialized_ml.py"
+      ],
+      "help": "forecasting"
+    },
+    {
+      "id": "specialized.ranking",
+      "title": "Query-group ranking",
+      "area_ids": [
+        8
+      ],
+      "api": [
+        "nil.ranking.fit",
+        "nil.ranking.evaluate"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "lightgbm",
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Features, relevance grades and explicit query groups"
+      },
+      "outputs": {
+        "description": "Ranker and per-query ranking metrics"
+      },
+      "limits": [
+        "No unbiased click-feedback/causal-ranking guarantee"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_SPECIALIZED.md",
+        "nil-sdk/tests/test_specialized_ml.py"
+      ],
+      "help": "ranking"
+    },
+    {
+      "id": "specialized.recommendation",
+      "title": "Sparse recommendation baseline",
+      "area_ids": [
+        8
+      ],
+      "api": [
+        "nil.recommendation.fit",
+        "nil.recommendation.evaluate"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "User/item interactions with explicit candidate/co-occurrence budgets"
+      },
+      "outputs": {
+        "description": "Item-cosine/popularity recommendations and held-out ranking metrics"
+      },
+      "limits": [
+        "No neural/ALS or vector-database claim"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_SPECIALIZED.md",
+        "nil-sdk/tests/test_specialized_ml.py"
+      ],
+      "help": "recommendation"
+    },
+    {
+      "id": "specialized.survival",
+      "title": "Right-censored survival integration",
+      "area_ids": [
+        8
+      ],
+      "api": [
+        "nil.survival.fit",
+        "nil.survival.evaluate"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "lifelines",
+        "scikit-learn"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Features, durations and event indicators"
+      },
+      "outputs": {
+        "description": "Cox/Kaplan\u2013Meier outputs and scoped concordance"
+      },
+      "limits": [
+        "No competing risks, time-varying or clinical validity claim"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_SPECIALIZED.md",
+        "nil-sdk/tests/test_specialized_ml.py"
+      ],
+      "help": "survival"
+    },
+    {
+      "id": "data.snapshots",
+      "title": "Bounded immutable JSONL data",
+      "area_ids": [
+        6,
+        28
+      ],
+      "api": [
+        "nil.data.snapshot",
+        "nil.data.load_snapshot"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "JSON-compatible records and explicit byte/record budgets"
+      },
+      "outputs": {
+        "description": "Immutable JSONL snapshot and manifest; fresh Records on load"
+      },
+      "limits": [
+        "Local data only; no Arrow dtype or external broker transaction claim"
+      ],
+      "evidence": [
+        "docs/CLASSICAL_SPECIALIZED.md",
+        "nil-sdk/tests/test_typed_datasets.py"
+      ],
+      "help": "data"
+    },
+    {
+      "id": "neural.supervised",
+      "title": "Torch model training and evaluation",
+      "area_ids": [
+        9,
+        10
+      ],
+      "api": [
+        "nil.train",
+        "nil.predict",
+        "nil.evaluate",
+        "nil.training.checkpoint.save",
+        "nil.training.checkpoint.load"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "numpy"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Torch module and dataset/loader of inputs/targets or declared custom task batches"
+      },
+      "outputs": {
+        "description": "TrainingResult(model/run/history/checkpoint/status); task metrics/predictions"
+      },
+      "limits": [
+        "Exact resume only for declared loader/config/epoch contracts; generic artifact save remains classical-specific"
+      ],
+      "evidence": [
+        "docs/NEURAL_RL.md",
+        "nil-sdk/tests/test_dl_correctness.py"
+      ],
+      "help": "training"
+    },
+    {
+      "id": "neural.distributed_cpu",
+      "title": "CPU DDP/FSDP training and shards",
+      "area_ids": [
+        24
+      ],
+      "api": [
+        "nil.distributed.train"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "numpy"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "CPU module, tensors and explicit fixed-world distributed options"
+      },
+      "outputs": {
+        "description": "Native exported model plus checkpoint/shard diagnostics"
+      },
+      "limits": [
+        "Two-rank CPU contracts; exact trusted shard resume has version/world/data restrictions; no multi-host/GPU acceptance"
+      ],
+      "evidence": [
+        "docs/NEURAL_RL.md",
+        "nil-sdk/tests/test_fsdp_training.py"
+      ],
+      "help": "distributed"
+    },
+    {
+      "id": "rl.control",
+      "title": "Native environment-training integrations",
+      "area_ids": [
+        19
+      ],
+      "api": [
+        "nil.rl.create",
+        "nil.rl.train",
+        "nil.rl.evaluate",
+        "nil.rl.save",
+        "nil.rl.load"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "gymnasium",
+        "stable-baselines3"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-rl-minimum",
+        "backend-ubuntu-latest-rl-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Supported algorithm and compatible environment; explicit timesteps/evaluation environment"
+      },
+      "outputs": {
+        "description": "RLTrainingResult(model/run/requested_steps/actual_steps/status); trusted policy bundles"
+      },
+      "limits": [
+        "Simulator continuation limited to declared CPU DQN/PPO/A2C protocol environments"
+      ],
+      "evidence": [
+        "docs/NEURAL_RL.md",
+        "nil-sdk/tests/test_rl_snapshot.py"
+      ],
+      "help": "rl"
+    },
+    {
+      "id": "rl.offline",
+      "title": "Offline imitation and discrete CQL",
+      "area_ids": [
+        19
+      ],
+      "api": [
+        "nil.rl.offline_fit"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "numpy"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-rl-minimum",
+        "backend-ubuntu-latest-rl-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Bounded explicit transition/action arrays, masks and matching config"
+      },
+      "outputs": {
+        "description": "OfflineResult with model/history/checkpoint/status"
+      },
+      "limits": [
+        "Discrete CQL is not continuous CQL/IQL; no arbitrary OOD quality guarantee"
+      ],
+      "evidence": [
+        "docs/NEURAL_RL.md",
+        "docs/benchmarks/2026-11-23-rl-coverage.json"
+      ],
+      "help": "rl"
+    },
+    {
+      "id": "rl.parallel",
+      "title": "Masked parallel collection and centralized offline AWR",
+      "area_ids": [
+        19
+      ],
+      "api": [
+        "nil.rl.collect_multiagent",
+        "nil.rl.centralized_fit"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "numpy",
+        "gymnasium"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-rl-minimum",
+        "backend-ubuntu-latest-rl-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Explicit parallel environment/policies or aligned agent datasets and team returns"
+      },
+      "outputs": {
+        "description": "Per-agent arrays or CentralizedResult(policies/critic/history/checkpoint/status)"
+      },
+      "limits": [
+        "Fixed-cohort offline AWR is not online MAPPO; truncation requires authoritative terminal metadata"
+      ],
+      "evidence": [
+        "docs/NEURAL_RL.md",
+        "docs/benchmarks/2026-11-23-rl-coverage.json"
+      ],
+      "help": "rl"
+    },
+    {
+      "id": "generative.pretrained_cpu",
+      "title": "Pinned pretrained CPU inference and LoRA",
+      "area_ids": [
+        13
+      ],
+      "api": [
+        "nil.generative.load_causal_lm",
+        "nil.generative.generate",
+        "nil.generative.lora"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "transformers",
+        "peft"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Explicit pinned local safetensors snapshot/tokenizer; token windows and adapter config"
+      },
+      "outputs": {
+        "description": "Native model/tokenizer, generated text, NLL reports and adapter artifacts"
+      },
+      "limits": [
+        "Declared134.5M SmolLM2 target; no download at install/import; no billion/GPU/all-architecture acceptance"
+      ],
+      "evidence": [
+        "docs/PRETRAINED_CPU.md",
+        "docs/benchmarks/2026-11-23-pretrained-135m.json"
+      ],
+      "help": "generative"
+    },
+    {
+      "id": "optimization.cpu_quantization",
+      "title": "CPU quantization and INT8 weight storage",
+      "area_ids": [
+        25
+      ],
+      "api": [
+        "nil.optimization.quantize"
+      ],
+      "implementation": "hybrid",
+      "validation": "validated",
+      "requires": [
+        "torch"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Compatible CPU model; explicit method, exclusions and numerical tolerance"
+      },
+      "outputs": {
+        "description": "Owned quantized model preserving caller state"
+      },
+      "limits": [
+        "Weight-only mode uses FP32 compute; dynamic activation INT8 failed the declared SmolLM2 tolerance; no automatic speedup"
+      ],
+      "evidence": [
+        "docs/PRETRAINED_CPU.md",
+        "docs/benchmarks/2026-11-23-model-coverage.json"
+      ],
+      "help": "optimization"
+    },
+    {
+      "id": "execution.owned_workers",
+      "title": "Owned process-tree execution",
+      "area_ids": [
+        1,
+        29
+      ],
+      "api": [
+        "nil.execution.run",
+        "nil.execution.submit"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux",
+            "Darwin",
+            "Windows"
+          ],
+          "python": [
+            "3.10",
+            "3.11",
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Explicit trusted worker target, data and resource/deadline limits"
+      },
+      "outputs": {
+        "description": "Result or typed execution error with durable status/recovery record"
+      },
+      "limits": [
+        "Trusted-code ownership, not hostile-code sandbox; Windows requires creation-time Job Object support"
+      ],
+      "evidence": [
+        "docs/WINDOWS_EXECUTION.md",
+        "docs/BACKEND_COMPATIBILITY.md"
+      ],
+      "help": "execution"
+    },
+    {
+      "id": "execution.linux_memory",
+      "title": "Linux kernel memory containment",
+      "area_ids": [
+        5,
+        29
+      ],
+      "api": [
+        "nil.execution.Limits",
+        "nil.execution.run"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [
+        "Owned delegated Linux cgroup-v2 subtree"
+      ],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Explicit delegated cgroup-v2 subtree and job limits"
+      },
+      "outputs": {
+        "description": "Kernel-contained job plus memory/OOM evidence"
+      },
+      "limits": [
+        "Delegation required; no global controller mutation or hard GPU quota claim"
+      ],
+      "evidence": [
+        "docs/DEPLOYMENT.md",
+        "docs/benchmarks/2026-11-22-cgroup-kernel.json"
+      ],
+      "help": "execution"
+    },
+    {
+      "id": "serving.managed_cpu",
+      "title": "Managed single-tenant TLS inference reference",
+      "area_ids": [
+        27,
+        29
+      ],
+      "api": [
+        "nil.serving.create_gateway",
+        "nil.serving.client",
+        "nil.serving.create_isolated_server"
+      ],
+      "implementation": "hybrid",
+      "validation": "validated",
+      "requires": [
+        "torch"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "backend-ubuntu-latest-torch-current",
+        "backend-ubuntu-latest-torch-minimum"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Trusted CPU model, explicit credentials/TLS and bounded request budgets"
+      },
+      "outputs": {
+        "description": "Isolated inference, authenticated gateway/client and aggregate metrics"
+      },
+      "limits": [
+        "Gateway/client themselves use stdlib only; reference is not audited public/multi-tenant ingress"
+      ],
+      "evidence": [
+        "docs/DEPLOYMENT.md",
+        "nil-sdk/tests/test_tls_inference.py"
+      ],
+      "help": "serving"
+    },
+    {
+      "id": "gpu.mixed_precision",
+      "title": "Real CUDA AMP acceptance",
+      "area_ids": [
+        5,
+        10
+      ],
+      "api": [
+        "nil.train"
+      ],
+      "implementation": "integration",
+      "validation": "target_blocked",
+      "requires": [
+        "torch"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [],
+          "python": [],
+          "device": "cuda"
+        }
+      ],
+      "inputs": {
+        "description": "Suitable explicitly provisioned target"
+      },
+      "outputs": {
+        "description": "Acceptance report only after real target execution"
+      },
+      "limits": [
+        "Actual CUDA FP16/BF16/overflow/resume acceptance not run here"
+      ],
+      "evidence": [
+        "docs/project/PHASES.md"
+      ],
+      "help": "training"
+    },
+    {
+      "id": "gpu.distributed",
+      "title": "Real GPU distributed/sharded acceptance",
+      "area_ids": [
+        24
+      ],
+      "api": [
+        "nil.distributed.train"
+      ],
+      "implementation": "integration",
+      "validation": "target_blocked",
+      "requires": [
+        "torch"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [],
+          "python": [],
+          "device": "cuda"
+        }
+      ],
+      "inputs": {
+        "description": "Suitable explicitly provisioned target"
+      },
+      "outputs": {
+        "description": "Acceptance report only after real target execution"
+      },
+      "limits": [
+        "Requires two supported GPUs/NCCL; CPU passes do not certify this target"
+      ],
+      "evidence": [
+        "docs/project/PHASES.md"
+      ],
+      "help": "distributed"
+    },
+    {
+      "id": "gpu.native_engine",
+      "title": "Independent GPU operators and hard VRAM containment",
+      "area_ids": [
+        4,
+        5
+      ],
+      "api": [],
+      "implementation": "unimplemented",
+      "validation": "target_blocked",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [],
+          "python": [],
+          "device": "cuda"
+        }
+      ],
+      "inputs": {
+        "description": "Suitable explicitly provisioned target"
+      },
+      "outputs": {
+        "description": "Acceptance report only after real target execution"
+      },
+      "limits": [
+        "Device-specific kernels/aggregate VRAM quotas are not implemented/validated"
+      ],
+      "evidence": [
+        "docs/project/PHASES.md"
+      ],
+      "help": "native"
+    },
+    {
+      "id": "hardware.old_pc",
+      "title": "Physical older-PC acceptance",
+      "area_ids": [
+        5,
+        32
+      ],
+      "api": [],
+      "implementation": "native",
+      "validation": "target_blocked",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [],
+          "python": [],
+          "device": "target-specific"
+        }
+      ],
+      "inputs": {
+        "description": "Suitable explicitly provisioned target"
+      },
+      "outputs": {
+        "description": "Acceptance report only after real target execution"
+      },
+      "limits": [
+        "Constrained modern-host benchmarks do not certify old ISA/cache/storage"
+      ],
+      "evidence": [
+        "docs/project/PHASES.md"
+      ],
+      "help": "coverage"
+    },
+    {
+      "id": "serving.public",
+      "title": "Public or multi-tenant deployment acceptance",
+      "area_ids": [
+        27,
+        29
+      ],
+      "api": [],
+      "implementation": "unimplemented",
+      "validation": "target_blocked",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [],
+          "python": [],
+          "device": "target-specific"
+        }
+      ],
+      "inputs": {
+        "description": "Suitable explicitly provisioned target"
+      },
+      "outputs": {
+        "description": "Acceptance report only after real target execution"
+      },
+      "limits": [
+        "Actual deployment host, authorization/revocation and workload SLO acceptance remain open"
+      ],
+      "evidence": [
+        "docs/project/PHASES.md"
+      ],
+      "help": "serving"
+    },
+    {
+      "id": "vision.classification",
+      "title": "Bounded local image classification and checkpoint inference",
+      "area_ids": [
+        6,
+        9,
+        12,
+        15,
+        26
+      ],
+      "api": [
+        "nil.vision.ImageTransform",
+        "nil.vision.image_folders",
+        "nil.vision.classify"
+      ],
+      "implementation": "integration",
+      "validation": "validated",
+      "requires": [
+        "torch",
+        "Pillow",
+        "numpy"
+      ],
+      "prerequisites": [],
+      "tested_profiles": [
+        "local-vision-cpu-current"
+      ],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Local root/class/file images; shared class order; EXIF/RGB/white-alpha/bilinear/CHW float32 preprocessing with byte/pixel/inventory limits."
+      },
+      "outputs": {
+        "description": "Lazy map dataset, neural TrainingResult, held-out loss/accuracy, JSON preprocessing/label manifest, checkpoint and streamed labels/probabilities."
+      },
+      "limits": [
+        "1000 training/300 held-out real digits; 89.3% accuracy, not natural-image accuracy.",
+        "Default 16MiB encoded/4M source pixels per image; no decoded cache.",
+        "Detection/segmentation/OCR/tracking, pretrained backbones, export and serving acceptance are open."
+      ],
+      "evidence": [
+        "docs/VISION.md",
+        "docs/benchmarks/2026-11-24-vision-digits.json",
+        "nil-sdk/tests/test_vision.py"
+      ],
+      "help": "vision"
+    },
+    {
+      "id": "sdk.result_contract",
+      "title": "Backend-neutral result metadata and neural result dispatch",
+      "area_ids": [
+        1,
+        30
+      ],
+      "api": [
+        "nil.contracts.result_info",
+        "nil.contracts.MapDataset",
+        "nil.contracts.Predictor",
+        "nil.contracts.SingleModelResult"
+      ],
+      "implementation": "native",
+      "validation": "validated",
+      "requires": [],
+      "prerequisites": [],
+      "tested_profiles": [],
+      "targets": [
+        {
+          "os": [
+            "Linux"
+          ],
+          "python": [
+            "3.12"
+          ],
+          "device": "cpu"
+        }
+      ],
+      "inputs": {
+        "description": "Supported native, classical, neural, online/offline/centralized RL training outcomes; numerical backends only to construct those outcomes."
+      },
+      "outputs": {
+        "description": "Schema-1 ResultInfo metadata (family, status, counts, paths, steps), without weights; prediction/evaluation also accept neural TrainingResult."
+      },
+      "limits": [
+        "Structural protocols do not validate backend types or tensor shapes.",
+        "Family-specific data, callbacks, cancellation and persistence remain explicit; alpha contract."
+      ],
+      "evidence": [
+        "docs/SDK_CONTRACTS.md",
+        "nil-sdk/tests/test_framework_contracts.py",
+        "nil-sdk/tests/test_neural_result_contract.py",
+        "nil-sdk/tests/test_classical_result_contract.py",
+        "nil-sdk/tests/test_rl_control.py",
+        "nil-sdk/tests/test_rl_centralized.py",
+        "nil-sdk/tests/test_offline_neural_rl.py"
+      ],
+      "help": "contracts"
+    }
+  ]
+}

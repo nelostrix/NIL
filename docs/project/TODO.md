@@ -1,6 +1,6 @@
 # NIL AI framework master TODO
 
-Updated: 2026-11-23. This is the active backlog for the 32-area capability map.
+Updated: 2026-11-24. This is the active backlog for the 32-area capability map.
 It includes extensions to existing functionality as well as new work. An unchecked
 area is not a claim that NIL has no implementation there. Audit existing modules,
 contracts and evidence before adding another implementation or dependency.
@@ -11,15 +11,22 @@ the historical section below; their old open boxes are not the current master st
 
 ## Completion contract and architecture
 
-- [ ] Publish a versioned supported-workflow matrix: API, input/output schema,
+- [x] Publish a versioned supported-workflow matrix: API, input/output schema,
   native/integration status, backend versions, OS/device, limits and evidence.
-- [ ] Define the stable SDK release boundary against that matrix, including the
+- [x] Define the stable SDK release boundary against that matrix, including the
   intentionally unsupported combinations. Do not infer worldwide AI coverage from
   constructor counts, adapters or the length of this backlog.
-- [ ] Label each declared capability as implemented, validated, experimental,
+- [x] Label each declared capability as implemented, validated, experimental,
   integration-only, target-blocked or unsupported; distinguish these in CLI/help.
-- [ ] Define independent-engine milestones separately from unified SDK coverage.
+- [x] Define independent-engine milestones separately from unified SDK coverage.
   Optional backend APIs do not imply NIL-owned numerical execution.
+
+Evidence for these bounded foundation deliverables: [workflow inventory](../WORKFLOWS.md),
+[SDK contracts/release criteria](../SDK_CONTRACTS.md), `nil workflows --json`,
+`nil help coverage` and `nil help contracts`. Stable release criteria are defined;
+NIL is still alpha. The inventory has 30 scoped records, not 32 completed areas.
+[2026-11-24 validation](../benchmarks/2026-11-24-framework.json): all nine base
+platform jobs and ten backend jobs passed; full SDK: 1,253 passed with 46 optional skips.
 
 Permanent constraints: base installation adds only nil-sdk; imports start no model
 loads/downloads, compilation, processes or services. Backends, accelerators, model
@@ -64,14 +71,39 @@ These checks certify their documented subsets, not the full categories below.
 | D | Production serving and trust boundaries: 27, 29 | Acceptance on a chosen deployment with authorization, failure recovery and workload SLO evidence |
 | E | Specialist extensions: 21–23 and optional domains | Independently scoped plugins with validated user workloads; no mandatory core dependencies |
 
+Current user priority: establish research readiness for efficient training,
+address-based cross-computer execution, explicit RAM/SSD offload and compact
+intelligence. Follow the [ordered research TODO](RESEARCH_TODO.md) and
+[capability audit](../RESEARCH_READINESS.md) before claiming larger-model readiness.
+The first foundation and classification deliverables remain complete; this does
+not close every Wave A gate, all computer-vision work or the research program.
+
 Within each wave, inventory and repair existing paths before expansion. Hardware
 or deployment gates can remain blocked while unrelated software work proceeds.
 New specialist rows are optional extension scope, not prerequisites for every SDK
 release. Revisit priorities using actual supported user workloads.
 
+## Research program and previously requested workflows
+
+The [research TODO](RESEARCH_TODO.md) covers recursive computation, adaptive
+thinking, external knowledge, low-bit execution, neuro-symbolic tools,
+distillation and alternative architectures; it also tracks cross-computer
+orchestration, configurable memory/storage budgets, measurement and scale gates.
+It preserves the seven requested incomplete workflow areas:14,20,22,23,16,17,21.
+A small custom-model smoke does not complete these areas. The first full study
+is approximately1M versus10M parameters;10–20B versus100B–1T remains a research
+target requiring resources and per-task evidence, not a promised capability.
+
 ## Capability backlog — all 32 areas
 
 ### 1. Consistent public API — Wave A
+
+- [x] Add backend-neutral structural dataset/predictor/result protocols and
+  schema-1 metadata for native, classical, neural and online/offline/centralized
+  RL outcomes. Accept neural TrainingResult directly in predict/evaluate and
+  verify mode restoration, errors and real outcome families.
+- [x] Ship passive workflow discovery, metadata-only availability, CLI and offline
+  help; verify NIL-only packaging and no backend/process/network work during discovery.
 
 - [ ] Audit model/data/result/config/error contracts across fit/train/predict,
   evaluate, persistence and serving; document intentional task-specific differences.
@@ -198,6 +230,12 @@ release. Revisit priorities using actual supported user workloads.
   expose index/backend requirements as explicit integrations.
 
 ### 15. Computer vision — Wave C
+
+- [x] Add the local classification subset: bounded lazy image decoding, EXIF/RGB/
+  alpha/resize semantics, shared train/test classes, CNN training, held-out metrics,
+  JSON preprocessing/label manifest and checkpoint inference. Validate file failures,
+  exact reload and real 1000/300 handwritten-digit split (89.33% held-out accuracy).
+  [Image guide and measured limits](../VISION.md).
 
 - [ ] Define end-to-end classification, detection, segmentation, tracking, OCR and
   image-retrieval contracts beyond existing construction/training examples.

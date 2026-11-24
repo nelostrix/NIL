@@ -22,6 +22,7 @@ python -m pip install .
 python -m nil models
 python -m nil help --list
 python -m nil doctor
+python -m nil workflows
 ```
 
 The dependency-free numerical subset can train small dense CPU models directly:
@@ -48,6 +49,7 @@ neural and specialized workflows use explicitly installed backends:
 | `python -m pip install '.[classical]'` | scikit-learn constructors, pipelines and validation |
 | `python -m pip install '.[boosting-cpu]'` | CPU XGBoost integration |
 | `python -m pip install '.[lightgbm,catboost,survival]'` | Specialized boosting and survival integrations |
+| `python -m pip install '.[vision]'` | Local image loading, classification and checkpoint inference |
 | `python -m pip install '.[torch]'` | Torch training, evaluation and distributed workflows |
 | `python -m pip install '.[generative]'` | Local causal models, LoRA and perplexity |
 | `python -m pip install '.[rl]'` | Gymnasium/SB3 environment training |
@@ -56,7 +58,9 @@ neural and specialized workflows use explicitly installed backends:
 
 Choose Torch wheels for your hardware explicitly. Selecting an extra requests its
 additional packages; NIL does not install backends automatically during execution.
-See the [installation contract](docs/INSTALLATION.md).
+See the [installation contract](docs/INSTALLATION.md), [versioned workflow inventory](docs/WORKFLOWS.md)
+and [SDK contracts](docs/SDK_CONTRACTS.md). Image workflows have an explicit
+[preprocessing, label and resource contract](docs/VISION.md).
 
 ## Classical machine learning
 
@@ -188,3 +192,19 @@ python scripts/build_sdk_bundle.py --output dist
 The bundle builder verifies a fresh offline installation adds only NIL. A skipped
 optional test is not acceptance for that feature. GPU tests require real devices;
 Windows acceptance requires Windows rather than portable mocks.
+
+## Research readiness
+
+NIL is being prepared for efficient training and compact-model experiments:
+shared/repeated computation, adaptive depth, distillation, retrieval/tools, low-bit
+execution and alternative architectures. The [readiness audit](docs/RESEARCH_READINESS.md)
+distinguishes existing support from missing acceptance, and the
+[research TODO](docs/project/RESEARCH_TODO.md) orders the work. Address-based
+multi-host orchestration and SSD training offload remain future implementations.
+A10–20B model matching a named100B–1T baseline is a research target, not a current
+capability or a guaranteed outcome.
+
+`python -I nil-sdk/examples/compact_research.py --output /tmp/nil-compact-smoke`
+runs a tiny offline CPU compatibility example with explicit Torch dependencies.
+It tests shared attention, frozen-logit distillation and checkpoint reload;
+it is not a useful language-model or intelligence benchmark.

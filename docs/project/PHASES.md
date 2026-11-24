@@ -306,3 +306,42 @@ Installed Torch/native/service/preparation checks pass131 tests with zero skips.
 The final pure wheel matches204 Python sources, includes no model/native binary
 payload and installs only nil-sdk through a fresh offline resolver. Actual GPU,
 physical older-PC, broader large architectures and public deployment remain open.
+
+
+## 2026-11-24 expanded roadmap: foundations, then images
+
+Implemented the first framework boundary: versioned passive workflow inventory,
+CLI/package discovery, structural protocols and schema-1 result metadata. Fixed
+neural TrainingResult dispatch in shared prediction/evaluation. Defined the alpha
+release/stability boundary and separate independent-engine milestones in
+[SDK_CONTRACTS.md](../SDK_CONTRACTS.md); declarations are bounded by
+[WORKFLOWS.md](../WORKFLOWS.md).
+
+Then implemented local image classification: lazy bounded preprocessing, shared
+labels, training/evaluation, manifest and exact checkpoint inference. Real held-out
+digit acceptance reached 89.33% (300 images), 29.93 seconds and 333,979,648-byte
+peak child RSS on the current CPU host. See [VISION.md](../VISION.md).
+
+These are checked subitems in the 32-area master, not completion of all SDK or
+vision requirements. Callback/cancellation convergence, broader data/evaluation
+and artifact contracts, detection/segmentation/OCR/tracking/retrieval, pretrained
+visual backbones and export/serving acceptance remain open. Existing actual GPU,
+older-PC and public deployment gates remain unchanged.
+
+
+## Research-readiness priority — 2026-11-24
+
+The compact-intelligence and efficient-learning objectives now have a separate
+[capability audit](../RESEARCH_READINESS.md) and [ordered research TODO](RESEARCH_TODO.md).
+The order is local framework proof, experiment protocol, measurement, recursive/
+adaptive research, then justified retrieval/tools/distillation/low-bit extensions
+and actual multi-host/offload acceptance. Previously requested audio/video/graph,
+probabilistic/causal and other learning-regime workflows remain tracked.
+
+A CPU recipe tests repeated shared attention, frozen-logit distillation, real
+training and checkpoint reload; dedicated tests verify shared gradient accounting,
+loss normalization, exact resume and depth-mismatch rejection. This is a tiny
+synthetic compatibility check, not the proposed1M/10M experiment or evidence of
+1T-level intelligence. Current strict distributed FSDP does not support this
+shared-parameter architecture, and training FLOP/energy measurement and SSD
+training offload still need implementation and target acceptance.

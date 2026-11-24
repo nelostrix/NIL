@@ -79,3 +79,16 @@ passes. [Base run45143679690](https://github.com/nelostrix/NIL/actions/runs/4514
 passes all nine OS/Python3.10–3.12 cells, and
 [full SDK run45143679678](https://github.com/nelostrix/NIL/actions/runs/45143679678)
 also passes. Base success still does not imply every optional backend combination.
+
+## Framework/image follow-on — 2026-11-24
+
+The explicit Torch profile now includes Pillow, framework result contracts and
+image classification/checkpoint inference; minimum-family codec is Pillow10.4.0,
+current codec range >=10.4,<14. No codec is added to the base wheel. Local regular-
+wheel acceptance: Torch153/RL36/classical-current70/classical-minimum68 tests,
+zero skips, all examples passing. See [recorded framework evidence](benchmarks/2026-11-24-framework.json).
+Hosted full SDK run [45365343601](https://github.com/nelostrix/NIL/actions/runs/45365343601)
+passed 1,253 tests with 46 optional-target skips. All nine Linux/macOS/Windows base jobs and all ten declared backend jobs passed
+at verification commit `318e453`. The [base run](https://github.com/nelostrix/NIL/actions/runs/45365343708)
+and [backend run](https://github.com/nelostrix/NIL/actions/runs/45365343865)
+cover these new contracts; hardware targets remain separate.

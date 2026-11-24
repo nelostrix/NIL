@@ -5,6 +5,7 @@ from nil.runtime import device, move, require
 
 def predict(model, inputs, device_name="auto", **options):
     from nil._classical_common import is_classical, is_rl, unwrap
+    model = unwrap(model)
     if is_rl(model):
         if device_name != 'auto':
             raise ValueError('Configure RL devices when constructing/loading the native algorithm')
