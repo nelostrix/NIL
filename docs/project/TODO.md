@@ -105,6 +105,9 @@ SDK 1294 passed/46 optional skips. [Evidence](../benchmarks/2026-11-24-seven-wor
 The [advanced workflow phase](../ADVANCED_WORKFLOWS.md) extends each of these
 seven areas. Its checked subitems below are bounded additions; broad acceptance
 requirements and the research program remain open.
+Final advanced-phase verification: 1,321 hosted SDK tests passed (46 optional skips),
+all nine base-platform jobs and ten installed-backend jobs passed. Local regression:
+1,198 passed/32 optional skips. [Recorded evidence](../benchmarks/2026-11-24-advanced-workflows.json).
 
 ## Capability backlog — all 32 areas
 
@@ -267,8 +270,11 @@ requirements and the research program remain open.
 - [x] Ship bounded PCM WAV/channel/rate/segment/spectral workflows and actual audio classification/reload; validate real recorded speech/whistle decoding separately from synthetic quality.
   [v1 scope and evidence](../SEVEN_WORKFLOWS.md). Advanced requirements below remain open.
 
-- [x] Add local native CTC/seq2seq recognition and VITS generation adapters, exclusive PCM export, WER and explicit SciPy polyphase resampling; validate native execution and reload separately from unmeasured quality.
+- [x] Add local native CTC recognition, an experimental seq2seq loader, and VITS generation adapters, exclusive PCM export, WER and explicit SciPy polyphase resampling; validate native execution and reload separately from unmeasured quality.
   [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
+- [x] Add incremental fixed-window recognition with arbitrary-block input, explicit absolute offsets, pending-audio snapshots, model identity checks and failure rollback; recurrent streaming/VAD/diarization remain open.
+  [Contracts, examples, limits and acceptance](../CONTINUED_WORKFLOWS.md).
 
 - [ ] Define waveform/sample-rate/channel, spectrogram, feature and alignment
   contracts; add bounded preprocessing and augmentation.
@@ -333,6 +339,9 @@ requirements and the research program remain open.
 - [x] Add independently checked weighted/directed GCN operations, true-nonedge sampling, leakage-aware link splits and bounded CPU neighborhood sampling.
   [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
 
+- [x] Add bounded heterogeneous relation-mean node learning, bipartite mean/gradient references, typed graph snapshots, schema-bound checkpoint reload and synthetic held-out-label learning.
+  [Contracts, examples, limits and acceptance](../CONTINUED_WORKFLOWS.md).
+
 - [ ] Define graph data, sparse storage, sampling and batching contracts before
   adding node/edge/graph prediction and link-prediction workflows.
 - [ ] Add selected message-passing, heterogeneous-graph and embedding integrations
@@ -361,6 +370,9 @@ requirements and the research program remain open.
 
 - [x] Add functional first/second-order MAML inner adaptation, a held-out synthetic adaptation learning gate and stage/task continual accuracy/forgetting summaries.
   [Advanced scope, validation and remaining work](../ADVANCED_WORKFLOWS.md).
+
+- [x] Add staged CPU continual classification through the shared trainer, bounded original-example reservoir replay, held-out accuracy/forgetting matrices and data/config-bound committed-stage recovery.
+  [Contracts, examples, limits and acceptance](../CONTINUED_WORKFLOWS.md).
 
 - [ ] Scope self-supervised, semi-supervised, active, transfer and few-shot
   workflows using existing training/data abstractions where possible.

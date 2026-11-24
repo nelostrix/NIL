@@ -221,3 +221,5 @@ and each module's `nil help TOPIC`; these are not claims of complete ASR/TTS,
 autonomous planning or all graph/probabilistic architectures.
 
 Advanced seven-area additions and still-open requirements: [advanced workflow phase](docs/ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.
+
+New bounded workflows: [incremental speech, staged continual learning and heterogeneous graphs](docs/CONTINUED_WORKFLOWS.md). Base NIL remains dependency-free; accepted scope and unfinished work are documented separately.

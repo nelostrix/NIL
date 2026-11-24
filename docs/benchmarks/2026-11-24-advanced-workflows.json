@@ -196,22 +196,22 @@
       "failure": "Forwarding use_fast=False via AutoProcessor also selected a slow tokenizer whose vocab files were absent. Fixed by explicitly constructing CLIPImageProcessor and native fast tokenizer separately."
     }
   ],
-  "resource_scope": "Single CPU host with OMP/BLAS threads=1. No measured process-tree RAM/energy or GPU/old-PC acceptance in this phase.",
+  "resource_scope": "Single CPU host with OMP/BLAS threads=1. Installed pretrained run has Linux single-process getrusage peak; process-tree RAM, hard quotas, energy, GPUs and actual old PCs were not measured in this phase.",
   "local_regression": {
-    "passed": 1192,
+    "passed": 1198,
     "skipped": 32,
-    "seconds": 130.89,
+    "seconds": 125.77,
     "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=nil-sdk robotics-venv/bin/python -m pytest nil-sdk/tests -q",
-    "note": "Includes all advanced contracts except the subsequently added synthetic link-learning gate; final advanced neural subset:10 passed in2.73s."
+    "scope": "Final implementation including Windows status-read fix and synthetic held-out link learning"
   },
   "wheel": {
-    "bytes": 591900,
-    "sha256": "eeaa7cfd1598216f34ae478af9794577064f247e1dbe8ea35acf33771009984f",
+    "bytes": 592133,
+    "sha256": "7b77a9515dcc0fc711427fe484eb4af16cd5de4dda88adea657c92ca44521f41",
     "python_files": 223,
     "help_guides": 114,
     "base_dependencies": [],
     "offline_resolution": "passed",
-    "note": "Final help-only correction; numerical implementation unchanged from installed-profile acceptance."
+    "note": "Final implementation and bundled offline help; installed in current/minimum classical and Torch environments with --no-deps."
   },
   "installed_profiles": {
     "current_classical": {
@@ -409,27 +409,2762 @@
     }
   },
   "previous_wheel": {
-    "bytes": 591797,
-    "sha256": "1f70e2854ac2c7a4f4000ccd4f46a299b5d269736237149d7c8626c6c21de184",
+    "bytes": 591900,
+    "sha256": "eeaa7cfd1598216f34ae478af9794577064f247e1dbe8ea35acf33771009984f",
     "python_files": 223,
     "help_guides": 114,
     "base_dependencies": [],
-    "offline_resolution": "passed"
+    "offline_resolution": "passed",
+    "note": "Final help-only correction; numerical implementation unchanged from installed-profile acceptance."
   },
   "hosted_verification": {
-    "commit": "904e91a6811ef9b43d5067e48e2bb2916702f053",
+    "commit": "9f78f3e4fdc7eb2a6e5ddbfd1012c2bb1c628c40",
     "branch": "codex/verify-nil-platforms-20261122",
-    "status": "in_progress",
+    "status": "passed",
     "runs": [
-      45453073802,
-      45453073873,
-      45453073838
+      45453753480,
+      45453753210,
+      45453753393
     ],
     "superseded_runs_cancelled": [
       45452907789,
       45452907594,
-      45452907744
-    ]
+      45452907744,
+      45453073873,
+      45453073838
+    ],
+    "prior_full_sdk_run": 45453073802,
+    "base_jobs_passed": 9,
+    "backend_jobs_passed": 10,
+    "base": {
+      "conclusion": "success",
+      "headSha": "9f78f3e4fdc7eb2a6e5ddbfd1012c2bb1c628c40",
+      "jobs": [
+        {
+          "completedAt": "2026-11-24T17:56:00Z",
+          "conclusion": "success",
+          "databaseId": 138657530601,
+          "name": "base (windows-latest, 3.12)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:11Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:27Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:31Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:27Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "success",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:31Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:56Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:56Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:58Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:58Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:58Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657530601"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:43Z",
+          "conclusion": "success",
+          "databaseId": 138657530993,
+          "name": "base (windows-latest, 3.10)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:58Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:43Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:51Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:43Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:04Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:51Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:06Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:56:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:10Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:56:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:32Z",
+              "conclusion": "success",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:56:10Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:33Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:56:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:34Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:56:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:36Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:56:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:36Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:56:36Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657530993"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:29Z",
+          "conclusion": "success",
+          "databaseId": 138657531068,
+          "name": "base (macos-latest, 3.12)",
+          "startedAt": "2026-11-24T17:54:53Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:05Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:15Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:17Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:26Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531068"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:28Z",
+          "conclusion": "success",
+          "databaseId": 138657531072,
+          "name": "base (macos-latest, 3.11)",
+          "startedAt": "2026-11-24T17:54:53Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:55Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:58Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:03Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:20Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:20Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531072"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:12Z",
+          "conclusion": "success",
+          "databaseId": 138657531088,
+          "name": "base (windows-latest, 3.11)",
+          "startedAt": "2026-11-24T17:54:53Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:04Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:04Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:55:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:17Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:36Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:39Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:36Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:42Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:39Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:05Z",
+              "conclusion": "success",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:42Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:07Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:56:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:07Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:56:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:10Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:56:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:10Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:56:10Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531088"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:30Z",
+          "conclusion": "success",
+          "databaseId": 138657531102,
+          "name": "base (macos-latest, 3.10)",
+          "startedAt": "2026-11-24T17:54:52Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:13Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:20Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:26Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531102"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:17Z",
+          "conclusion": "success",
+          "databaseId": 138657531112,
+          "name": "base (ubuntu-latest, 3.10)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:03Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:05Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:11Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:12Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:15Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:12Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:15Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531112"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:11Z",
+          "conclusion": "success",
+          "databaseId": 138657531188,
+          "name": "base (ubuntu-latest, 3.11)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:04Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:04Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:07Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:07Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531188"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:52Z",
+          "conclusion": "success",
+          "databaseId": 138657531192,
+          "name": "base (ubuntu-latest, 3.12)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:55Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:58Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:04Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py --output dist",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:05Z",
+              "conclusion": "success",
+              "name": "Install only the built NIL wheel for explicit platform checks",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "success",
+              "name": "Actual owned-worker platform acceptance",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Windows Job Object kernel acceptance (installed wheel)",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:10Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:10Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-11-24T17:55:10Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753393/job/138657531192"
+        }
+      ],
+      "status": "completed"
+    },
+    "backends": {
+      "conclusion": "success",
+      "headSha": "9f78f3e4fdc7eb2a6e5ddbfd1012c2bb1c628c40",
+      "jobs": [
+        {
+          "completedAt": "2026-11-24T17:56:17Z",
+          "conclusion": "success",
+          "databaseId": 138657530099,
+          "name": "installed (windows-latest, classical, minimum)",
+          "startedAt": "2026-11-24T17:54:52Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:01Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:01Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:55:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:20Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "success",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:54Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:58Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:11Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:13Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:56:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:13Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:16Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:16Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:56:16Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530099"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:44Z",
+          "conclusion": "success",
+          "databaseId": 138657530395,
+          "name": "installed (ubuntu-latest, rl, current)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "success",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "success",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:40Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:42Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:40Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:42Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:42Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:42Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:42Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:42Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:55:42Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530395"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:21Z",
+          "conclusion": "success",
+          "databaseId": 138657530459,
+          "name": "installed (ubuntu-latest, classical, minimum)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "success",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:08Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:09Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:17Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:18Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:18Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:19Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:55:19Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530459"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:01Z",
+          "conclusion": "success",
+          "databaseId": 138657530523,
+          "name": "installed (ubuntu-latest, rl, minimum)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "success",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:21Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:33Z",
+              "conclusion": "success",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:33Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:33Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:35Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:58Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:35Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:59Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:59Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:00Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:00Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:56:00Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530523"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:29Z",
+          "conclusion": "success",
+          "databaseId": 138657530529,
+          "name": "installed (windows-latest, classical, current)",
+          "startedAt": "2026-11-24T17:54:52Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:02Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:02Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:55:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:15Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:55:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:15Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "success",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:01Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:06Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:22Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:56:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:25Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:56:22Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:25Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:27Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:28Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:56:27Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530529"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:39Z",
+          "conclusion": "success",
+          "databaseId": 138657530613,
+          "name": "installed (macos-latest, classical, current)",
+          "startedAt": "2026-11-24T17:54:52Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:55Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:55Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:18Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:33Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:18Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:35Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:33Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:35Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:35Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:35Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:35Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:36Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:55:36Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530613"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:32Z",
+          "conclusion": "success",
+          "databaseId": 138657530653,
+          "name": "installed (ubuntu-latest, classical, current)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "success",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:16Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:18Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:29Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:18Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:30Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:29Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:30Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:30Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:30Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:30Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:30Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:55:30Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530653"
+        },
+        {
+          "completedAt": "2026-11-24T17:55:51Z",
+          "conclusion": "success",
+          "databaseId": 138657530682,
+          "name": "installed (macos-latest, classical, minimum)",
+          "startedAt": "2026-11-24T17:54:53Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:55Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:59Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:06Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "success",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:25Z",
+              "conclusion": "skipped",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:28Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:45Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:28Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:47Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:55:45Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:47Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:55:47Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:48Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:55:47Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:49Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:55:48Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530682"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:50Z",
+          "conclusion": "success",
+          "databaseId": 138657530897,
+          "name": "installed (ubuntu-latest, torch, current)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:57Z",
+              "conclusion": "skipped",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "success",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:54:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:23Z",
+              "conclusion": "skipped",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "success",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:23Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:24Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:39Z",
+              "conclusion": "success",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:24Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:41Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:39Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:47Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:41Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:48Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:56:47Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:48Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:56:48Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:48Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:56:48Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:48Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:56:48Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657530897"
+        },
+        {
+          "completedAt": "2026-11-24T17:56:20Z",
+          "conclusion": "success",
+          "databaseId": 138657531118,
+          "name": "installed (ubuntu-latest, torch, minimum)",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:52Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install --upgrade build wheel 'setuptools>=68' pytest",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum classical profile",
+              "number": 5,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:56Z",
+              "conclusion": "skipped",
+              "name": "Install current classical profile",
+              "number": 6,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:13Z",
+              "conclusion": "success",
+              "name": "Install minimum CPU Torch profile",
+              "number": 7,
+              "startedAt": "2026-11-24T17:54:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:13Z",
+              "conclusion": "skipped",
+              "name": "Install current CPU Torch profile",
+              "number": 8,
+              "startedAt": "2026-11-24T17:55:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "success",
+              "name": "Install minimum image codec backend",
+              "number": 9,
+              "startedAt": "2026-11-24T17:55:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "skipped",
+              "name": "Install current image codec backend",
+              "number": 10,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "skipped",
+              "name": "Install explicit minimum RL profile",
+              "number": 11,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "skipped",
+              "name": "Install current RL profile",
+              "number": 12,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:29Z",
+              "conclusion": "success",
+              "name": "Install explicit external video codec for Torch acceptance",
+              "number": 13,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:30Z",
+              "conclusion": "success",
+              "name": "Build and install regular NIL wheel",
+              "number": 14,
+              "startedAt": "2026-11-24T17:55:29Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:17Z",
+              "conclusion": "success",
+              "name": "Verify installed workflows and runnable examples",
+              "number": 15,
+              "startedAt": "2026-11-24T17:55:30Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:18Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 16,
+              "startedAt": "2026-11-24T17:56:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:19Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 31,
+              "startedAt": "2026-11-24T17:56:18Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:19Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 32,
+              "startedAt": "2026-11-24T17:56:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:56:19Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 33,
+              "startedAt": "2026-11-24T17:56:19Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753210/job/138657531118"
+        }
+      ],
+      "status": "completed"
+    },
+    "sdk": {
+      "conclusion": "success",
+      "headSha": "9f78f3e4fdc7eb2a6e5ddbfd1012c2bb1c628c40",
+      "jobs": [
+        {
+          "completedAt": "2026-11-24T17:57:57Z",
+          "conclusion": "success",
+          "databaseId": 138657530876,
+          "name": "cpu-development",
+          "startedAt": "2026-11-24T17:54:51Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-11-24T17:54:53Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-11-24T17:54:52Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-11-24T17:54:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:54:54Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 3,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:14Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install 'torch==2.6.0' --index-url https://download.pytorch.org/whl/cpu",
+              "number": 4,
+              "startedAt": "2026-11-24T17:54:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:43Z",
+              "conclusion": "success",
+              "name": "Run python -m pip install '.[generative,classical,onnx,robotics,vision,dev]'",
+              "number": 5,
+              "startedAt": "2026-11-24T17:55:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:55:59Z",
+              "conclusion": "success",
+              "name": "Install explicit external video test codecs",
+              "number": 6,
+              "startedAt": "2026-11-24T17:55:43Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:47Z",
+              "conclusion": "success",
+              "name": "Run python -m pytest nil-sdk/tests -q",
+              "number": 7,
+              "startedAt": "2026-11-24T17:55:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:49Z",
+              "conclusion": "success",
+              "name": "Run nil demo --output /tmp/nil-demo",
+              "number": 8,
+              "startedAt": "2026-11-24T17:57:47Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:54Z",
+              "conclusion": "success",
+              "name": "Run python scripts/build_sdk_bundle.py",
+              "number": 9,
+              "startedAt": "2026-11-24T17:57:49Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:55Z",
+              "conclusion": "success",
+              "name": "Run actions/upload-artifact@v4",
+              "number": 10,
+              "startedAt": "2026-11-24T17:57:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:55Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 19,
+              "startedAt": "2026-11-24T17:57:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:56Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 20,
+              "startedAt": "2026-11-24T17:57:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-11-24T17:57:56Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 21,
+              "startedAt": "2026-11-24T17:57:56Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/nelostrix/NIL/actions/runs/45453753480/job/138657530876"
+        }
+      ],
+      "status": "completed"
+    }
   },
   "pre_fix_hosted_failure": {
     "commit": "904e91a6811ef9b43d5067e48e2bb2916702f053",
@@ -633,5 +3368,624 @@
     "peak_process_rss_kib": 899552,
     "elapsed_seconds": 21.820567994000157,
     "measurement": "Linux getrusage lifetime peak of one process; not process tree, hard quota, GPU, or old-PC acceptance"
+  },
+  "targeted_status_fix_tests": {
+    "passed": 40,
+    "skipped": 1,
+    "seconds": 14.17,
+    "scope": "Windows sharing/CRT errno simulation, persistent failure, corrupt JSON, planning and owned execution; skip requires an actual unsupported device/platform fixture"
+  },
+  "pre_status_fix_regression": {
+    "passed": 1192,
+    "skipped": 32,
+    "seconds": 130.89,
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=nil-sdk robotics-venv/bin/python -m pytest nil-sdk/tests -q",
+    "note": "Includes all advanced contracts except the subsequently added synthetic link-learning gate; final advanced neural subset:10 passed in2.73s."
+  },
+  "final_installed_subset": {
+    "passed": 15,
+    "skipped": 0,
+    "seconds": 6.19,
+    "scope": "Copied outside checkout, isolated interpreter, regular-wheel local model protocols, advanced neural and owned planning tests"
+  },
+  "hosted_full_regression": {
+    "passed": 1321,
+    "skipped": 46,
+    "seconds": 105.85,
+    "run": 45453753480,
+    "url": "https://github.com/nelostrix/NIL/actions/runs/45453753480",
+    "scope": "Full declared development environment; skips are optional targets, not accepted coverage"
+  },
+  "hosted_backend_profiles": {
+    "backend-macos-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 96,
+        "skipped": 0
+      },
+      "seconds": 14.946975625000007
+    },
+    "backend-macos-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 94,
+        "skipped": 0
+      },
+      "seconds": 16.409258750000006
+    },
+    "backend-ubuntu-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 96,
+        "skipped": 0
+      },
+      "seconds": 10.943743368
+    },
+    "backend-ubuntu-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 94,
+        "skipped": 0
+      },
+      "seconds": 7.575341570000006
+    },
+    "backend-ubuntu-latest-rl-current": {
+      "schema_version": 1,
+      "profile": "rl",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "gymnasium": "1.4.0",
+        "stable-baselines3": "2.9.2",
+        "sb3-contrib": "2.9.2",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 36,
+        "skipped": 0
+      },
+      "seconds": 15.12308624100001
+    },
+    "backend-ubuntu-latest-rl-minimum": {
+      "schema_version": 1,
+      "profile": "rl",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "gymnasium": "1.0.0",
+        "stable-baselines3": "2.4.0",
+        "sb3-contrib": "2.4.0",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 36,
+        "skipped": 0
+      },
+      "seconds": 23.438642924
+    },
+    "backend-ubuntu-latest-torch-current": {
+      "schema_version": 1,
+      "profile": "torch",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.5",
+        "Pillow": "13.0.0",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        },
+        {
+          "name": "example-6",
+          "returncode": 0,
+          "log": "backend-acceptance-example-6.log"
+        },
+        {
+          "name": "example-7",
+          "returncode": 0,
+          "log": "backend-acceptance-example-7.log"
+        },
+        {
+          "name": "example-8",
+          "returncode": 0,
+          "log": "backend-acceptance-example-8.log"
+        },
+        {
+          "name": "example-9",
+          "returncode": 0,
+          "log": "backend-acceptance-example-9.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 202,
+        "skipped": 0
+      },
+      "seconds": 65.94167695
+    },
+    "backend-ubuntu-latest-torch-minimum": {
+      "schema_version": 1,
+      "profile": "torch",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.6.0+cpu",
+        "numpy": "1.26.4",
+        "Pillow": "10.4.0",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        },
+        {
+          "name": "example-6",
+          "returncode": 0,
+          "log": "backend-acceptance-example-6.log"
+        },
+        {
+          "name": "example-7",
+          "returncode": 0,
+          "log": "backend-acceptance-example-7.log"
+        },
+        {
+          "name": "example-8",
+          "returncode": 0,
+          "log": "backend-acceptance-example-8.log"
+        },
+        {
+          "name": "example-9",
+          "returncode": 0,
+          "log": "backend-acceptance-example-9.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 202,
+        "skipped": 0
+      },
+      "seconds": 46.608796017
+    },
+    "backend-windows-latest-classical-current": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 96,
+        "skipped": 0
+      },
+      "seconds": 15.35899999999998
+    },
+    "backend-windows-latest-classical-minimum": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.10",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "backend-acceptance-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "backend-acceptance-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "backend-acceptance-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "backend-acceptance-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "backend-acceptance-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "backend-acceptance-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "backend-acceptance-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 94,
+        "skipped": 0
+      },
+      "seconds": 12.172000000000025
+    }
   }
 }

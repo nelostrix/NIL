@@ -364,3 +364,5 @@ ASR/TTS or semantic video understanding. Optional backends/codecs remain explici
 and importing NIL still starts no worker/model/compiler/service.
 
 Advanced seven-area additions and still-open requirements: [advanced workflow phase](../ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.
+
+New bounded workflows: [incremental speech, staged continual learning and heterogeneous graphs](../CONTINUED_WORKFLOWS.md). Base NIL remains dependency-free; accepted scope and unfinished work are documented separately.

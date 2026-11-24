@@ -74,3 +74,5 @@ for exact input schemas, budgets, missing modalities, causal assumptions and the
 macOS active-job-recovery refusal boundary.
 
 Advanced seven-area additions and still-open requirements: [advanced workflow phase](ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.
+
+New bounded workflows: [incremental speech, staged continual learning and heterogeneous graphs](CONTINUED_WORKFLOWS.md). Base NIL remains dependency-free; accepted scope and unfinished work are documented separately.

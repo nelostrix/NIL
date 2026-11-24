@@ -1,0 +1,461 @@
+{
+  "schema_version": 1,
+  "scope": "Synthetic CPU training and functional stream recovery; optional real CTC execution is not a transcript-quality benchmark",
+  "versions": {
+    "torch": "2.15.0+cpu",
+    "numpy": "2.5.4",
+    "nil-sdk": "0.2.1"
+  },
+  "continual": [
+    {
+      "seed": 7,
+      "replay_capacity": 0,
+      "accuracy": [
+        [
+          0.921875,
+          null
+        ],
+        [
+          0.453125,
+          0.953125
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.703125,
+        "forgetting": [
+          0.46875
+        ],
+        "mean_forgetting": 0.46875,
+        "backward_transfer": -0.46875
+      },
+      "seen": 0,
+      "optimizer_updates": 80,
+      "example_exposures": 1280,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    },
+    {
+      "seed": 7,
+      "replay_capacity": 32,
+      "accuracy": [
+        [
+          0.921875,
+          null
+        ],
+        [
+          0.703125,
+          0.859375
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.78125,
+        "forgetting": [
+          0.21875
+        ],
+        "mean_forgetting": 0.21875,
+        "backward_transfer": -0.21875
+      },
+      "seen": 128,
+      "optimizer_updates": 100,
+      "example_exposures": 1600,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    },
+    {
+      "seed": 11,
+      "replay_capacity": 0,
+      "accuracy": [
+        [
+          1.0,
+          null
+        ],
+        [
+          0.578125,
+          0.96875
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.7734375,
+        "forgetting": [
+          0.421875
+        ],
+        "mean_forgetting": 0.421875,
+        "backward_transfer": -0.421875
+      },
+      "seen": 0,
+      "optimizer_updates": 80,
+      "example_exposures": 1280,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    },
+    {
+      "seed": 11,
+      "replay_capacity": 32,
+      "accuracy": [
+        [
+          1.0,
+          null
+        ],
+        [
+          0.796875,
+          0.9375
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.8671875,
+        "forgetting": [
+          0.203125
+        ],
+        "mean_forgetting": 0.203125,
+        "backward_transfer": -0.203125
+      },
+      "seen": 128,
+      "optimizer_updates": 100,
+      "example_exposures": 1600,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    },
+    {
+      "seed": 19,
+      "replay_capacity": 0,
+      "accuracy": [
+        [
+          0.9375,
+          null
+        ],
+        [
+          0.515625,
+          0.90625
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.7109375,
+        "forgetting": [
+          0.421875
+        ],
+        "mean_forgetting": 0.421875,
+        "backward_transfer": -0.421875
+      },
+      "seen": 0,
+      "optimizer_updates": 80,
+      "example_exposures": 1280,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    },
+    {
+      "seed": 19,
+      "replay_capacity": 32,
+      "accuracy": [
+        [
+          0.9375,
+          null
+        ],
+        [
+          0.640625,
+          0.96875
+        ]
+      ],
+      "metrics": {
+        "final_average": 0.8046875,
+        "forgetting": [
+          0.296875
+        ],
+        "mean_forgetting": 0.296875,
+        "backward_transfer": -0.296875
+      },
+      "seen": 128,
+      "optimizer_updates": 100,
+      "example_exposures": 1600,
+      "budget_note": "Equal epochs, replay adds examples; not compute-matched"
+    }
+  ],
+  "heterogeneous_graph": {
+    "heldout_accuracy": 1.0,
+    "heldout_nodes": 4,
+    "scope": "Synthetic typed relational classification, transductive topology",
+    "exact_reload": true
+  },
+  "speech": {
+    "real_model": true,
+    "records": [
+      {
+        "text": "I HAD THA",
+        "start_sample": 0,
+        "end_sample": 16000,
+        "start_seconds": 0.0,
+        "end_seconds": 1.0,
+        "model_fingerprint": "e6223a2ac347cd27af1b0260e78c75b8a651406357db7d9bf559fc7e46d37835"
+      },
+      {
+        "text": "CURIOSITY",
+        "start_sample": 16000,
+        "end_sample": 32000,
+        "start_seconds": 1.0,
+        "end_seconds": 2.0,
+        "model_fingerprint": "e6223a2ac347cd27af1b0260e78c75b8a651406357db7d9bf559fc7e46d37835"
+      },
+      {
+        "text": "SIDE ME AT THIS MOM",
+        "start_sample": 32000,
+        "end_sample": 48000,
+        "start_seconds": 2.0,
+        "end_seconds": 3.0,
+        "model_fingerprint": "e6223a2ac347cd27af1b0260e78c75b8a651406357db7d9bf559fc7e46d37835"
+      },
+      {
+        "text": "UT",
+        "start_sample": 48000,
+        "end_sample": 54400,
+        "start_seconds": 3.0,
+        "end_seconds": 3.4,
+        "model_fingerprint": "e6223a2ac347cd27af1b0260e78c75b8a651406357db7d9bf559fc7e46d37835"
+      }
+    ],
+    "exact_block_invariance_and_reload": true,
+    "wer": null
+  },
+  "seconds": 6.564660582997021,
+  "prior_failed_quality_gates": [
+    {
+      "fixture": "Uncontextualized conflicting rules",
+      "epochs": 5,
+      "current_task_accuracy": 0.765625,
+      "floor": 0.8,
+      "outcome": "failed",
+      "correction": "Supply task context to disambiguate incompatible labels"
+    },
+    {
+      "fixture": "Contextual fixture, insufficient budget",
+      "epochs": 5,
+      "current_task_accuracy": 0.796875,
+      "floor": 0.8,
+      "outcome": "failed",
+      "correction": "Use ten epochs; floor remains .8"
+    }
+  ],
+  "phase_scope": "Incremental fixed-window ASR, CPU staged continual classification and bounded heterogeneous relation-mean node learning; not complete streaming/continual/graph fields",
+  "pending_verification": "Hosted platform/full SDK verification pending; local installed profiles and full regression passed",
+  "wheel": {
+    "bytes": 601401,
+    "sha256": "b3389f6045cc2f66cbce845488e140e97e49f037d0d49cffa43911b059dc8d9d",
+    "python_files": 225,
+    "help_guides": 114,
+    "base_dependencies": [],
+    "offline_resolution": "passed"
+  },
+  "commands": {
+    "regression": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests -q",
+    "example": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HF_HUB_OFFLINE=1 PYTHONPATH=nil-sdk python nil-sdk/examples/continued_workflows.py --output EXTERNAL --asr-model LOCAL_MODEL --audio LOCAL_WAV",
+    "focused": "python -m pytest nil-sdk/tests/test_speech_stream.py nil-sdk/tests/test_continual_workflow.py nil-sdk/tests/test_heterogeneous_graphs.py -q"
+  },
+  "focused_tests": {
+    "passed": 10,
+    "scope": "Functional and numerical gates for the three new workflows; source command also had one optional sklearn module skip, separately validated classical tests:8 passed with zero skips"
+  },
+  "local_regression": {
+    "passed": 1208,
+    "skipped": 32,
+    "seconds": 117.38,
+    "scope": "Full CPU development environment; optional skips are not accepted coverage"
+  },
+  "environment": {
+    "python": "3.14.10",
+    "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+    "note": "Runtime Python/Torch versions are recorded per actual test profile; this field describes the reporting process"
+  },
+  "installed_profiles": {
+    "classical": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.9.1",
+        "numpy": "2.5.5",
+        "scipy": "1.18.1",
+        "pandas": "3.1.1",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "continued-classical-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "continued-classical-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "continued-classical-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "continued-classical-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "continued-classical-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "continued-classical-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "continued-classical-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 99,
+        "skipped": 0
+      },
+      "seconds": 11.212365170002158
+    },
+    "min-classical": {
+      "schema_version": 1,
+      "profile": "classical",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "scikit-learn": "1.4.2",
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "pandas": "2.3.3",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "continued-min-classical-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "continued-min-classical-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "continued-min-classical-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "continued-min-classical-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "continued-min-classical-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "continued-min-classical-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "continued-min-classical-example-5.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 97,
+        "skipped": 0
+      },
+      "seconds": 8.857806291998713
+    },
+    "torch": {
+      "schema_version": 1,
+      "profile": "torch",
+      "status": "passed",
+      "python": "3.12.16",
+      "platform": "Linux-7.3.5-arch1-1-x86_64-with-glibc2.44",
+      "versions": {
+        "nil-sdk": "0.2.1",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.5.4",
+        "Pillow": "13.0.0",
+        "pytest": "9.2.0"
+      },
+      "steps": [
+        {
+          "name": "installed-import",
+          "returncode": 0,
+          "log": "continued-torch-installed-import.log"
+        },
+        {
+          "name": "tests",
+          "returncode": 0,
+          "log": "continued-torch-tests.log"
+        },
+        {
+          "name": "example-1",
+          "returncode": 0,
+          "log": "continued-torch-example-1.log"
+        },
+        {
+          "name": "example-2",
+          "returncode": 0,
+          "log": "continued-torch-example-2.log"
+        },
+        {
+          "name": "example-3",
+          "returncode": 0,
+          "log": "continued-torch-example-3.log"
+        },
+        {
+          "name": "example-4",
+          "returncode": 0,
+          "log": "continued-torch-example-4.log"
+        },
+        {
+          "name": "example-5",
+          "returncode": 0,
+          "log": "continued-torch-example-5.log"
+        },
+        {
+          "name": "example-6",
+          "returncode": 0,
+          "log": "continued-torch-example-6.log"
+        },
+        {
+          "name": "example-7",
+          "returncode": 0,
+          "log": "continued-torch-example-7.log"
+        },
+        {
+          "name": "example-8",
+          "returncode": 0,
+          "log": "continued-torch-example-8.log"
+        },
+        {
+          "name": "example-9",
+          "returncode": 0,
+          "log": "continued-torch-example-9.log"
+        },
+        {
+          "name": "example-10",
+          "returncode": 0,
+          "log": "continued-torch-example-10.log"
+        }
+      ],
+      "scope": "Installed-wheel CPU regression and examples; CUDA is explicitly excluded",
+      "tests": {
+        "collected": 212,
+        "skipped": 0
+      },
+      "seconds": 68.7499697769963
+    }
+  }
+}

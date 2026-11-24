@@ -1,5 +1,7 @@
 # Advanced workflow phase
 
+Subsequent work: [chunked speech, continual training and heterogeneous graphs](CONTINUED_WORKFLOWS.md). This document records the earlier phase and its historical open scope.
+
 This phase extends the seven [foundation workflows](SEVEN_WORKFLOWS.md).
 The framework remains alpha. These are bounded implementations, not completion
 of seven entire AI fields. Base installation still installs **only nil-sdk**;
@@ -11,7 +13,7 @@ no model, codec, backend or service starts on installation or import.
 | Agents/planning | Bounded policy-driven tool loop with approved tools, per-call deadlines, version-bound journals and committed-call resume; explicit verified-result reconciliation | General autonomous reasoning; automatic external-effect reconciliation; concurrent journal ownership; cross-service transactions |
 | Probabilistic/causal | Multi-chain random-walk Metropolis, exact state/RNG continuation, basic split-Rhat/ESS; linear IV 2SLS with HC1 uncertainty and first-stage diagnostic | HMC/NUTS, full probabilistic programming, causal discovery, longitudinal/time-varying treatment identification |
 | Learning regimes | Functional first/second-order MAML inner adaptation; measured continual-learning accuracy/forgetting summaries | General episodic task engine; resumable end-to-end continual-learning trainer; large-task meta-learning and rigorous representation benchmarks |
-| Audio/speech | Explicit local native CTC/seq2seq ASR and VITS TTS; mono conversion, exclusive PCM16 output, WER, optional anti-alias polyphase resampling | Streaming/diarization; multilingual quality acceptance; ASR/TTS fine-tuning workflows; hardware acceleration acceptance |
+| Audio/speech | Explicit local native CTC ASR, experimental seq2seq loader and VITS TTS; mono conversion, exclusive PCM16 output, WER, optional anti-alias polyphase resampling | Streaming/diarization; multilingual quality acceptance; ASR/TTS fine-tuning workflows; hardware acceleration acceptance |
 | Video/multimodal | Local native CLIP text/image embeddings and reload; optional original video frame timestamps/durations | Semantic video/audio-language training; live capture; model-family/codec coverage and real-world retrieval quality |
 | Graphs | Weighted/directed GCN, row/symmetric propagation; true-nonedge sampling, held-out link splits, dot-product links and bounded CPU neighborhood sampling | Heterogeneous/temporal graphs, attention/message-passing families, scalable distributed graph loaders |
 
@@ -156,12 +158,40 @@ vision uses synthetic colors. The MMS English TTS research fixture has
 [CC-BY-NC-4.0 weights](https://huggingface.co/facebook/mms-tts-eng), unsuitable as
 a commercial-weight entitlement. No weights or recordings ship with NIL.
 
-Pretrained probe results and pinned manifests: [dated evidence](benchmarks/2026-11-24-advanced-workflows.json). The CLIP reload gate uses absolute/relative tolerance 1e-6 and records observed error; bitwise pretrained CLIP equality is not claimed. Earlier failed attempts are retained.
+## Final acceptance and remaining work
 
-Local full regression: **1,192 passed / 32 optional skips** in 130.89 s. A subsequent synthetic link-learning gate passes in the 10-test advanced neural subset. Minimum/current installed classical profiles (96/94 tests) and current Torch (202 tests, nine examples) pass with zero skips. The verified base wheel is 591,900 bytes, contains 223 Python files and 114 offline help guides, and declares no mandatory dependencies. GPU and actual older-PC acceptance remain unavailable.
+[Raw results, pinned model manifests and failure history](benchmarks/2026-11-24-advanced-workflows.json)
+record the scope of every gate. Verification commit:
+`9f78f3e4fdc7eb2a6e5ddbfd1012c2bb1c628c40` on the approved temporary branch.
 
-Native save_pretrained may rewrite configuration files and therefore change the conservative content fingerprint. Save and reload the canonical encoder bundle before building an index intended to travel with it.
+| Gate | Result |
+|---|---|
+| Full hosted SDK regression | 1,321 passed, 46 optional skips, 105.85 s |
+| Final local full regression | 1,198 passed, 32 optional skips, 125.77 s |
+| Base platform/Python matrix | Nine Linux/macOS/Windows × Python3.10–3.12 jobs passed |
+| Installed backend matrix | Ten minimum/current jobs passed; zero skipped acceptance tests |
+| Final installed-wheel advanced subset | 15 passed, zero skips, 6.19 s, outside checkout |
+| Installed pretrained probes | Four native models executed and reloaded offline; 21.82 s total |
+| Pretrained resource measurement | Linux one-process lifetime peak899,552KiB; not a process-tree/quota gate |
+| Final base wheel | 592,133 bytes; 223 Python files; 114 offline help guides; no mandatory dependencies |
 
-Hosted platform/backend verification runs for commit `904e91a6811ef9b43d5067e48e2bb2916702f053` are recorded separately in the evidence file. Pending jobs do not establish acceptance. Native seq2seq ASR loading is exposed experimentally; this phase executed CTC speech recognition, not a seq2seq recognition-quality gate.
+The CLIP reload gate uses absolute/relative tolerance1e-6; observed maximum absolute
+error2.9802322e-8. Other recorded probes compare exact outputs where stated. Earlier
+failed probes and the hosted Windows status-file sharing race are retained in the
+JSON evidence. The Windows fix retries sharing/access errors for at most0.5s;
+persistent denial and corrupt JSON still fail. The previously failing minimum
+Windows profile and all three Windows Python base jobs passed after the fix.
 
-Installed-wheel pretrained acceptance also passed offline in21.82s; measured Linux single-process lifetime RSS peak899,552KiB. That includes sequentially loaded native models and is not a process-tree or memory-quota gate. Hosted Windows minimum-classical exposed a status-file atomic-rename read race (93 passed/1 failure); bounded Windows read retries address the sharing violation while persistent access denial/corrupt JSON remain errors. Final verification is tracked separately.
+Native save_pretrained may rewrite configuration files and change the conservative
+content fingerprint. Save and reload the canonical encoder bundle before building
+an index intended to travel with it.
+
+The table at the start lists the open work in each of the seven areas. Native
+seq2seq ASR loading is exposed experimentally: CTC recognition executed here,
+not a seq2seq recognition-quality gate. Real transcript-based WER, TTS intelligibility,
+representative multimodal quality and broader graph benchmarks remain open.
+General autonomous agents, end-to-end continual learning, probabilistic programming,
+heterogeneous graphs and scalable multi-host training are separate future phases.
+Actual GPU/older-PC targets remain unavailable. The compact-intelligence research
+program is still in [its dedicated backlog](project/RESEARCH_TODO.md); no
+10–20B-to-1T capability equivalence is claimed.

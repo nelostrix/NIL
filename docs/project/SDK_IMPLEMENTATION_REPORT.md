@@ -686,3 +686,7 @@ Exact versions, failures, safe-refusal limits and raw-report references are in t
 [dated evidence](../benchmarks/2026-11-24-seven-workflows.json).
 
 Advanced seven-area additions and still-open requirements: [advanced workflow phase](../ADVANCED_WORKFLOWS.md). New CPU checks are separate from the earlier v1 hosted matrix.
+
+Final advanced-phase commit `9f78f3e`: all nine base-platform jobs and ten installed-backend jobs passed; hosted SDK **1321 passed /46 optional skips**. Final local regression **1198 passed /32 optional skips**. [Exact profiles and failures retained](../benchmarks/2026-11-24-advanced-workflows.json).
+
+New bounded workflows: [incremental speech, staged continual learning and heterogeneous graphs](../CONTINUED_WORKFLOWS.md). Base NIL remains dependency-free; accepted scope and unfinished work are documented separately.

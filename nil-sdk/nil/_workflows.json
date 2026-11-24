@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "matrix_version": "2026.11.24.3",
+  "matrix_version": "2026.11.24.4",
   "sdk_version": "0.2.1",
   "release_channel": "alpha",
   "scope": "Versioned bounded workflow inventory; not exhaustive 32-area coverage or runtime/hardware readiness",
@@ -1821,7 +1821,8 @@
         "nil.learning.contrastive_loss",
         "nil.learning.ReplayMemory",
         "nil.learning.adapt",
-        "nil.learning.continual_metrics"
+        "nil.learning.continual_metrics",
+        "nil.learning.continual_fit"
       ],
       "implementation": "hybrid",
       "validation": "validated",
@@ -1852,15 +1853,16 @@
         "description": "Budgeted query indices, fitted native self-training model, differentiable NT-Xent, few-shot predictions and exact replay continuation."
       },
       "limits": [
-        "Functional MAML inner loop and measured matrix summaries, not an end-to-end continual/meta-learning engine.",
-        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
+        "Staged CPU rank2 classification with bounded reservoir replay; AdamW resets per stage. Resume is committed-stage only, with matching data/config/schema. General continual/meta-learning and large real-data acceptance remain open."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
         "nil-sdk/tests/test_seven_classical.py",
         "docs/ADVANCED_WORKFLOWS.md",
-        "docs/benchmarks/2026-11-24-advanced-workflows.json"
+        "docs/benchmarks/2026-11-24-advanced-workflows.json",
+        "docs/CONTINUED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-continued-workflows.json"
       ],
       "help": "learning"
     },
@@ -1879,7 +1881,9 @@
         "nil.audio.load_tts",
         "nil.audio.mono",
         "nil.audio.save_wav",
-        "nil.audio.word_error_rate"
+        "nil.audio.word_error_rate",
+        "nil.audio.stream",
+        "nil.audio.load_stream"
       ],
       "implementation": "integration",
       "validation": "validated",
@@ -1908,15 +1912,16 @@
         "description": "Channel-first waveform, explicit linear resampling, aligned segments and streaming-summary spectral features for classifiers."
       },
       "limits": [
-        "Explicit local native ASR/VITS models require Transformers/Torch; polyphase resampling requires SciPy. Streaming, fine-tuning and multilingual quality acceptance remain open.",
-        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
+        "Incremental fixed-window ASR supports explicit offsets/pending snapshots, not recurrent neural streaming/VAD/diarization. Models/backends remain explicit; WER remains unmeasured for the recorded fixture."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
         "nil-sdk/tests/test_seven_media.py",
         "docs/ADVANCED_WORKFLOWS.md",
-        "docs/benchmarks/2026-11-24-advanced-workflows.json"
+        "docs/benchmarks/2026-11-24-advanced-workflows.json",
+        "docs/CONTINUED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-continued-workflows.json"
       ],
       "help": "audio"
     },
@@ -1993,7 +1998,11 @@
         "nil.graphs.negative_edges",
         "nil.graphs.split_links",
         "nil.graphs.link_logits",
-        "nil.graphs.sample_neighbors"
+        "nil.graphs.sample_neighbors",
+        "nil.graphs.hetero_sage",
+        "nil.graphs.relation_mean",
+        "nil.graphs.save_hetero",
+        "nil.graphs.load_hetero"
       ],
       "implementation": "hybrid",
       "validation": "validated",
@@ -2022,15 +2031,16 @@
         "description": "Sparse normalized propagation, disjoint batches, differentiable node/graph logits, pooled features, JSON graphs and neural checkpoints."
       },
       "limits": [
-        "Weighted/directed graphs, bounded CPU neighbor sampling and leakage-aware link splits added. Heterogeneous/temporal graphs and distributed loading remain open.",
-        "See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions."
+        "Typed relation-mean node classification added with bounded sparse messages and schema-bound checkpoints. Temporal/distributed graphs, typed batching/sampling and representative real-data quality remain open."
       ],
       "evidence": [
         "docs/SEVEN_WORKFLOWS.md",
         "docs/benchmarks/2026-11-24-seven-workflows.json",
         "nil-sdk/tests/test_seven_neural.py",
         "docs/ADVANCED_WORKFLOWS.md",
-        "docs/benchmarks/2026-11-24-advanced-workflows.json"
+        "docs/benchmarks/2026-11-24-advanced-workflows.json",
+        "docs/CONTINUED_WORKFLOWS.md",
+        "docs/benchmarks/2026-11-24-continued-workflows.json"
       ],
       "help": "graphs"
     }

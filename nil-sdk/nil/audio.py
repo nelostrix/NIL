@@ -135,3 +135,15 @@ def word_error_rate(reference,hypothesis):
         for j,b in enumerate(second,1):row.append(min(row[-1]+1,previous[j]+1,previous[j-1]+(a!=b)))
         previous=row
     return previous[-1]/len(first)
+
+
+def stream(recognizer,**options):
+    """Create bounded fixed-window recognition, explicit push/flush and snapshots."""
+    from nil._speech_stream import Stream
+    return Stream(recognizer,**options)
+
+
+def load_stream(path,*,recognizer):
+    """Resume pending samples and absolute offsets with the same recognizer."""
+    from nil._speech_stream import Stream
+    return Stream.load(path,recognizer=recognizer)

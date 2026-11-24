@@ -1,6 +1,6 @@
 # Supported workflow inventory
 
-Matrix 2026.11.24.3; schema 1; SDK 0.2.1 (alpha).
+Matrix 2026.11.24.4; schema 1; SDK 0.2.1 (alpha).
 
 This is a bounded inventory, not a completeness score for the 32 roadmap areas.
 Recorded validation does not verify the current machine. Package detection does
@@ -781,13 +781,13 @@ Active/semi/self-supervised, prototype and bounded replay workflows
 
 Areas: 23. Offline help: `nil help learning`.
 
-APIs: `nil.learning.query_uncertain`, `nil.learning.self_training`, `nil.learning.prototypes`, `nil.learning.contrastive_loss`, `nil.learning.ReplayMemory`, `nil.learning.adapt`, `nil.learning.continual_metrics`
+APIs: `nil.learning.query_uncertain`, `nil.learning.self_training`, `nil.learning.prototypes`, `nil.learning.contrastive_loss`, `nil.learning.ReplayMemory`, `nil.learning.adapt`, `nil.learning.continual_metrics`, `nil.learning.continual_fit`
 
 Input: Explicit labeled/unlabeled pools, paired views, support/query embeddings or bounded JSON stream records.
 
 Output: Budgeted query indices, fitted native self-training model, differentiable NT-Xent, few-shot predictions and exact replay continuation.
 
-Limits: Functional MAML inner loop and measured matrix summaries, not an end-to-end continual/meta-learning engine. See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions.
+Limits: Staged CPU rank2 classification with bounded reservoir replay; AdamW resets per stage. Resume is committed-stage only, with matching data/config/schema. General continual/meta-learning and large real-data acceptance remain open.
 
 Prerequisites: Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit.
 
@@ -795,7 +795,7 @@ Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
 
 Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
 
-Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_classical.py](../nil-sdk/tests/test_seven_classical.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json)
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_classical.py](../nil-sdk/tests/test_seven_classical.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json), [CONTINUED_WORKFLOWS.md](../docs/CONTINUED_WORKFLOWS.md), [2026-11-24-continued-workflows.json](../docs/benchmarks/2026-11-24-continued-workflows.json)
 
 ## audio.classification
 
@@ -803,13 +803,13 @@ PCM WAV and audio classification frontend
 
 Areas: 16. Offline help: `nil help audio`.
 
-APIs: `nil.audio.load_wav`, `nil.audio.resample`, `nil.audio.segment`, `nil.audio.features`, `nil.audio.load_asr`, `nil.audio.load_tts`, `nil.audio.mono`, `nil.audio.save_wav`, `nil.audio.word_error_rate`
+APIs: `nil.audio.load_wav`, `nil.audio.resample`, `nil.audio.segment`, `nil.audio.features`, `nil.audio.load_asr`, `nil.audio.load_tts`, `nil.audio.mono`, `nil.audio.save_wav`, `nil.audio.word_error_rate`, `nil.audio.stream`, `nil.audio.load_stream`
 
 Input: Bounded local uncompressed integer PCM WAV, explicit sample rate/channel/duration and FFT configuration.
 
 Output: Channel-first waveform, explicit linear resampling, aligned segments and streaming-summary spectral features for classifiers.
 
-Limits: Explicit local native ASR/VITS models require Transformers/Torch; polyphase resampling requires SciPy. Streaming, fine-tuning and multilingual quality acceptance remain open. See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions.
+Limits: Incremental fixed-window ASR supports explicit offsets/pending snapshots, not recurrent neural streaming/VAD/diarization. Models/backends remain explicit; WER remains unmeasured for the recorded fixture.
 
 Prerequisites: Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit.
 
@@ -817,7 +817,7 @@ Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
 
 Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
 
-Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_media.py](../nil-sdk/tests/test_seven_media.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json)
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_media.py](../nil-sdk/tests/test_seven_media.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json), [CONTINUED_WORKFLOWS.md](../docs/CONTINUED_WORKFLOWS.md), [2026-11-24-continued-workflows.json](../docs/benchmarks/2026-11-24-continued-workflows.json)
 
 ## video.multimodal
 
@@ -847,13 +847,13 @@ Homogeneous GCN node and graph classification
 
 Areas: 21. Offline help: `nil help graphs`.
 
-APIs: `nil.graphs.gcn`, `nil.graphs.propagate`, `nil.graphs.batch`, `nil.graphs.pool`, `nil.graphs.save`, `nil.graphs.load`, `nil.graphs.weighted_gcn`, `nil.graphs.weighted_propagate`, `nil.graphs.negative_edges`, `nil.graphs.split_links`, `nil.graphs.link_logits`, `nil.graphs.sample_neighbors`
+APIs: `nil.graphs.gcn`, `nil.graphs.propagate`, `nil.graphs.batch`, `nil.graphs.pool`, `nil.graphs.save`, `nil.graphs.load`, `nil.graphs.weighted_gcn`, `nil.graphs.weighted_propagate`, `nil.graphs.negative_edges`, `nil.graphs.split_links`, `nil.graphs.link_logits`, `nil.graphs.sample_neighbors`, `nil.graphs.hetero_sage`, `nil.graphs.relation_mean`, `nil.graphs.save_hetero`, `nil.graphs.load_hetero`
 
 Input: Finite float32/64 homogeneous node features, int64 endpoints, caller-owned labels and explicit train/test masks.
 
 Output: Sparse normalized propagation, disjoint batches, differentiable node/graph logits, pooled features, JSON graphs and neural checkpoints.
 
-Limits: Weighted/directed graphs, bounded CPU neighbor sampling and leakage-aware link splits added. Heterogeneous/temporal graphs and distributed loading remain open. See ADVANCED_WORKFLOWS.md for the new local CPU scope; earlier v1 hosted results do not certify these additions.
+Limits: Typed relation-mean node classification added with bounded sparse messages and schema-bound checkpoints. Temporal/distributed graphs, typed batching/sampling and representative real-data quality remain open.
 
 Prerequisites: Advanced local CPU additions have separate tests/evidence; optional model backends remain explicit.
 
@@ -861,7 +861,7 @@ Targets: `[{"device": "cpu", "os": ["Linux"], "python": ["3.12"]}]`
 
 Recorded profiles: See workflow-specific evidence; no backend-matrix acceptance claimed.
 
-Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_neural.py](../nil-sdk/tests/test_seven_neural.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json)
+Evidence: [SEVEN_WORKFLOWS.md](../docs/SEVEN_WORKFLOWS.md), [2026-11-24-seven-workflows.json](../docs/benchmarks/2026-11-24-seven-workflows.json), [test_seven_neural.py](../nil-sdk/tests/test_seven_neural.py), [ADVANCED_WORKFLOWS.md](../docs/ADVANCED_WORKFLOWS.md), [2026-11-24-advanced-workflows.json](../docs/benchmarks/2026-11-24-advanced-workflows.json), [CONTINUED_WORKFLOWS.md](../docs/CONTINUED_WORKFLOWS.md), [2026-11-24-continued-workflows.json](../docs/benchmarks/2026-11-24-continued-workflows.json)
 
 ## Recorded backend profiles
 

@@ -61,7 +61,7 @@ def main():
         files['docs/BACKEND_COMPATIBILITY.md'] = root / 'docs/BACKEND_COMPATIBILITY.md'
         files['docs/NATIVE_ENGINE.md'] = root / 'docs/NATIVE_ENGINE.md'
         files['docs/HARDWARE_ACCEPTANCE.md'] = root / 'docs/HARDWARE_ACCEPTANCE.md'
-        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md','SEVEN_WORKFLOWS.md','ADVANCED_WORKFLOWS.md'):
+        for name in ('WORKFLOWS.md','SDK_CONTRACTS.md','VISION.md','RESEARCH_READINESS.md','SEVEN_WORKFLOWS.md','ADVANCED_WORKFLOWS.md','CONTINUED_WORKFLOWS.md'):
             files['docs/'+name]=root/'docs'/name
         files['scripts/render_workflows.py']=root/'scripts/render_workflows.py'
         files['nil-sdk/nil/_workflows.json']=root/'nil-sdk/nil/_workflows.json'

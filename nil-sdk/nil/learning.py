@@ -79,15 +79,23 @@ class ReplayMemory:
             if index<self.capacity:self._records[index]=record
 
     def records(self):return json.loads(json.dumps(self._records))
-    def save(self,path):return _save(path,'replay-memory',dict(capacity=self.capacity,seed=self.seed,seen=self.seen,records=self._records))
+    def state_dict(self):
+        return dict(capacity=self.capacity,seed=self.seed,seen=self.seen,records=self.records())
+
+    def save(self,path):return _save(path,'replay-memory',self.state_dict())
 
     @classmethod
-    def load(cls,path):
-        r=_load(path,'replay-memory');memory=cls(r['capacity'],seed=r['seed'])
+    def from_state_dict(cls,r):
+        if not isinstance(r,dict) or set(r)!={'capacity','seed','seen','records'}:raise ValueError('Invalid replay schema')
+        memory=cls(r['capacity'],seed=r['seed'])
         if type(r['seen']) is not int or not 0<=r['seen']<2**63 or not isinstance(r['records'],list) or len(r['records'])!=min(r['seen'],memory.capacity):raise ValueError('Invalid replay state')
-        for row in r['records']:
+        owned=json.loads(json.dumps(r['records'],allow_nan=False))
+        for row in owned:
             if len(json.dumps(row,allow_nan=False).encode())>4096:raise ValueError('Invalid replay record')
-        memory.seen=r['seen'];memory._records=r['records'];return memory
+        memory.seen=r['seen'];memory._records=owned;return memory
+
+    @classmethod
+    def load(cls,path):return cls.from_state_dict(_load(path,'replay-memory'))
 
 
 def adapt(model, inputs, targets, loss, **options):
@@ -115,3 +123,9 @@ def continual_metrics(accuracy):
     return dict(final_average=sum(accuracy[-1])/count,forgetting=forgetting,
                 mean_forgetting=sum(forgetting)/len(forgetting) if forgetting else None,
                 backward_transfer=sum(accuracy[-1][i]-accuracy[i][i] for i in range(count-1))/(count-1) if count>1 else None)
+
+
+def continual_fit(model, tasks, **options):
+    """CPU classification stages with bounded replay and committed-stage resume."""
+    from nil._continual import fit
+    return fit(model,tasks,**options)

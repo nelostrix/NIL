@@ -196,3 +196,64 @@ def sample_neighbors(features,edge_index,seeds,*,fanouts=(10,5),seed=0,max_nodes
     lookup={node:i for i,node in enumerate(nodes)}
     sampled=torch.tensor([(lookup[a],lookup[b]) for a,b in sorted(selected)],dtype=torch.long).T if selected else torch.empty((2,0),dtype=torch.long)
     return dict(features=x[nodes].clone(),edge_index=sampled,nodes=torch.tensor(nodes),seed_positions=torch.arange(len(ids)))
+
+
+def _hetero_validate(features,edges):
+    torch=require('torch','torch')
+    if not isinstance(features,dict) or not 1<=len(features)<=16 or not isinstance(edges,dict) or len(edges)>64:raise ValueError('Require bounded node-type and relation dictionaries')
+    device=None;dtype=None;elements=0;nodes=0;edge_count=0
+    for name,x in features.items():
+        if not isinstance(name,str) or not name or len(name)>128 or not isinstance(x,torch.Tensor) or x.ndim!=2 or not 1<=len(x)<=100000 or not 1<=x.shape[1]<=4096 or x.dtype not in (torch.float32,torch.float64) or not torch.isfinite(x).all():raise ValueError('Invalid typed node features')
+        if device is not None and (x.device!=device or x.dtype!=dtype):raise ValueError('Node types must share device/dtype')
+        device=x.device;dtype=x.dtype;elements+=x.numel();nodes+=len(x)
+    if elements>1000000 or nodes>100000:raise ValueError('Heterogeneous feature budget exceeded')
+    for relation,e in edges.items():
+        if not isinstance(relation,tuple) or len(relation)!=3 or any(not isinstance(s,str) or not s or len(s)>128 for s in relation) or relation[0] not in features or relation[2] not in features:raise ValueError('Relation requires (source_type,name,target_type)')
+        if not isinstance(e,torch.Tensor) or e.dtype!=torch.int64 or e.device!=device or e.ndim!=2 or e.shape[0]!=2 or (e<0).any() or (e[0]>=len(features[relation[0]])).any() or (e[1]>=len(features[relation[2]])).any():raise ValueError('Invalid typed relation endpoints')
+        edge_count+=e.shape[1]
+        if edge_count>1000000:raise ValueError('Heterogeneous edge budget exceeded')
+    return features,edges
+
+
+def relation_mean(source,edge_index,target_nodes):
+    """Incoming neighbor mean for bipartite COO edges; repeated edges count twice."""
+    torch=require('torch','torch')
+    if type(target_nodes) is not int or not 1<=target_nodes<=100000:raise ValueError('Invalid target count')
+    target=source.new_empty((target_nodes,1)) if isinstance(source,torch.Tensor) else None
+    if target is None:raise ValueError('Torch source features required')
+    # No target feature values are read: use finite zeros for shared validation.
+    target.zero_();_hetero_validate({'source':source,'target':target},{('source','to','target'):edge_index})
+    if target_nodes*source.shape[1]>1000000:raise ValueError('Relation message budget exceeded')
+    result=source.new_zeros((target_nodes,source.shape[1]))
+    result.index_add_(0,edge_index[1],source[edge_index[0]])
+    degree=torch.bincount(edge_index[1],minlength=target_nodes).to(source.dtype).clamp_min(1)
+    return result/degree[:,None]
+
+
+def hetero_sage(input_dims,hidden_dim,output_dims,relations):
+    """Two-layer typed self + relation-specific incoming-mean neural network."""
+    if not isinstance(input_dims,dict) or not isinstance(output_dims,dict) or set(input_dims)!=set(output_dims) or not 1<=len(input_dims)<=16 or any(not isinstance(k,str) or not k or len(k)>128 for k in input_dims):raise ValueError('Matching bounded node-type dimensions required')
+    if type(hidden_dim) is not int or not 1<=hidden_dim<=512 or any(type(v) is not int or not 1<=v<=4096 for v in [*input_dims.values(),*output_dims.values()]):raise ValueError('Invalid heterogeneous model dimensions')
+    if not isinstance(relations,(list,tuple)) or not 1<=len(relations)<=64 or any(not isinstance(r,tuple) or len(r)!=3 or any(not isinstance(s,str) or not s or len(s)>128 for s in r) or r[0] not in input_dims or r[2] not in input_dims for r in relations) or len(set(relations))!=len(relations):raise ValueError('Unique declared relations required')
+    relations=tuple(sorted(relations));types=sorted(input_dims)
+    count=sum((input_dims[t]+1)*hidden_dim+(hidden_dim+1)*output_dims[t] for t in types)+sum(input_dims[a]*hidden_dim+hidden_dim*output_dims[b] for a,_,b in relations)
+    if count>1000000:raise ValueError('Heterogeneous parameter budget exceeds 1M')
+    from nil._graph_models import HeteroSAGE
+    return HeteroSAGE(dict(input_dims),hidden_dim,dict(output_dims),relations)
+
+
+def save_hetero(features,edges,path):
+    x,e=_hetero_validate(features,edges)
+    return _save(path,'heterogeneous-graph',dict(features={k:v.detach().cpu().tolist() for k,v in x.items()},
+        dtype=str(next(iter(x.values())).dtype).split('.')[-1],relations=[dict(type=list(k),edge_index=v.cpu().tolist()) for k,v in sorted(e.items())]))
+
+
+def load_hetero(path):
+    torch=require('torch','torch');r=_load(path,'heterogeneous-graph')
+    if r.get('dtype') not in ('float32','float64') or not isinstance(r.get('relations'),list) or len(r['relations'])>64:raise ValueError('Invalid heterogeneous snapshot')
+    features={k:torch.tensor(v,dtype=getattr(torch,r['dtype'])) for k,v in r['features'].items()};edges={}
+    for row in r['relations']:
+        key=tuple(row['type'])
+        if key in edges:raise ValueError('Duplicate snapshot relation')
+        edges[key]=torch.tensor(row['edge_index'],dtype=torch.long)
+    _hetero_validate(features,edges);return dict(features=features,edges=edges)
