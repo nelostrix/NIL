@@ -89,9 +89,9 @@ The [research TODO](RESEARCH_TODO.md) covers recursive computation, adaptive
 thinking, external knowledge, low-bit execution, neuro-symbolic tools,
 distillation and alternative architectures; it also tracks cross-computer
 orchestration, configurable memory/storage budgets, measurement and scale gates.
-It preserves the seven requested incomplete workflow areas:14,20,22,23,16,17,21.
+It preserves the seven requested incomplete workflow areas: 14, 20, 22, 23, 16, 17, 21.
 A small custom-model smoke does not complete these areas. The first full study
-is approximately1M versus10M parameters;10–20B versus100B–1T remains a research
+is approximately 1M versus 10M parameters; 10–20B versus 100B–1T remains a research
 target requiring resources and per-task evidence, not a promised capability.
 
 ## Capability backlog — all 32 areas

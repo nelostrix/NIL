@@ -50,9 +50,13 @@ means an executable small integration check. Neither means large-model readiness
 | Audio/video/graphs/probabilistic/other regimes | Generic custom-model infrastructure or components | Dedicated workflows remain in the 32-area master and new research backlog |
 
 The strict distributed reference rejects dropout module types even when a model
-sets dropout probability to zero, and its FSDP path rejects tied parameter names.
-The compact recipe is therefore a **local CPU** recipe; do not pass it through
-that distributed API and advertise support. Fix and test the distributed
+sets dropout probability to zero, and its FSDP path rejects aliased parameter
+names. Repeatedly calling a single registered block is different from registering
+one parameter under multiple names; do not assume those cases are interchangeable.
+The current distributed feature adapter also converts inputs to floating point,
+which is unsuitable for the compact recipe's integer embedding token IDs. The
+recipe is therefore a **local CPU** recipe; do not pass it through that distributed
+API and advertise support. Fix and test the distributed
 contract before adding a supported distributed research recipe.
 
 `nil.optimization.profile` measures a cloned CPU inference model's footprint and
@@ -68,7 +72,7 @@ PYTHONPATH=nil-sdk python -m pytest nil-sdk/tests/test_compact_research.py -q
 
 The example trains an untied attention baseline, a repeated shared-block student,
 and a student using frozen offline teacher logits. Each uses four attention
-applications at width16, with deterministic synthetic token-label data, separate
+applications at width 16, with deterministic synthetic token-label data, separate
 96/48 train/validation samples and no external tools. It records unique model
 parameter counts, held-out loss/accuracy, timing, dataset hash and exact checkpoint
 reload. The CLI requires a fresh output directory. Seeds and epoch limits are
@@ -105,14 +109,18 @@ Full CLI invocation wall time and energy are not measured by its internal timer.
 Reference work: [Universal Transformers](https://arxiv.org/abs/1807.03819),
 [Adaptive Computation Time](https://arxiv.org/abs/1603.08983),
 [BitNet b1.58](https://arxiv.org/abs/2402.17764),
-[knowledge distillation](https://arxiv.org/abs/1503.02531) and
+[knowledge distillation](https://arxiv.org/abs/1503.02531),
+[Tiny Recursive Models](https://arxiv.org/abs/2510.04871) and
 [ZeRO-Infinity](https://arxiv.org/abs/2104.07857).
-These motivate experiments; their results are not NIL results.
+These motivate experiments; their results are not NIL results. Published compact
+reasoning work must be included when selecting strong task-specific baselines;
+success on a narrow puzzle suite does not establish general language-model
+equivalence. Pin paper/code/model revisions in the actual experiment protocol.
 
-Theoretical ternary entropy is log2(3), approximately1.585 bits per weight.
-A nominal1.58-bit20B weight payload is approximately3.95 decimal GB. Real storage
+Theoretical ternary entropy is log2(3), approximately 1.585 bits per weight.
+A nominal 1.58-bit 20B weight payload is approximately 3.95 decimal GB. Real storage
 includes packing, scales, padding, unquantized tensors and metadata; a simple
-fixed-width ternary encoding uses2 bits per symbol. Training also needs
+fixed-width ternary encoding uses 2 bits per symbol. Training also needs
 activations, gradients and optimizer state. No current NIL INT8 path is a BitNet
 training implementation, and reduced storage alone does not increase capability.
 
@@ -150,12 +158,12 @@ External knowledge and extra thinking must remain visible in that comparison.
 | Gate | Student / reference target | Required evidence before moving on |
 |---|---|---|
 | Smoke | Thousands of parameters, synthetic | Gradients, actual updates, held-out loss reduction, checkpoint identity/recovery; no capability conclusion |
-| E1 | Approximately1M /10M | Fixed local datasets and protocol, at least3 seeds, held-out generalization and measured compute/memory; outcome may be negative |
-| E2 | Approximately10M /100M | Replication on another task/data distribution with matched training and inference budget reports |
-| E3 | Approximately50M /500M | Real language/task quality, reproducible training/data manifests and target hardware acceptance |
-| E4 | Approximately100M /1B | Broader suite, reliability, total teacher/tool/retrieval costs and independent repeat |
-| E5 | Approximately1B /10B | Provisioned hardware, distributed/offload acceptance if used, complete compute and recovery evidence |
-| E6 | Approximately10–20B /100B–1T | Named dense/MoE baselines, explicit equivalence margins per task, full-system costs and independent replication |
+| E1 | Approximately 1M / 10M | Fixed local datasets and protocol, at least 3 seeds, held-out generalization and measured compute/memory; outcome may be negative |
+| E2 | Approximately 10M / 100M | Replication on another task/data distribution with matched training and inference budget reports |
+| E3 | Approximately 50M / 500M | Real language/task quality, reproducible training/data manifests and target hardware acceptance |
+| E4 | Approximately 100M / 1B | Broader suite, reliability, total teacher/tool/retrieval costs and independent repeat |
+| E5 | Approximately 1B / 10B | Provisioned hardware, distributed/offload acceptance if used, complete compute and recovery evidence |
+| E6 | Approximately 10–20B / 100B–1T | Named dense/MoE baselines, explicit equivalence margins per task, full-system costs and independent replication |
 
 These sizes are research targets, not delivery promises or a guarantee of equal
 quality. Run the next gate only if its hardware and budget exist and the preceding
@@ -188,3 +196,29 @@ supported installation is defined. Do not sell an unmeasured speedup or charge f
 infrastructure plan. The [32-area master](project/TODO.md) remains the broader SDK
 backlog, including all seven previously requested workflow areas. A checked smoke
 item never closes a whole research track, hardware target or framework area.
+
+
+## Recorded readiness outcome — 2026-11-24
+
+Current recipe acceptance is Linux/Python 3.12 with the versions in the report.
+Prior platform/backend CI evidence predates this example and is not a new
+minimum-backend or cross-platform certification. The installed Torch profile
+now includes the new checks for subsequent CI runs.
+
+The [three-seed CPU smoke](benchmarks/2026-11-24-compact-readiness.json) passed
+with seeds 7, 11, 19 and 10 focused tests with zero skips. The untied baseline has
+9,282 parameters; each shared model has 2,610. All three recipes reduced held-out
+loss and reproduced predictions exactly after checkpoint reload. Shared-gradient
+parity, uneven distillation accumulation and exact CPU resume passed separately.
+
+Distillation did not outperform the shared supervised model on any tested seed;
+that negative result is retained. No measured FLOP/energy/peak-training-memory
+result, intelligence-equivalence result or large-model readiness follows from
+this smoke. Full measured1M-versus 10M research remains R005/P2, not completed work.
+
+
+The regular installed-wheel Torch profile also passed 163 tests with zero skips
+and all five examples, including compact_research.py. The base-install verifier
+again passed offline with dependency resolution enabled and only nil-sdk added.
+The dated JSON records exact interpreter/backend versions and wheel hash. No
+new minimum-backend or accelerator acceptance is inferred from this local run.

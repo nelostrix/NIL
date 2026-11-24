@@ -1,6 +1,6 @@
 # NIL efficient-learning and compact-intelligence TODO
 
-Updated2026-11-24. Status is acceptance-based. Research hypotheses and hardware
+Updated 2026-11-24. Status is acceptance-based. Research hypotheses and hardware
 requests remain open until measured evidence exists. This plan supplements the
 [32-area master](TODO.md), never replaces its unchecked requirements. See the
 [readiness audit, protocols and scope](../RESEARCH_READINESS.md).
@@ -13,10 +13,13 @@ requests remain open until measured evidence exists. This plan supplements the
   versus MoE and native implementation versus optional integration distinctions.
 - [x] **R003** Define experimental score/resource reporting and staged scale gates;
   do not describe 10–20B-to-1T capability equivalence as an implemented feature.
-- [ ] **R004** Run and record the small offline shared-model/distillation readiness
-  recipe with multiple seeds, real updates, reload and exact resume/gradient tests.
-- [ ] **R005** Publish a first1M-versus10M experiment specification with selected
-  tasks, pinned data, baselines, margins, seeds and a real resource budget.
+- [x] **R004** Run and record the small offline shared-model/distillation readiness
+  recipe with seeds 7/11/19, real updates, reload and exact resume/gradient tests.
+  [Recorded smoke evidence](../benchmarks/2026-11-24-compact-readiness.json): 10 tests
+  passed; distillation did not improve on the ordinary shared student.
+- [ ] **R005** Publish a first1M-versus 10M experiment specification with selected
+  tasks, pinned data, baselines (including relevant published compact-recursive
+  work), margins, seeds and a real resource budget.
 - [ ] **R006** Complete research model/data/objective/config/error contracts and
   reusable type hints; preserve existing classical/neural/RL interfaces.
 - [ ] **R007** Define portable architecture manifests including block sharing,
@@ -68,7 +71,7 @@ small denominator alone cannot pass a capability threshold.
 - [ ] **R025** Validate recurrent/halting state checkpoints, exact supported resume,
   cancellation and changed-config refusal before mutation.
 - [ ] **R026** Evaluate fixed-depth, recursive and adaptive baselines on held-out
-  algorithmic, language and reasoning tasks with at least3 prespecified seeds.
+  algorithmic, language and reasoning tasks with at least 3 prespecified seeds.
 - [ ] **R027** Publish E1 results, including failures and compute overhead; proceed
   to E2 only if evidence and available budget justify it.
 
@@ -108,7 +111,7 @@ retrieval or tool access is not a claim of capability stored in student weights.
 - [ ] **R041** Implement reference low-bit operators and independently check
   gradients/surrogates, saturation and numerical error against FP baselines.
 - [ ] **R042** Define packed storage, serialization/migration and metadata accounting;
-  theoretical1.58-bit entropy must not be reported as actual training RAM.
+  theoretical 1.58-bit entropy must not be reported as actual training RAM.
 - [ ] **R043** Add real selected CPU/GPU low-bit kernels with correctness, shape,
   device and measured latency acceptance; no simulated integer speed claims.
 - [ ] **R044** Compare from-scratch and adapted low-bit models under declared data,
@@ -137,6 +140,8 @@ or proof of increased intelligence density.
   data sharding, deterministic seeds and compatible backend selection.
 - [ ] **R055** Support shared/tied parameters and chosen recursive architectures in
   selected distributed strategies; current scoped FSDP rejection remains a gate.
+  Add integer token IDs and structured batch support rather than converting all
+  input features to float; test repeated blocks separately from aliased names.
 - [ ] **R056** Implement shard/checkpoint ownership, coordinated failure handling,
   interruption/rejoin and tested continuation at explicitly defined boundaries.
 - [ ] **R057** Measure compute/communication balance and recommend local/distributed

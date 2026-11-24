@@ -630,3 +630,25 @@ minimum/current backend jobs passed at commit `318e453`. Actual GPU, older-PC an
 public deployment acceptance remains unchanged. See the [framework evidence](../benchmarks/2026-11-24-framework.json),
 [image evidence](../benchmarks/2026-11-24-vision-digits.json),
 [workflow inventory](../WORKFLOWS.md) and [contracts](../SDK_CONTRACTS.md).
+
+
+## Compact-research readiness — 2026-11-24
+
+Added an existing-capability audit and a 78-task research plan for efficient training,
+compact intelligence and all seven previously requested incomplete workflow areas.
+The first four preparation/readiness tasks are checked, with real evidence for
+the fourth. The proposed 1M/10M study and 10–20B/100B–1T comparisons remain open.
+
+The local CPU example uses shared attention and a custom frozen-logit distillation
+loss. Three seeds passed updates/loss-reduction/reload checks. Ten focused tests
+passed shared-gradient parity, independent KL reference, frozen teacher behavior,
+uneven accumulation, exact resume and changed-depth refusal before weight loading.
+Distillation did not improve on ordinary shared-model accuracy on this tiny task;
+that negative outcome is retained, with no intelligence-equivalence claim.
+
+Installed-wheel Torch acceptance passed 163 tests with zero skips and all five
+examples. Offline resolver-enabled base installation still adds NIL only. See
+[readiness audit](../RESEARCH_READINESS.md), [ordered tasks](RESEARCH_TODO.md)
+and [evidence](../benchmarks/2026-11-24-compact-readiness.json). The existing scoped
+FSDP, feature-type adapters, training measurement and hardware/resource gaps are
+explicitly documented; no additional GPU or multi-host acceptance was performed.

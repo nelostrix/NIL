@@ -201,7 +201,7 @@ execution and alternative architectures. The [readiness audit](docs/RESEARCH_REA
 distinguishes existing support from missing acceptance, and the
 [research TODO](docs/project/RESEARCH_TODO.md) orders the work. Address-based
 multi-host orchestration and SSD training offload remain future implementations.
-A10–20B model matching a named100B–1T baseline is a research target, not a current
+A 10–20B model matching a named 100B–1T baseline is a research target, not a current
 capability or a guaranteed outcome.
 
 `python -I nil-sdk/examples/compact_research.py --output /tmp/nil-compact-smoke`

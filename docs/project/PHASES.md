@@ -341,7 +341,7 @@ probabilistic/causal and other learning-regime workflows remain tracked.
 A CPU recipe tests repeated shared attention, frozen-logit distillation, real
 training and checkpoint reload; dedicated tests verify shared gradient accounting,
 loss normalization, exact resume and depth-mismatch rejection. This is a tiny
-synthetic compatibility check, not the proposed1M/10M experiment or evidence of
+synthetic compatibility check, not the proposed 1M/10M experiment or evidence of
 1T-level intelligence. Current strict distributed FSDP does not support this
 shared-parameter architecture, and training FLOP/energy measurement and SSD
 training offload still need implementation and target acceptance.
