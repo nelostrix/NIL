@@ -24,7 +24,7 @@ GIF/TIFF needs vision extra; fusion/audio alignment needs NumPy; MP4/WebM additi
 
 ## Limitations
 
-MP4 sampling is constant-rate, not original variable timestamps. No pretrained multimodal encoder, language generation or semantic video quality claim. Default decoded cap64MiB; source is trusted local data.
+MP4 defaults to constant-rate sampling; original timestamps require preserve_timestamps=True and available source PTS/duration. Local CLIP requires explicit weights/Transformers. Language generation, semantic video training and broad quality acceptance remain open. Default decoded cap64MiB; source is trusted local data.
 
 See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
 

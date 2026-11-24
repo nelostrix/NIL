@@ -159,3 +159,5 @@ a commercial-weight entitlement. No weights or recordings ship with NIL.
 Pretrained probe results and pinned manifests: [dated evidence](benchmarks/2026-11-24-advanced-workflows.json). The CLIP reload gate uses absolute/relative tolerance 1e-6 and records observed error; bitwise pretrained CLIP equality is not claimed. Earlier failed attempts are retained.
 
 Local full regression: **1,192 passed / 32 optional skips** in 130.89 s. A subsequent synthetic link-learning gate passes in the 10-test advanced neural subset. Minimum/current installed classical profiles pass with zero skips. The verified base wheel is 591,797 bytes, contains 223 Python files and 114 offline help guides, and declares no mandatory dependencies. GPU and actual older-PC acceptance remain unavailable.
+
+Native save_pretrained may rewrite configuration files and therefore change the conservative content fingerprint. Save and reload the canonical encoder bundle before building an index intended to travel with it.

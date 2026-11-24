@@ -23,7 +23,7 @@ Explicit audio extra (NumPy); WAV parser is standard library.
 
 ## Limitations
 
-Uncompressed8/16/24/32-bit PCM only. Default32MiB/60seconds/8channels. Linear resampling is not bandlimited; no ASR/TTS model or compressed-audio decoder is implied.
+WAV decoding supports uncompressed8/16/24/32-bit PCM, default32MiB/60seconds/8channels. Default linear resampling is not bandlimited; polyphase is an explicit SciPy option. ASR/TTS require separately supplied local models and backends; compressed-audio decoding and streaming remain open.
 
 See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
 

@@ -23,7 +23,7 @@ Explicit Torch extra. No PyG/DGL/NetworkX runtime dependency.
 
 ## Limitations
 
-Homogeneous undirected unweighted graphs. Self loops are deduplicated. Caller owns train/test masks; transductive topology visibility is distinct from unseen-graph evaluation. Advanced sampling/heterogeneous/link-prediction workflows remain open.
+Homogeneous graphs: base GCN is unweighted/undirected; weighted_gcn explicitly adds weights/direction. Caller owns train/test masks; transductive topology visibility differs from unseen-graph evaluation. Link splitting/scoring and bounded CPU sampling are available; heterogeneous/temporal and distributed graph workflows remain open.
 
 See docs/SEVEN_WORKFLOWS.md for v1 acceptance and docs/ADVANCED_WORKFLOWS.md for this phase and remaining work.
 
