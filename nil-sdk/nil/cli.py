@@ -20,6 +20,10 @@ def main():
     help_command = commands.add_parser("help", help="Read a module or model's bundled help.md")
     help_command.add_argument("topic", nargs="?", default="catalog")
     help_command.add_argument("--list", action="store_true", dest="list_topics")
+    workflows = commands.add_parser("workflows", help="Inspect bounded workflow contracts and recorded validation")
+    workflows.add_argument("workflow_id", nargs="?")
+    workflows.add_argument("--json", action="store_true", dest="as_json")
+    workflows.add_argument("--availability", action="store_true", help="Inspect package metadata; does not verify runtime readiness")
     demo = commands.add_parser("demo", help="Train a tiny CPU regression model locally")
     demo.add_argument("--output", default="./nil_runs")
     args = parser.parse_args()
@@ -31,6 +35,21 @@ def main():
         try:
             print("\n".join(topics()) if args.list_topics else read_help(args.topic))
         except (ValueError, OSError) as error:
+            parser.error(str(error))
+    elif args.command == "workflows":
+        from nil import coverage
+        try:
+            rows = [coverage.describe(args.workflow_id)] if args.workflow_id else coverage.list_workflows()
+            if args.availability:
+                rows = [dict(row, availability=coverage.availability(row['id'])) for row in rows]
+            if args.as_json:
+                print(json.dumps(rows, indent=2))
+            else:
+                for row in rows:
+                    print(f"{row['id']}: {row['implementation']} / {row['validation']}")
+                    if args.availability:
+                        print(f"  packages: {row['availability']['dependency_state']}; runtime/hardware unverified")
+        except ValueError as error:
             parser.error(str(error))
     elif args.command == "models":
         from nil.catalog import tree

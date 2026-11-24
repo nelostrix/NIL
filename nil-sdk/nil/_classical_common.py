@@ -5,7 +5,8 @@ from nil.runtime import require
 
 
 def unwrap(model):
-    return model.model if getattr(model, "_nil_classical_result", False) or getattr(model, "_nil_rl_result", False) else model
+    return model.model if any(getattr(model, name, False) for name in
+        ('_nil_classical_result','_nil_rl_result','_nil_training_result')) else model
 
 
 def is_rl(model):

@@ -1,16 +1,420 @@
-# NIL completion checklist
+# NIL AI framework master TODO
 
-Ordered follow-on work: [PHASES.md](PHASES.md). Phase 1 is active; target-specific
-acceptance remains separate from implementation and local test completion.
+Updated: 2026-11-24. This is the active backlog for the 32-area capability map.
+It includes extensions to existing functionality as well as new work. An unchecked
+area is not a claim that NIL has no implementation there. Audit existing modules,
+contracts and evidence before adding another implementation or dependency.
 
-This is the live implementation and validation checklist. Work proceeds in the
-numbered order below. An item is checked only after its stated acceptance gate
-passes; optional-backend adapters are labelled as integrations, not NIL-native
-numerical engines. Hardware/platform checks remain open until actually run.
+[PHASES.md](PHASES.md) retains the concrete implementation/target acceptance gates
+for the existing phases. The earlier checklist and dated reports are preserved in
+the historical section below; their old open boxes are not the current master status.
 
-Every public module needs its own help.md. Every batch must retain a NIL-only
-base wheel installation, lazy imports, honest capability reports and a tested
-distribution artifact. No blanket claim of complete AI/DL/RL coverage is made.
+## Completion contract and architecture
+
+- [x] Publish a versioned supported-workflow matrix: API, input/output schema,
+  native/integration status, backend versions, OS/device, limits and evidence.
+- [x] Define the stable SDK release boundary against that matrix, including the
+  intentionally unsupported combinations. Do not infer worldwide AI coverage from
+  constructor counts, adapters or the length of this backlog.
+- [x] Label each declared capability as implemented, validated, experimental,
+  integration-only, target-blocked or unsupported; distinguish these in CLI/help.
+- [x] Define independent-engine milestones separately from unified SDK coverage.
+  Optional backend APIs do not imply NIL-owned numerical execution.
+
+Evidence for these bounded foundation deliverables: [workflow inventory](../WORKFLOWS.md),
+[SDK contracts/release criteria](../SDK_CONTRACTS.md), `nil workflows --json`,
+`nil help coverage` and `nil help contracts`. Stable release criteria are defined;
+NIL is still alpha. The inventory has 30 scoped records, not 32 completed areas.
+
+Permanent constraints: base installation adds only nil-sdk; imports start no model
+loads/downloads, compilation, processes or services. Backends, accelerators, model
+weights and specialist modules are explicit opt-ins. Keep shallow public modules,
+shared contracts and private implementation helpers. Each public module/model
+needs offline help.md. Preserve measured low-resource budgets and existing APIs.
+
+For every task below, close the checkbox only after publishing the supported API,
+runnable example/help, meaningful correctness/learning tests, persistence/recovery
+checks where relevant, resource measurements, exact tested versions/targets and
+known failures. Record commands and raw evidence. A skip is not target acceptance;
+compilation or an exposed backend symbol alone does not establish workflow coverage.
+
+## Existing validated scope to preserve
+
+- [x] NIL-only offline wheel installation, passive imports and bundled help:
+  [installation contract](../INSTALLATION.md).
+- [x] Bounded nonempty rank0–8 CPU float64 tensors/autograd, ND SGD/Adam,
+  COO/CSR and explicit Linux C matmul/VJP: [native scope](../NATIVE_ENGINE.md).
+- [x] Documented optional classical/specialized workflows and persistence:
+  [classical guide](../CLASSICAL_ML.md), [specialized limits](../CLASSICAL_SPECIALIZED.md).
+- [x] Scoped CPU neural, offline/online RL integrations, masked parallel collection,
+  centralized-value AWR and declared simulator continuation: [DL/RL](../NEURAL_RL.md).
+- [x] Pinned134.5M pretrained CPU inference, LoRA/adapter reload and INT8 weight
+  storage within actual2GiB/no-swap limits: [pretrained evidence](../PRETRAINED_CPU.md).
+- [x] Base Linux/macOS/Windows Python3.10–3.12 and declared minimum/current backend
+  profiles: [compatibility evidence](../BACKEND_COMPATIBILITY.md).
+- [x] Current-host one-CPU/1GiB/no-swap small workloads; physical old-PC acceptance
+  remains open: [hardware evidence](../HARDWARE_ACCEPTANCE.md).
+- [x] Managed single-tenant CPU TLS service reference with bounded execution and
+  lifecycle checks; public deployment remains open: [deployment scope](../DEPLOYMENT.md).
+
+These checks certify their documented subsets, not the full categories below.
+
+## Execution order for the expanded roadmap
+
+| Wave | Priority and area IDs | Exit gate |
+| --- | --- | --- |
+| A | Stable SDK/data/evaluation/release contracts: 1, 6, 11, 12, 26, 28, 30–32 | Published coverage matrix, stable contracts, reproducible installed examples and compatibility policy |
+| B | Independent execution/training/scale: 2–5, 9, 10, 24, 25 | Measured CPU improvements and actual acceptance for each declared accelerator/distributed target |
+| C | Broader common AI workflows: 7, 8, 13–20 | Real datasets/environments, held-out evaluation, artifacts and declared resource/quality limits |
+| D | Production serving and trust boundaries: 27, 29 | Acceptance on a chosen deployment with authorization, failure recovery and workload SLO evidence |
+| E | Specialist extensions: 21–23 and optional domains | Independently scoped plugins with validated user workloads; no mandatory core dependencies |
+
+Current user priority: implement framework foundations first, then image workflows.
+The first foundation and classification deliverables are complete; this does not
+close every Wave A gate or all computer-vision tasks.
+
+Within each wave, inventory and repair existing paths before expansion. Hardware
+or deployment gates can remain blocked while unrelated software work proceeds.
+New specialist rows are optional extension scope, not prerequisites for every SDK
+release. Revisit priorities using actual supported user workloads.
+
+## Capability backlog — all 32 areas
+
+### 1. Consistent public API — Wave A
+
+- [x] Add backend-neutral structural dataset/predictor/result protocols and
+  schema-1 metadata for native, classical, neural and online/offline/centralized
+  RL outcomes. Accept neural TrainingResult directly in predict/evaluate and
+  verify mode restoration, errors and real outcome families.
+- [x] Ship passive workflow discovery, metadata-only availability, CLI and offline
+  help; verify NIL-only packaging and no backend/process/network work during discovery.
+
+- [ ] Audit model/data/result/config/error contracts across fit/train/predict,
+  evaluate, persistence and serving; document intentional task-specific differences.
+- [ ] Stabilize callbacks, cancellation, progress and capability reporting; validate
+  compatible behavior across native execution and declared optional backends.
+- [ ] Define extension/registration interfaces, type hints and compatibility tests
+  so adding a model does not require edits throughout the framework.
+
+### 2. Numerical foundation — Wave B
+
+- [ ] Expand beyond the bounded float64 subset: declared float32/float16/bfloat16,
+  integer/bool semantics, conversions, promotion, overflow and numerical guarantees.
+- [ ] Specify/test zero-sized tensors, advanced indexing, concatenation/stacking,
+  additional reductions and linear algebra; retain existing scalar/vector behavior.
+- [ ] Expand sparse formats/operators only with explicit storage, coalescing,
+  gradient and densification budgets; document owned-storage/view rules.
+
+### 3. Automatic differentiation — Wave B
+
+- [ ] Define a supported custom differentiable-operator interface and independent
+  gradient-checking utilities rather than depending on private graph internals.
+- [ ] Add declared higher-order gradients, vector/Jacobian products and Hessian
+  workflows with finite-difference/reference tests and memory limits.
+- [ ] Validate accumulation, retained/reused graphs and mutation behavior across
+  every newly supported operator/dtype/device combination.
+
+### 4. Efficient execution — Wave B
+
+- [ ] Expand optimized CPU coverage beyond explicit matmul/VJP: elementwise work,
+  reductions, convolution, normalization and attention where benchmarks justify it.
+- [ ] Define graph capture/compilation, fusion, reusable plans and memory planning
+  with explicit fallbacks, cache ownership and cold/warm compilation budgets.
+- [ ] Track import latency, end-to-end wrapper overhead, throughput and peak memory;
+  publish wins and regressions across small and representative larger workloads.
+
+### 5. Hardware support — Wave B
+
+- [ ] Define and implement selected accelerator backends/device transfers,
+  synchronization, allocation ownership and unsupported-operation errors.
+- [ ] Accept real CUDA/other chosen devices, precision combinations and process-tree
+  cleanup; validate hard GPU containment separately from allocator preferences.
+- [ ] Run actual older-PC/OS/ISA tests and publish usable workload limits; current
+  resource-constrained modern-host results remain a separate evidence class.
+
+### 6. Data system — Wave A
+
+- [ ] Audit typed datasets, schemas, preprocessing, transforms and provenance;
+  publish modality-specific data contracts and reusable validation rules.
+- [ ] Extend memory-bounded streaming, caching, batching, shuffling and parallel
+  loading to declared out-of-RAM datasets with corruption/backpressure tests.
+- [ ] Broaden exact iterator/sampler/offset resume and schema migrations; explicitly
+  scope prefetch, external broker and model-state transaction boundaries.
+
+### 7. Classical machine learning — Wave C
+
+- [ ] Inventory actual end-to-end support for linear/generalized linear, tree/
+  ensemble/boosting, kernel, neighbor and probabilistic estimator families.
+- [ ] Audit clustering, mixtures, dimensionality/manifold reduction, feature
+  selection and anomaly workflows against the shared SDK contract.
+- [ ] Close matrix gaps in weighting, sparse/multioutput data, preprocessing,
+  streaming and persistence; label integrations separately from native algorithms.
+
+### 8. Specialized machine learning — Wave C
+
+- [ ] Extend forecasting to declared multivariate, hierarchical, irregular-time,
+  state-space/ARIMA and covariate cases with leakage-safe backtests.
+- [ ] Expand collaborative/neural recommendation and ranking beyond current scoped
+  baselines; validate retrieval, cold starts and feedback assumptions.
+- [ ] Scope advanced survival, spatial, imbalanced and online-learning extensions;
+  publish assumptions and real-data validation for each added method.
+
+### 9. Deep-learning building blocks — Wave B
+
+- [ ] Map backend-provided versus NIL-owned dense/convolutional/recurrent/attention,
+  embedding, normalization, graph and pooling layers.
+- [ ] Expand independent layers, losses, initializers, optimizers, schedules and
+  regularization with numerical gradients, serialization and measured kernels.
+- [ ] Test supported combinations of shapes, masks, dtypes, stateful layers and
+  custom modules; do not advertise an alias as independent implementation.
+
+### 10. Training engine — Wave B
+
+- [ ] Audit custom objectives, accumulation, clipping, mixed precision, callbacks,
+  early stopping and reproducibility across all declared task families.
+- [ ] Broaden resumable execution and recovery for additional data-loader,
+  optimizer/scheduler and asynchronous job configurations.
+- [ ] Validate real accelerator training, failure/cancellation and resource budgets;
+  retain exact definitions of epoch/update/rollout continuation boundaries.
+
+### 11. Model selection — Wave A
+
+- [ ] Publish a common leakage-safe pipeline/search contract for grouped, temporal,
+  nested and other declared validation strategies.
+- [ ] Extend budgeted Bayesian/adaptive search, pruning, multi-objective selection
+  and distributed tuning beyond the current supported sampler/host combinations.
+- [ ] Verify deterministic recovery, fit accounting, failed-trial handling and
+  preprocessing isolation under actual concurrent workers.
+
+### 12. Evaluation and uncertainty — Wave A
+
+- [ ] Inventory metrics for each supported task and add independent reference,
+  weighting, threshold, aggregation and degenerate-input tests.
+- [ ] Extend calibration, uncertainty, conformal and model-explanation workflows
+  with documented statistical assumptions and leakage guards.
+- [ ] Define robustness, drift, subgroup and multi-seed comparison reports;
+  distinguish measured coverage from unsupported conditional/causal claims.
+
+### 13. Language-model workflows — Wave C
+
+- [ ] Expand pinned pretrained/tokenizer coverage to declared generation,
+  embeddings, classification, extraction and summarization architectures.
+- [ ] Broaden fine-tuning/adapters/preference optimization, long contexts and
+  generation controls with matching checkpoint/tokenizer/processor recovery.
+- [ ] Accept larger actual checkpoints on provisioned hardware, recording data,
+  quality, memory, latency and numerical failures; preserve opt-in downloads.
+
+### 14. Retrieval and RAG — Wave C
+
+- [ ] Audit existing memory/retrieval components and define ingestion/chunking,
+  embedding index, hybrid search and reranking interfaces.
+- [ ] Add provenance, incremental updates, access-aware retrieval and index/schema
+  migration with bounded storage and restart/recovery behavior.
+- [ ] Publish retrieval and grounded-answer evaluation on declared datasets;
+  expose index/backend requirements as explicit integrations.
+
+### 15. Computer vision — Wave C
+
+- [x] Add the local classification subset: bounded lazy image decoding, EXIF/RGB/
+  alpha/resize semantics, shared train/test classes, CNN training, held-out metrics,
+  JSON preprocessing/label manifest and checkpoint inference. Validate file failures,
+  exact reload and real 1000/300 handwritten-digit split (89.33% held-out accuracy).
+  [Image guide and measured limits](../VISION.md).
+
+- [ ] Define end-to-end classification, detection, segmentation, tracking, OCR and
+  image-retrieval contracts beyond existing construction/training examples.
+- [ ] Add image transforms/augmentation, labels, pretrained weights/processors and
+  task metrics with consistent artifact packaging.
+- [ ] Validate representative real datasets, export and serving paths; scope image
+  generation under the generative workflows rather than duplicate engines.
+
+### 16. Speech and audio — Wave C
+
+- [ ] Define waveform/sample-rate/channel, spectrogram, feature and alignment
+  contracts; add bounded preprocessing and augmentation.
+- [ ] Add declared recognition, synthesis, speaker and classification workflows
+  with local/pinned models and task-specific metrics.
+- [ ] Validate streaming/chunk boundaries, latency, resume and export on actual
+  audio data and selected devices.
+
+### 17. Video and multimodal AI — Wave C
+
+- [ ] Define video sampling/timestamp, multimodal processor and aligned-label
+  contracts with bounded decoding and data loading.
+- [ ] Add declared image/text/audio/video input-output workflows and test absent,
+  corrupt, variable-length and missing-modality behavior.
+- [ ] Validate training, inference and processor/model artifact compatibility
+  on representative tasks and documented hardware.
+
+### 18. Generative modeling — Wave C
+
+- [ ] Inventory autoregressive support and scope optional diffusion, autoencoder,
+  adversarial and other generative-model families according to actual demand.
+- [ ] Standardize conditioning, reproducible sampling, checkpoint/resume and
+  model/processor packaging across declared families.
+- [ ] Add meaningful quality/diversity, numerical and resource evaluation;
+  distinguish functional generation from useful model quality.
+
+### 19. Reinforcement learning — Wave C
+
+- [ ] Audit the declared discrete/continuous, vector, recurrent/masked, replay and
+  offline algorithm matrix before adding another overlapping implementation.
+- [ ] Extend beyond discrete CQL/fixed offline centralized AWR where required:
+  continuous offline RL, online centralized multi-agent and variable populations.
+- [ ] Broaden exact simulator continuation only for explicit environment/wrapper/
+  algorithm contracts and test real learning, recovery and multiple seeds.
+
+### 20. Agents and planning — Wave C
+
+- [ ] Audit existing tools, memory, agent state and planning/search components;
+  align them with shared execution, configuration and artifact contracts.
+- [ ] Standardize structured outputs, permissions, bounded retries/tool budgets,
+  cancellation and deterministic trace/replay where supported.
+- [ ] Add task-level evaluations and recovery tests with real tool/environment
+  boundaries; distinguish stored traces from demonstrated task competence.
+
+### 21. Graph learning — Wave E
+
+- [ ] Define graph data, sparse storage, sampling and batching contracts before
+  adding node/edge/graph prediction and link-prediction workflows.
+- [ ] Add selected message-passing, heterogeneous-graph and embedding integrations
+  with independent parity, leakage-safe splits and documented memory limits.
+- [ ] Validate actual graph-learning datasets, artifacts and target backends.
+
+### 22. Probabilistic and causal modeling — Wave E
+
+- [ ] Inventory existing uncertainty/probabilistic utilities and scope Bayesian
+  inference, probabilistic programs and causal graph extensions separately.
+- [ ] Add selected treatment-effect/counterfactual workflows with explicit
+  identification assumptions, diagnostics and appropriate reference tests.
+- [ ] Publish numerical/statistical validation and failure limits rather than
+  presenting predictive accuracy or attribution as causal evidence.
+
+### 23. Other learning regimes — Wave E
+
+- [ ] Scope self-supervised, semi-supervised, active, transfer and few-shot
+  workflows using existing training/data abstractions where possible.
+- [ ] Audit existing continual/evolution/memory work; add forgetting, transfer,
+  stream-order and recovery evaluation for supported continual-learning methods.
+- [ ] Add selective-labeling/data-efficiency comparisons on held-out workloads;
+  report limitations and independently scoped optional dependencies.
+
+### 24. Distributed and large-model systems — Wave B
+
+- [ ] Accept real multi-GPU/multi-host data, tensor and pipeline parallel execution
+  for explicitly chosen strategies and network topologies.
+- [ ] Extend distributed checkpoints, sharding/offload and worker failure recovery
+  beyond the current accepted CPU/same-world contracts.
+- [ ] Publish measured communication, memory, scaling and resume behavior;
+  GPU tests, driver/runtime versions and rank failures require actual targets.
+
+### 25. Compression and inference optimization — Wave B
+
+- [ ] Expand the model/device/fidelity matrix for existing dynamic and weight-only
+  INT8; preserve failed configurations and caller ownership tests.
+- [ ] Add selected static quantization/calibration, QAT, lower-bit formats,
+  pruning and distillation only against declared model/backend contracts.
+- [ ] Measure accuracy, serialized size, resident/peak memory and actual latency
+  independently; storage reduction does not certify a compute speedup.
+
+### 26. Model interoperability — Wave A
+
+- [ ] Audit artifact schemas, safe/trusted serialization, processor/tokenizer
+  packaging, architecture manifests and version compatibility.
+- [ ] Expand tested import/export and ONNX cases, including dynamic shapes,
+  recurrent/cache state and unsupported graph/operator diagnostics.
+- [ ] Add format/version migration, integrity, partial-publication and roundtrip
+  checks without silent data, dtype or model-semantic changes.
+
+### 27. Serving — Wave D
+
+- [ ] Preserve the validated managed single-tenant reference and define the chosen
+  public/multi-tenant serving target before broadening its acceptance claim.
+- [ ] Scope batch/online/streaming inference, batching, warmup, concurrency,
+  deadlines, version routing and rollback with resource/model boundaries.
+- [ ] Validate authorization/revocation, quotas, monitoring, recovery and actual
+  workload reliability on the deployment host; local TLS tests are separate.
+
+### 28. Experiment lifecycle — Wave A
+
+- [ ] Audit runs, metrics, artifacts, lineage, registries and tracking integrations
+  against a stable shared schema and clear local/remote ownership.
+- [ ] Add reproducible environment manifests, comparison and model/data promotion
+  with explicit retention, migration and failure-recovery policies.
+- [ ] Test restart/reconciliation across the supported training, search and serving
+  workflows without enabling unsolicited remote tracking or background services.
+
+### 29. Security and privacy — Wave D
+
+- [ ] Audit credential handling, artifact integrity, executable/trusted-code
+  boundaries and access policies for the actual supported workflows.
+- [ ] Add declared tenant isolation, authorization/revocation and audit behavior
+  with deployment-specific tests and explicit process/device resource policies.
+- [ ] Scope optional differential privacy/federated learning as separate modules;
+  validate their threat models and numerical/privacy guarantees before advertising.
+
+### 30. Developer experience — Wave A
+
+- [ ] Audit all public APIs against offline help.md, runnable installed examples,
+  reference documentation, typing and actionable error messages.
+- [ ] Stabilize extension interfaces, diagnostics and migration guides with a
+  shallow public module tree and shared utilities instead of duplicate wrappers.
+- [ ] Add onboarding checks for representative low-resource, backend and device
+  configurations; preserve deterministic opt-ins and readable capability reports.
+
+### 31. Release engineering — Wave A
+
+- [ ] Publish API stability/versioning/deprecation and supported-Python/backend
+  policies; define the release candidate acceptance checklist.
+- [ ] Extend reproducible build, source/wheel parity, install/upgrade/uninstall,
+  dependency and platform-matrix checks for declared release targets.
+- [ ] Publish versioned artifacts and evidence with rollback/migration guidance;
+  verification-branch CI artifacts are not a permanent package-index release.
+
+### 32. Validation infrastructure — Wave A
+
+- [ ] Map each advertised workflow to numerical references, real learning tests,
+  data provenance, multiple seeds and persistence/fault/resource acceptance.
+- [ ] Expand reproducible performance regressions and actual hardware checks;
+  keep CPU constraints, physical older machines and GPUs as distinct targets.
+- [ ] Maintain a release dashboard of passing/failed/skipped/blocked combinations,
+  with exact commands, versions and raw reports; never turn missing targets green.
+
+## Optional specialist extension backlog — Wave E
+
+- [ ] Scientific ML and differential-equation workflows: define solver/gradient,
+  stability, physical constraints and reference-validation contracts.
+- [ ] Robotics/control extensions: audit current modules; select actual simulators,
+  control loops and hardware interfaces with bounded execution and safety ownership.
+- [ ] Symbolic reasoning, rules, constraint solving and neural-symbolic interfaces:
+  select concrete user tasks and formal correctness/reference checks.
+- [ ] Evolutionary/gradient-free/multi-objective optimization: audit current
+  evolutionary/search utilities and fill justified gaps without duplicate engines.
+- [ ] Domain-specific/federated/privacy extensions: declare data, evaluation,
+  governance and optional dependency boundaries per supported application.
+
+## Current external acceptance blockers
+
+- [ ] Provision actual supported GPU targets for operators, precision, distributed
+  training/sharding and device-specific aggregate memory containment.
+- [ ] Obtain an identified physical older PC; run the same published workloads
+  and record CPU/ISA/RAM/OS provenance and backend-wrapper overhead.
+- [ ] Select larger model/architecture/data/resource targets; the accepted134.5M
+  CPU checkpoint does not certify billion-scale, long-context or all quantizers.
+- [ ] Select and provision a public/multi-tenant deployment target and its
+  authorization/revocation policy and workload reliability budgets.
+
+Prior hardware availability was explicitly limited to this modern CPU host;
+current low-resource tests and the accepted pretrained CPU case remain valid.
+No new release, feature, hardware result or implementation is claimed by this
+roadmap update. The first next task is Wave A's coverage/API audit and release scope.
+
+<details>
+<summary>Earlier checklist and dated validation records (historical)</summary>
+
+The records below are preserved from the preceding implementation batches. Their
+checkboxes and target availability describe those batches; use the master backlog
+above and the current PHASES.md gates for present planning and status.
 
 ## Validated foundation (existing work)
 
@@ -679,3 +1083,12 @@ Full neural/RL source suite:1110 passed/30 explicit skips in119.76s; final
 preparation/loading/quantization guards:13 passed. The full run predates the three
 new preparation regressions and final complex-dtype rejection; focused checks
 and hosted tests cover the final guard paths. No mandatory dependency changed.
+
+Final pretrained snapshot93d8937 passes base45151221151 (9cells),
+backend45151221178 (10cells) and full SDK45151221134. All204 Python sources match
+the regular wheel; ZIP hashes and updated documentation links verify. Fresh
+base installation still adds nil-sdk alone, with no model or compiled payload.
+The actual pretrained snapshot stays outside the distribution. Final runtime
+updates were published only on the already approved verification branch.
+
+</details>

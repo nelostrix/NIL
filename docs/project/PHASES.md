@@ -6,6 +6,12 @@ checkboxes: writing a runner or encountering a skip does not pass them. Preserve
 NIL-only installation, passive imports, shallow public modules and per-module
 help. Existing optional integrations remain available while native work expands.
 
+The expanded [32-area master TODO](TODO.md) now defines the broader framework
+backlog and Waves A–E. The numbered phases below retain their concrete existing
+implementation and target-acceptance gates; they are not an exhaustive list of
+the expanded scope. Start new software work with the master coverage/API audit,
+and preserve open hardware/deployment gates while progressing independent tasks.
+
 ## Phase 1 — Execution containment and resource budgets (active)
 
 - [x] Add optional Linux process-group RSS monitoring with typed resource-limit
@@ -283,3 +289,41 @@ The ND engine's core/native workload also passed again under actual CPUQuota100%
 MemoryMax1GiB, no-swap and TasksMax64 limits; unit peak32.6MiB, zero swap/OOM kills.
 Actual GPU/device quotas, a physical old PC, external large pretrained targets and
 public/multi-tenant deployment acceptance remain open as listed above.
+
+## Pinned pretrained CPU follow-on — 2026-11-23
+
+The external134.5M SmolLM2/Llama gate passes installed-wheel FP32 inference,
+LoRA/frozen-base/adapter-only reload and explicit INT8 weight storage under actual
+2GiB/no-swap/one-CPU limits. [Exact source, fidelity limits and failed dynamic
+configuration](../PRETRAINED_CPU.md) remain separate from tiny local models and
+from GPU/billion-scale targets. Model/tokenizer pinning now shares revision/cache/
+auth options; optional weight-only conversion reduces storage with FP32 compute.
+
+At commit93d8937, [all nine base cells](https://github.com/nelostrix/NIL/actions/runs/45151221151),
+[all ten backend cells](https://github.com/nelostrix/NIL/actions/runs/45151221178)
+and [full SDK CI](https://github.com/nelostrix/NIL/actions/runs/45151221134) pass.
+Installed Torch/native/service/preparation checks pass131 tests with zero skips.
+The final pure wheel matches204 Python sources, includes no model/native binary
+payload and installs only nil-sdk through a fresh offline resolver. Actual GPU,
+physical older-PC, broader large architectures and public deployment remain open.
+
+
+## 2026-11-24 expanded roadmap: foundations, then images
+
+Implemented the first framework boundary: versioned passive workflow inventory,
+CLI/package discovery, structural protocols and schema-1 result metadata. Fixed
+neural TrainingResult dispatch in shared prediction/evaluation. Defined the alpha
+release/stability boundary and separate independent-engine milestones in
+[SDK_CONTRACTS.md](../SDK_CONTRACTS.md); declarations are bounded by
+[WORKFLOWS.md](../WORKFLOWS.md).
+
+Then implemented local image classification: lazy bounded preprocessing, shared
+labels, training/evaluation, manifest and exact checkpoint inference. Real held-out
+digit acceptance reached 89.33% (300 images), 29.93 seconds and 333,979,648-byte
+peak child RSS on the current CPU host. See [VISION.md](../VISION.md).
+
+These are checked subitems in the 32-area master, not completion of all SDK or
+vision requirements. Callback/cancellation convergence, broader data/evaluation
+and artifact contracts, detection/segmentation/OCR/tracking/retrieval, pretrained
+visual backbones and export/serving acceptance remain open. Existing actual GPU,
+older-PC and public deployment gates remain unchanged.

@@ -9,6 +9,8 @@ def test_neural_behavior_cloning_heldout_and_exact_resume(tmp_path):
     data={'observations':x,'actions':actions}
     options=dict(action_count=2,hidden=(16,),lr=.02,batch_size=32,seed=7)
     full=nil.rl.offline_fit(data,steps=120,output_dir=tmp_path/'full',**options)
+    info=nil.contracts.result_info(full)
+    assert info.family=='rl.offline' and info.history_length==len(full.history) and info.model_count==1
     first=nil.rl.offline_fit(data,steps=40,output_dir=tmp_path/'first',**options)
     resumed=nil.rl.offline_fit(data,steps=120,resume=first.checkpoint,output_dir=tmp_path/'resume',**options)
     assert full.history==resumed.history

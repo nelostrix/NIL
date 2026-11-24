@@ -115,3 +115,12 @@ Each has offline help; see CLASSICAL_SPECIALIZED.md for their exact scope.
 
 Each has offline help. Scope, measured tests and unaccepted hardware/deployment
 combinations: [CPU_COMPLETION.md](CPU_COMPLETION.md).
+
+## Framework contracts and images
+
+- `nil.coverage`: passive, versioned workflow inventory and metadata-only availability; `nil help coverage`.
+- `nil.contracts`: structural dataset/predictor/result protocols and result_info metadata; `nil help contracts`.
+- `nil.vision`: lazy bounded local image classification and saved preprocessing/labels; `nil help vision`.
+- `nil.model("nelo_vision_mini", ...)`: compact trainable CNN baseline; `nil help nelo_vision_mini`.
+
+See [SDK contracts](SDK_CONTRACTS.md), [workflow inventory](WORKFLOWS.md) and [image acceptance](VISION.md).

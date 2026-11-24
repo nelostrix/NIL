@@ -27,18 +27,19 @@ PROFILES={
     },
     'classical': {
         'packages':('scikit-learn','numpy','scipy','pandas','pytest'),
-        'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py'),
+        'tests':('test_classical_workflow.py','test_classical_validation.py','test_classical_inspection.py','test_sklearn_mirror.py','test_classical_result_contract.py'),
         'exclude':'',
         'examples':(('classical_workflow.py',),('sklearn_mirror.py',)),
     },
     'torch': {
-        'packages':('torch','numpy','pytest'),
+        'packages':('torch','numpy','Pillow','pytest'),
         'tests':('test_dl_correctness.py','test_loader_resume.py','test_isolated_serving.py','test_native_engine.py','test_native_multiclass.py',
                  'test_service_credentials.py','test_tls_gateway.py','test_tls_inference.py',
                  'test_native_nd.py','test_native_sparse.py','test_native_cpu.py',
-                 'test_quantization_ownership.py','test_pretrained_loading_contract.py','test_pretrained_runner.py'),
+                 'test_quantization_ownership.py','test_pretrained_loading_contract.py','test_pretrained_runner.py',
+                 'test_framework_contracts.py','test_neural_result_contract.py','test_vision.py'),
         'exclude':'not cuda',
-        'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer')),
+        'examples':(('deep_workflows.py','--architecture','cnn'),('deep_workflows.py','--architecture','lstm'),('deep_workflows.py','--architecture','transformer'),('image_classification.py',)),
     },
 }
 

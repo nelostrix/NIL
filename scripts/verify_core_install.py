@@ -60,8 +60,12 @@ assert nil.list_models() and nil.help('linear_regression')
 for name in ('pipeline', 'fit', 'save', 'load', 'split', 'cross_validate', 'tune',
              'Trainer', 'training', 'preprocessing', 'inspection', 'predict', 'evaluate', 'sklearn',
              'streaming', 'uncertainty', 'imbalance', 'selection', 'execution', 'rl',
-             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets', 'native', 'distributed'):
+             'boosting', 'forecasting', 'ranking', 'recommendation', 'survival', 'datasets', 'native', 'distributed', 'contracts', 'coverage', 'vision'):
     assert getattr(nil, name) is not None, name
+assert len(nil.coverage.areas()) == 32
+assert nil.coverage.describe('native.tensor')['requires'] == []
+assert nil.coverage.availability('neural.supervised')['runtime_verified'] is False
+assert nil.vision.ImageTransform.from_dict(nil.vision.ImageTransform().to_dict()).size == (64,64)
 model = nil.native.Linear(1,1,seed=0)
 result = nil.native.fit(model, [[0.],[1.],[2.]], [[1.],[3.],[5.]], epochs=150, lr=.1)
 classifier = nil.native.Linear(2,3,seed=7)

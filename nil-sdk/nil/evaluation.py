@@ -7,6 +7,7 @@ from nil.runtime import device, move, require
 
 def evaluate(model, data, targets=None, task=None, batch_size=32, device_name="auto", sample_weight=None, **options):
     from nil._classical_common import is_classical, is_rl, unwrap
+    model = unwrap(model)
     if is_rl(model):
         if targets is not None or sample_weight is not None or task is not None or device_name != 'auto' or batch_size != 32:
             raise ValueError('RL evaluation expects a separate environment and episodes/max_steps options')

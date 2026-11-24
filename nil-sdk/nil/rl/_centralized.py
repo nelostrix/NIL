@@ -66,6 +66,7 @@ class CentralizedResult:
     history: list
     checkpoint: Path
     status: str
+    _nil_centralized_result = True
 
 
 def _result(model,config,history,path,status,rng_states=None):

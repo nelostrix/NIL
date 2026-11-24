@@ -15,6 +15,8 @@ def data():
 def test_centralized_awr_heldout_and_exact_resume(tmp_path):
     sets,returns=data();options=dict(action_counts={'a':2,'b':2},returns=returns,hidden=(16,),lr=.02,batch_size=32,seed=7)
     full=nil.rl.centralized_fit(sets,steps=150,output_dir=tmp_path/'full',**options)
+    info=nil.contracts.result_info(full)
+    assert info.family=='rl.centralized' and info.model_count==2 and info.history_length==len(full.history)
     first=nil.rl.centralized_fit(sets,steps=50,output_dir=tmp_path/'first',**options)
     resumed=nil.rl.centralized_fit(sets,steps=150,resume=first.checkpoint,output_dir=tmp_path/'resume',**options)
     assert full.history==resumed.history

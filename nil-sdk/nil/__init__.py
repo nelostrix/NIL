@@ -36,7 +36,7 @@ for _name in (
     "AutonomousManipulationDomain",
 ):
     _EXPORTS[_name] = ("nil.robotics", _name)
-_MODULES = {"native", "distributed", "boosting", "forecasting", "ranking", "recommendation", "survival", "datasets", "rl", "execution", "selection", "imbalance", "uncertainty", "streaming", "sklearn", "catalog", "preprocessing", "persistence", "validation", "inspection", "data", "nn", "training", "evaluation", "inference", "optimization",
+_MODULES = {"vision", "coverage", "contracts", "native", "distributed", "boosting", "forecasting", "ranking", "recommendation", "survival", "datasets", "rl", "execution", "selection", "imbalance", "uncertainty", "streaming", "sklearn", "catalog", "preprocessing", "persistence", "validation", "inspection", "data", "nn", "training", "evaluation", "inference", "optimization",
             "generative", "lifecycle", "runtime", "models", "robotics", "classical", "serving"}
 __all__ = list(_EXPORTS) + sorted(_MODULES)
 

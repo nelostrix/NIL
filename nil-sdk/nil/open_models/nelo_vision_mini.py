@@ -4,7 +4,7 @@ from nil.runtime import require
 
 def build(num_classes, channels=3, width=32):
     torch = require("torch", "torch")
-    if min(num_classes, channels, width) < 1:
+    if any(type(n) is not int or n < 1 for n in (num_classes, channels, width)):
         raise ValueError("Class, channel and width dimensions must be positive")
     nn = torch.nn
     return nn.Sequential(

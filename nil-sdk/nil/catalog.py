@@ -4,6 +4,7 @@ from nil.runtime import require
 
 # name: (group, module, constructor, optional dependency extra)
 _MODELS = {
+    "nelo_vision_mini": ("neural_networks", "nil.open_models.nelo_vision_mini", "build", "torch"),
     "lag_forecaster": ("forecasting", "nil._forecast", "LagForecaster", "classical"),
     "query_ranker": ("ranking", "nil._ranking", "QueryRanker", "lightgbm"),
     "item_cosine": ("recommendation", "nil._recommendation", "ItemRecommender", "classical"),
